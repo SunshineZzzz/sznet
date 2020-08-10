@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="sznet">
+      <UniqueIdentifier>{f2cd92c2-5c0a-41fb-a39a-12413e22618d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sznet\base">
+      <UniqueIdentifier>{97e51afe-4c60-4f0c-b3ab-d17c2ec7d8fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sznet\memory">
+      <UniqueIdentifier>{3799ad73-d4f0-48ad-9865-86dced894cd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sznet\time">
+      <UniqueIdentifier>{945cfe39-98ab-4bd0-af46-a8277dece92e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sznet\thread">
+      <UniqueIdentifier>{227ef0ed-fca6-4b39-b291-2b84b7b8295f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\sznet\base\Compiler.h">
+      <Filter>sznet\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\base\Copyable.h">
+      <Filter>sznet\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\base\Platform.h">
+      <Filter>sznet\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\base\Types.h">
+      <Filter>sznet\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\base\NonCopyable.h">
+      <Filter>sznet\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\NetCmn.h">
+      <Filter>sznet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\time\Time.h">
+      <Filter>sznet\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\time\Timestamp.h">
+      <Filter>sznet\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\thread\Thread.h">
+      <Filter>sznet\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\memory\MemoryPool.h">
+      <Filter>sznet\memory</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\sznet\memory\MemoryPool.cpp">
+      <Filter>sznet\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\thread\Thread.cpp">
+      <Filter>sznet\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\time\Timer.cpp">
+      <Filter>sznet\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\time\Timestamp.cpp">
+      <Filter>sznet\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\NetCmn.cpp">
+      <Filter>sznet</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
