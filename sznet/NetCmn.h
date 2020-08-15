@@ -9,9 +9,11 @@
 
 #if SZ_OS_WINDOWS
 #	define WIN32_LEAN_AND_MEAN
+#		define NOGDI
 #		define NOMINMAX 
 #			include <Windows.h>
 #		undef NOMINMAX
+#		undef NOGDI
 #	undef WIN32_LEAN_AND_MEAN
 #	include <crtdbg.h>
 #endif
