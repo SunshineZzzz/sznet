@@ -1,6 +1,7 @@
-﻿#ifndef _SZNET_MEMORY_MEMORY_POOL_H_
-#define _SZNET_MEMORY_MEMORY_POOL_H_
+﻿#ifndef _SZNET_MEMORY_MEMORYPOOL_H_
+#define _SZNET_MEMORY_MEMORYPOOL_H_
 
+#include "../base/NonCopyable.h"
 #include "../thread/Thread.h"
 #include <stdlib.h>
 #include <string.h>
@@ -109,7 +110,7 @@ float MemoryPoolGetProgUsage(MemoryPool* mp);
 // ///////////////////////////////////////////////////////////////////////
 
 // 通用非固定内存分配器
-class CmnMemoryPool
+class CmnMemoryPool : NonCopyable
 {
 public:
 	struct info_t 
@@ -160,5 +161,5 @@ private:
 	sz_mutex_t m_mutex;
 };
 
-}
-#endif  // _SZNET_MEMORY_MEMORY_POOL_H_
+} // namespace sznet
+#endif // _SZNET_MEMORY_MEMORYPOOL_H_

@@ -19,9 +19,9 @@ public:
 	// 交换函数
 	void swap(Timestamp& that);
 	// 返回 秒.xxxxxx(微妙)
-	std::string toString() const;
+	string toString() const;
 	// 转换成一个格式化字符串 .[xxxxxx(微妙)]
-	std::string toFormattedString(bool showMicroseconds = true) const;
+	string toFormattedString(bool showMicroseconds = true) const;
 	// 大于0有效
 	bool valid() const;
 	// 返回从1970年到当前的时间，单位微秒

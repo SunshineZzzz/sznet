@@ -16,6 +16,21 @@
     <Filter Include="sznet\thread">
       <UniqueIdentifier>{227ef0ed-fca6-4b39-b291-2b84b7b8295f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sznet\string">
+      <UniqueIdentifier>{513ffa13-0ab8-4df5-b029-b576b41001b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sznet\log">
+      <UniqueIdentifier>{50150d69-f23a-4526-8bf4-7189c7f72eec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sznet\process">
+      <UniqueIdentifier>{516fbaca-1e6b-4f52-af89-a2658023ba1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sznet\io">
+      <UniqueIdentifier>{8aed1b61-16e2-4236-aca2-fe14fa4a3aef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sznet\ds">
+      <UniqueIdentifier>{62e2cc13-482b-4751-ae61-30302070a55e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\sznet\base\Compiler.h">
@@ -48,6 +63,54 @@
     <ClInclude Include="..\sznet\memory\MemoryPool.h">
       <Filter>sznet\memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\sznet\string\StringPiece.h">
+      <Filter>sznet\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\log\LogStream.h">
+      <Filter>sznet\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\thread\Mutex.h">
+      <Filter>sznet\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\thread\CurrentThread.h">
+      <Filter>sznet\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\process\Process.h">
+      <Filter>sznet\process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\thread\Condition.h">
+      <Filter>sznet\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\thread\CountDownLatch.h">
+      <Filter>sznet\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\thread\ThreadClass.h">
+      <Filter>sznet\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\log\Logging.h">
+      <Filter>sznet\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\base\Exception.h">
+      <Filter>sznet\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\thread\ThreadPool.h">
+      <Filter>sznet\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\io\FileUtil.h">
+      <Filter>sznet\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\io\IO.h">
+      <Filter>sznet\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\log\LogFile.h">
+      <Filter>sznet\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\ds\BlockingQueue.h">
+      <Filter>sznet\ds</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\ds\BoundedBlockingQueue.h">
+      <Filter>sznet\ds</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\sznet\memory\MemoryPool.cpp">
@@ -64,6 +127,36 @@
     </ClCompile>
     <ClCompile Include="..\sznet\NetCmn.cpp">
       <Filter>sznet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\log\LogStream.cpp">
+      <Filter>sznet\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\thread\CurrentThread.cpp">
+      <Filter>sznet\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\process\Process.cpp">
+      <Filter>sznet\process</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\thread\CountDownLatch.cpp">
+      <Filter>sznet\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\thread\ThreadClass.cpp">
+      <Filter>sznet\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\log\Logging.cpp">
+      <Filter>sznet\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\thread\ThreadPool.cpp">
+      <Filter>sznet\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\io\FileUtil.cpp">
+      <Filter>sznet\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\io\IO.cpp">
+      <Filter>sznet\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\log\LogFile.cpp">
+      <Filter>sznet\log</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

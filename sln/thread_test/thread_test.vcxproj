@@ -18,55 +18,10 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\sznet\base\Compiler.h" />
-    <ClInclude Include="..\sznet\base\Copyable.h" />
-    <ClInclude Include="..\sznet\base\Exception.h" />
-    <ClInclude Include="..\sznet\base\NonCopyable.h" />
-    <ClInclude Include="..\sznet\base\Platform.h" />
-    <ClInclude Include="..\sznet\base\Types.h" />
-    <ClInclude Include="..\sznet\ds\BlockingQueue.h" />
-    <ClInclude Include="..\sznet\ds\BoundedBlockingQueue.h" />
-    <ClInclude Include="..\sznet\io\FileUtil.h" />
-    <ClInclude Include="..\sznet\io\IO.h" />
-    <ClInclude Include="..\sznet\log\LogFile.h" />
-    <ClInclude Include="..\sznet\log\Logging.h" />
-    <ClInclude Include="..\sznet\log\LogStream.h" />
-    <ClInclude Include="..\sznet\memory\MemoryPool.h" />
-    <ClInclude Include="..\sznet\NetCmn.h" />
-    <ClInclude Include="..\sznet\process\Process.h" />
-    <ClInclude Include="..\sznet\string\StringPiece.h" />
-    <ClInclude Include="..\sznet\thread\Condition.h" />
-    <ClInclude Include="..\sznet\thread\CountDownLatch.h" />
-    <ClInclude Include="..\sznet\thread\CurrentThread.h" />
-    <ClInclude Include="..\sznet\thread\Mutex.h" />
-    <ClInclude Include="..\sznet\thread\Thread.h" />
-    <ClInclude Include="..\sznet\thread\ThreadClass.h" />
-    <ClInclude Include="..\sznet\thread\ThreadPool.h" />
-    <ClInclude Include="..\sznet\time\Time.h" />
-    <ClInclude Include="..\sznet\time\Timestamp.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\sznet\io\FileUtil.cpp" />
-    <ClCompile Include="..\sznet\io\IO.cpp" />
-    <ClCompile Include="..\sznet\log\LogFile.cpp" />
-    <ClCompile Include="..\sznet\log\Logging.cpp" />
-    <ClCompile Include="..\sznet\log\LogStream.cpp" />
-    <ClCompile Include="..\sznet\memory\MemoryPool.cpp" />
-    <ClCompile Include="..\sznet\NetCmn.cpp" />
-    <ClCompile Include="..\sznet\process\Process.cpp" />
-    <ClCompile Include="..\sznet\thread\CountDownLatch.cpp" />
-    <ClCompile Include="..\sznet\thread\CurrentThread.cpp" />
-    <ClCompile Include="..\sznet\thread\Thread.cpp" />
-    <ClCompile Include="..\sznet\thread\ThreadClass.cpp" />
-    <ClCompile Include="..\sznet\thread\ThreadPool.cpp" />
-    <ClCompile Include="..\sznet\time\Timer.cpp" />
-    <ClCompile Include="..\sznet\time\Timestamp.cpp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{75E59ED3-61A5-4B8B-AD90-D43D19ABDE2B}</ProjectGuid>
-    <RootNamespace>sznet</RootNamespace>
+    <ProjectGuid>{18382A7E-2E5B-4222-9900-621470064360}</ProjectGuid>
+    <RootNamespace>threadtest</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -84,7 +39,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -115,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
@@ -123,13 +78,12 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -160,6 +114,9 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\test\thread_test.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

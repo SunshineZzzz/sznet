@@ -19,7 +19,7 @@ void Timestamp::swap(Timestamp& that)
 	std::swap(m_microSecondsSinceEpoch, that.m_microSecondsSinceEpoch);
 }
 
-std::string Timestamp::toString() const
+string Timestamp::toString() const
 {
 	char buf[32] = { 0 };
 	int64_t seconds = m_microSecondsSinceEpoch / kMicroSecondsPerSecond;
@@ -28,7 +28,7 @@ std::string Timestamp::toString() const
 	return buf;
 }
 
-std::string Timestamp::toFormattedString(bool showMicroseconds) const
+string Timestamp::toFormattedString(bool showMicroseconds) const
 {
 	char buf[32] = { 0 };
 	time_t seconds = static_cast<time_t>(m_microSecondsSinceEpoch / kMicroSecondsPerSecond);

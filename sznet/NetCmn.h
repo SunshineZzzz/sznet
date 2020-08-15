@@ -3,16 +3,42 @@
 
 #include "base/Platform.h"
 #include "base/Compiler.h"
+#include "base/Types.h"
 
 #include <inttypes.h>  
 
 #if SZ_OS_WINDOWS
-#	include <Windows.h>
+#	define WIN32_LEAN_AND_MEAN
+#		define NOMINMAX 
+#			include <Windows.h>
+#		undef NOMINMAX
+#	undef WIN32_LEAN_AND_MEAN
 #	include <crtdbg.h>
 #endif
 
+#if SZ_OS_LINUX
+#	include <unistd.h>
+#	include <sys/types.h>
+#endif
+
+#if SZ_COMPILER_MSVC
+#	define expect(expr,value) (expr)
+#endif
+
 #if SZ_COMPILER_GNUC 
-#	include <pthread.h>
+#	if(defined((__GNUC__ >= 3)))
+#		define expect(expr,value) (__builtin_expect ((expr),(value)))
+#	else
+#		define expect(expr,value) (expr)
+#	endif
+#endif
+
+// 分支预测
+#ifndef likely
+#	define likely(expr)     expect((expr) != 0, 1)
+#endif
+#ifndef unlikely
+#	define unlikely(expr)   expect((expr) != 0, 0)
 #endif
 
 namespace sznet

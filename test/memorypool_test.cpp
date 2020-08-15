@@ -1,4 +1,4 @@
-// ²âÊÔ¶àÏß³ÌÏÂ·Ç¹Ì¶¨ÄÚ´æ·ÖÅä£¬º¯Êı½Ó¿Ú²âÊÔ
+ï»¿// æµ‹è¯•å¤šçº¿ç¨‹ä¸‹éå›ºå®šå†…å­˜åˆ†é…ï¼Œå‡½æ•°æ¥å£æµ‹è¯•
 
 #include <vector>
 #include <atomic>
@@ -11,7 +11,7 @@
 #include <assert.h>
 
 #include "../sznet/thread/Thread.h"
-// ×¢ÊÍÕâĞĞ±È½ÏÏµÍ³mallocÓëmemory poolµÄĞÔÄÜ
+// æ³¨é‡Šè¿™è¡Œæ¯”è¾ƒç³»ç»Ÿmallocä¸memory poolçš„æ€§èƒ½
 #include "../sznet/memory/MemoryPool.h"
 
 #if SZ_COMPILER_MSVC
@@ -20,27 +20,27 @@
 
 using namespace sznet;
 
-// ¿ªÆôENABLE_SHOWÊä³öÄÚ²¿ĞÅÏ¢ »á¼«´óµÄÓ°ÏìĞÔÄÜ
+// å¼€å¯ENABLE_SHOWè¾“å‡ºå†…éƒ¨ä¿¡æ¯ ä¼šæå¤§çš„å½±å“æ€§èƒ½
 #define ENABLE_SHOW
-// HARD_MODEÄ£Ê½¸ü½Ó½üËæ»ú·ÖÅäÊÍ·ÅÄÚ´æµÄÇé¾°
+// HARD_MODEæ¨¡å¼æ›´æ¥è¿‘éšæœºåˆ†é…é‡Šæ”¾å†…å­˜çš„æƒ…æ™¯
 #define HARD_MODE
-// ÊÇ·ñ²âÊÔÏûºÄÍê³ÉËùÓĞÄÚ´æ
+// æ˜¯å¦æµ‹è¯•æ¶ˆè€—å®Œæˆæ‰€æœ‰å†…å­˜
 #define USE_RETAIN_MEMORY
 
-/* -------- ²âÊÔÊı¾İ²ÎÊı -------- */
-// ÄÚ´æ³Ø¹ÜÀíµÄÃ¿¸öÄÚ´æ¿é´óĞ¡
+/* -------- æµ‹è¯•æ•°æ®å‚æ•° -------- */
+// å†…å­˜æ± ç®¡ç†çš„æ¯ä¸ªå†…å­˜å—å¤§å°
 #define MAX_MEM_SIZE (2 * GB)
-// ÄÚ´æ³Ø¹ÜÀíµÄÃ¿¸öÄÚ´æ¿é´óĞ¡
+// å†…å­˜æ± ç®¡ç†çš„æ¯ä¸ªå†…å­˜å—å¤§å°
 #define MEM_SIZE (uint64_t)(0.3 * GB)
-// Êı¾İÌõÊı
+// æ•°æ®æ¡æ•°
 #define DATA_N (50000)
-// Ã¿ÌõÊı¾İ×î´ó³ß´ç
+// æ¯æ¡æ•°æ®æœ€å¤§å°ºå¯¸
 #define DATA_MAX_SIZE (16 * KB)
-// ×Ü²âÊÔ´ÎÊı
+// æ€»æµ‹è¯•æ¬¡æ•°
 #define MAX_N (3)
-/* -------- ²âÊÔÊı¾İ²ÎÊı -------- */
+/* -------- æµ‹è¯•æ•°æ®å‚æ•° -------- */
 
-#ifdef _SZNET_MEMORY_MEMORY_POOL_H_
+#ifdef _SZNET_MEMORY_MEMORYPOOL_H_
 #	define My_Malloc(x) MemoryPoolAlloc(mp, x)
 #	define My_Free(x) MemoryPoolFree(mp, x)
 #	define My_Malloc_TEST(x) MemoryPoolAlloc(mp, x, false)
@@ -53,7 +53,7 @@ using namespace sznet;
 #	define My_Malloc_TEST(x) malloc(x)
 #endif
 
-#if (defined _SZNET_MEMORY_MEMORY_POOL_H_)
+#if (defined _SZNET_MEMORY_MEMORYPOOL_H_)
 void SHOW(const char* x, MemoryPool* mp)
 {
 	std::cout << "============ " << std::this_thread::get_id() << " ============\n";
@@ -74,27 +74,27 @@ void SHOW(const char* x, MemoryPool* mp)
 }
 #endif
 
-// ×Ü¹²·ÖÅäÄÚ´æ´óĞ¡
+// æ€»å…±åˆ†é…å†…å­˜å¤§å°
 std::atomic_uint64_t total_size = 0;
-// ÁÙÊ±±äÁ¿ÓÃÀ´¼ÇÂ¼Ëæ»úÄÚ´æ´óĞ¡
+// ä¸´æ—¶å˜é‡ç”¨æ¥è®°å½•éšæœºå†…å­˜å¤§å°
 uint32_t cur_size = 0;
-// ¸¨Öú´òÓ¡µÄ»¥³âÁ¿
+// è¾…åŠ©æ‰“å°çš„äº’æ–¥é‡
 sz_mutex_t mutex;
-// ·ÖÅäÄÚ´æ½Úµã
+// åˆ†é…å†…å­˜èŠ‚ç‚¹
 struct Node 
 {
-	// ·ÖÅäÄÚ´æ´óĞ¡
+	// åˆ†é…å†…å­˜å¤§å°
 	uint32_t size;
-	// ÄÚ´æbuffer
+	// å†…å­˜buffer
 	char* data;
-	// ÊµÏÖĞ¡ÓÚÔËËã·û£¬·½±ãÅÅĞò
+	// å®ç°å°äºè¿ç®—ç¬¦ï¼Œæ–¹ä¾¿æ’åº
 	bool operator<(const Node& n) const 
 	{
 		return size < n.size;
 	}
 };
 
-// Ëæ»úÒ»¸öÊıºÍmaxnÈ¡Ä£
+// éšæœºä¸€ä¸ªæ•°å’Œmaxnå–æ¨¡
 unsigned int random_uint(unsigned int maxn) 
 {
 	// 0 to RAND_MAX(32767)
@@ -103,18 +103,18 @@ unsigned int random_uint(unsigned int maxn)
 	return ret > 0 ? ret : 32;
 }
 
-// Ïß³Ìº¯Êı£¬²âÊÔÄÚ´æ
+// çº¿ç¨‹å‡½æ•°ï¼Œæµ‹è¯•å†…å­˜
 void* test_fn(void* arg) 
 {
 	Node* mem = new Node[DATA_N];
-#ifdef _SZNET_MEMORY_MEMORY_POOL_H_
+#ifdef _SZNET_MEMORY_MEMORYPOOL_H_
 	MemoryPool* mp = (MemoryPool*)arg;
 	mem_size_t cur_total_size = 0;
 #else
 	unsigned long long cur_total_size = 0;
 #endif
 
-#if (defined _SZNET_MEMORY_MEMORY_POOL_H_) && (defined ENABLE_SHOW)
+#if (defined _SZNET_MEMORY_MEMORYPOOL_H_) && (defined ENABLE_SHOW)
 	sz_mutex_lock(&mutex);
 	SHOW("Alloc Before1: ", mp);
 	sz_mutex_unlock(&mutex);
@@ -133,17 +133,17 @@ void* test_fn(void* arg)
 		mem[i].size = cur_size;
 		*(char*)mem[i].data = '\0';
 	}
-	// ÅÅĞò½øÒ»²½´òÂÒÄÚ´æÊÍ·ÅË³Ğò Ä£ÄâÊµ¼ÊÖĞËæ»úÊÍ·ÅÄÚ´æ
+	// æ’åºè¿›ä¸€æ­¥æ‰“ä¹±å†…å­˜é‡Šæ”¾é¡ºåº æ¨¡æ‹Ÿå®é™…ä¸­éšæœºé‡Šæ”¾å†…å­˜
 	std::sort(mem, mem + DATA_N);
 
-#if (defined _SZNET_MEMORY_MEMORY_POOL_H_) && (defined ENABLE_SHOW)
+#if (defined _SZNET_MEMORY_MEMORYPOOL_H_) && (defined ENABLE_SHOW)
 	sz_mutex_lock(&mutex);
 	SHOW("Alloc Before2: ", mp);
 	sz_mutex_unlock(&mutex);
 #endif
 
-#if (defined _SZNET_MEMORY_MEMORY_POOL_H_) && (defined USE_RETAIN_MEMORY)
-	// Ê£ÏÂÄÚ´æ¶ÔÏóÖĞµÄÄÚ´æ·ÖÅäÍê
+#if (defined _SZNET_MEMORY_MEMORYPOOL_H_) && (defined USE_RETAIN_MEMORY)
+	// å‰©ä¸‹å†…å­˜å¯¹è±¡ä¸­çš„å†…å­˜åˆ†é…å®Œ
 	std::vector<char*> vChars;
 	std::vector<mem_size_t> vSizes;
 	char* pMem = nullptr;
@@ -181,13 +181,13 @@ void* test_fn(void* arg)
 #endif
 
 #ifdef HARD_MODE
-	// ÊÍ·ÅÇ°Ò»°ë¹ÜÀíµÄÄÚ´æ£¬ÕâÀïµÄÇ°Ò»°ëÒÑ¾­ÂÒĞòµÄÁË
+	// é‡Šæ”¾å‰ä¸€åŠç®¡ç†çš„å†…å­˜ï¼Œè¿™é‡Œçš„å‰ä¸€åŠå·²ç»ä¹±åºçš„äº†
 	for (int i = 0; i < DATA_N / 2; ++i)
 	{
 		My_Free(mem[i].data);
 		cur_total_size -= mem[i].size;
 	}
-	// ÖØĞÂ·ÖÅäÇ°Ò»°ëµÄÄÚ´æ
+	// é‡æ–°åˆ†é…å‰ä¸€åŠçš„å†…å­˜
 	for (int i = 0; i < DATA_N / 2; ++i) 
 	{
 		cur_size = random_uint(DATA_MAX_SIZE);
@@ -204,7 +204,7 @@ void* test_fn(void* arg)
 	std::sort(mem, mem + DATA_N);
 #endif
 
-#if (defined _SZNET_MEMORY_MEMORY_POOL_H_) && (defined ENABLE_SHOW)
+#if (defined _SZNET_MEMORY_MEMORYPOOL_H_) && (defined ENABLE_SHOW)
 	sz_mutex_lock(&mutex);
 	SHOW("Free Before: ", mp);
 	sz_mutex_unlock(&mutex);
@@ -218,9 +218,9 @@ void* test_fn(void* arg)
 	printf("\n");
 
 	sz_mutex_lock(&mutex);
-	// È«¾Ö·ÖÅäÄÚ´æÀÛ¼Ó
+	// å…¨å±€åˆ†é…å†…å­˜ç´¯åŠ 
 	total_size += cur_total_size;
-#ifdef _SZNET_MEMORY_MEMORY_POOL_H_
+#ifdef _SZNET_MEMORY_MEMORYPOOL_H_
 #ifdef ENABLE_SHOW
 	SHOW("Free After: ", mp);
 #endif
@@ -245,8 +245,8 @@ int main()
 	double total_time;
 	start = clock();
 
-	// Çø·ÖÏµÍ³mallocºÍÄÚ´æ³ØÊµÏÖ
-#ifndef _SZNET_MEMORY_MEMORY_POOL_H_
+	// åŒºåˆ†ç³»ç»Ÿmallocå’Œå†…å­˜æ± å®ç°
+#ifndef _SZNET_MEMORY_MEMORYPOOL_H_
 	printf("System malloc:\n");
 #else
 	printf("Memory Pool:\n");
@@ -254,8 +254,8 @@ int main()
 #endif
 
 
-	// µÚÒ»´ÎÖ´ĞĞ
-#if (defined _SZNET_MEMORY_MEMORY_POOL_H_)
+	// ç¬¬ä¸€æ¬¡æ‰§è¡Œ
+#if (defined _SZNET_MEMORY_MEMORYPOOL_H_)
 	auto t1 = std::thread(test_fn, mp);
 	auto t2 = std::thread(test_fn, mp);
 	auto t3 = std::thread(test_fn, mp);
@@ -269,12 +269,12 @@ int main()
 	t2.join();
 	t3.join();
 
-	// µÚ¶ş´ÎÖ´ĞĞ
+	// ç¬¬äºŒæ¬¡æ‰§è¡Œ
 	printf("\n>\n>\n>\n\n");
 
 	total_size = 0;
 
-#ifdef _SZNET_MEMORY_MEMORY_POOL_H_
+#ifdef _SZNET_MEMORY_MEMORYPOOL_H_
 	t1 = std::thread(test_fn, mp);
 	// t2 = std::thread(test_fn, mp);
 	// t3 = std::thread(test_fn, mp);
@@ -287,7 +287,7 @@ int main()
 	// t2.join();
 	// t3.join();
 
-#ifdef _SZNET_MEMORY_MEMORY_POOL_H_
+#ifdef _SZNET_MEMORY_MEMORYPOOL_H_
 	MemoryPoolDestroy(mp);
 #endif
 

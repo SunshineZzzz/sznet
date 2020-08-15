@@ -21,6 +21,18 @@ void sz_localtime(struct tm& t, time_t n)
 #endif
 }
 
+void sz_sleep(int millisec)
+{
+#if SZ_OS_LINUX
+	struct timespec ts {};
+	ts.tv_sec = millisec / 1000;
+	ts.tv_nsec = (millisec % 1000) * 1000000;
+	nanosleep(&ts, nullptr);
+#elif SZ_OS_WINDOWS
+	Sleep(millisec);
+#endif
+}
+
 #if defined(SZ_OS_WINDOWS)
 
 // From https://gist.github.com/ugovaretto/5875385#file-win-gettimeofday-c
@@ -52,7 +64,7 @@ int sz_gettimeofday(struct timeval* tv)
 
 int sz_gettimeofday(struct timeval *tv)
 {
-	return ::gettimeofday(tv, nullptr);
+	return gettimeofday(tv, nullptr);
 }
 
 #endif

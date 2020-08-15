@@ -13,6 +13,8 @@
 namespace sznet
 {
 
+using std::string;
+
 // Taken from google-protobuf stubs/common.h
 //
 // Protocol Buffers - Google's data interchange format
