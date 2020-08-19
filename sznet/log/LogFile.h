@@ -21,7 +21,7 @@ class LogFile : NonCopyable
 public:
 	LogFile(
 		const string& basename, // 日志文件名前缀
-		size_t rollSize, // 志文件写入大小达到rollSize换一个文件
+		size_t rollSize, // 日志文件写入大小达到rollSize换一个文件
 		bool threadSafe = true, // 默认开启线程安全，即初始化mutex
 		int flushInterval = 3); // flush间隔
 		// int checkEveryN = 1024); // append文件上限，可以写逻辑

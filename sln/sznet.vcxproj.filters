@@ -111,6 +111,12 @@
     <ClInclude Include="..\sznet\ds\BoundedBlockingQueue.h">
       <Filter>sznet\ds</Filter>
     </ClInclude>
+    <ClInclude Include="..\sznet\log\AsyncLogging.h">
+      <Filter>sznet\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\ds\MinHeap.h">
+      <Filter>sznet\ds</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\sznet\memory\MemoryPool.cpp">
@@ -156,6 +162,9 @@
       <Filter>sznet\io</Filter>
     </ClCompile>
     <ClCompile Include="..\sznet\log\LogFile.cpp">
+      <Filter>sznet\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\log\AsyncLogging.cpp">
       <Filter>sznet\log</Filter>
     </ClCompile>
   </ItemGroup>
