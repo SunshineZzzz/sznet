@@ -172,4 +172,4 @@ void ThreadPool::runInThread()
 	}
 }
 
-} // namespace sznet
+} // end namespace sznet

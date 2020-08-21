@@ -109,6 +109,6 @@ string stackTrace(bool demangle)
 
 #endif
 
-} // namespace CurrentThread
+} // end namespace CurrentThread
 
-} // namespace sznet
+} // end namespace sznet

@@ -31,6 +31,9 @@
     <Filter Include="sznet\ds">
       <UniqueIdentifier>{62e2cc13-482b-4751-ae61-30302070a55e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sznet\net">
+      <UniqueIdentifier>{3704e3df-f4ba-4e6d-abf9-8818505acde0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\sznet\base\Compiler.h">
@@ -117,6 +120,30 @@
     <ClInclude Include="..\sznet\ds\MinHeap.h">
       <Filter>sznet\ds</Filter>
     </ClInclude>
+    <ClInclude Include="..\sznet\time\Timer.h">
+      <Filter>sznet\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\time\TimerId.h">
+      <Filter>sznet\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\base\Callbacks.h">
+      <Filter>sznet\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\Channel.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\Poller.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\EventLoop.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\time\TimerQueue.h">
+      <Filter>sznet\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\SelectPoller.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\sznet\memory\MemoryPool.cpp">
@@ -124,9 +151,6 @@
     </ClCompile>
     <ClCompile Include="..\sznet\thread\Thread.cpp">
       <Filter>sznet\thread</Filter>
-    </ClCompile>
-    <ClCompile Include="..\sznet\time\Timer.cpp">
-      <Filter>sznet\time</Filter>
     </ClCompile>
     <ClCompile Include="..\sznet\time\Timestamp.cpp">
       <Filter>sznet\time</Filter>
@@ -166,6 +190,30 @@
     </ClCompile>
     <ClCompile Include="..\sznet\log\AsyncLogging.cpp">
       <Filter>sznet\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\time\Time.cpp">
+      <Filter>sznet\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\time\Timer.cpp">
+      <Filter>sznet\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\Poller.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\Channel.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\EventLoop.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\time\TimerQueue.cpp">
+      <Filter>sznet\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\SelectPoller.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\DefaultPoller.cpp">
+      <Filter>sznet\net</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

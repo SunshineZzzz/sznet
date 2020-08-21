@@ -111,6 +111,6 @@ inline To down_cast(From* f)                     // so we only accept pointers
 	return static_cast<To>(f);
 }
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_BASE_TYPES_H_

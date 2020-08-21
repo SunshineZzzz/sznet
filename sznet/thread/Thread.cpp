@@ -188,4 +188,4 @@ int sz_cond_timewait(sz_cond_t* cond, sz_mutex_t* mutex, int& millisec)
 
 #endif
 
-} // namespace sznet
+} // end namespace sznet

@@ -19,4 +19,4 @@ void sztool_setbreakalloc(int size)
 #endif
 }
 
-} // namespace sznet
+} // end namespace sznet

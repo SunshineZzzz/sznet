@@ -35,4 +35,4 @@ int CountDownLatch::getCount() const
 	return m_count;
 }
 
-}
+} // end namespace sznet

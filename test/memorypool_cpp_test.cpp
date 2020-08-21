@@ -41,9 +41,9 @@ using namespace sznet;
 /* -------- 测试数据参数 -------- */
 
 #ifdef _SZNET_MEMORY_MEMORYPOOL_H_
-#	define My_Malloc(x) mp->Allocate(x)
-#	define My_Free(x) mp->Deallocate(x)
-#	define My_Malloc_TEST(x) mp->Allocate(x, false)
+#	define My_Malloc(x) mp->allocate(x)
+#	define My_Free(x) mp->deallocate(x)
+#	define My_Malloc_TEST(x) mp->allocate(x, false)
 #else
 #	define KB (unsigned long long) (1 << 10)
 #	define MB (unsigned long long) (1 << 20)
@@ -198,7 +198,7 @@ void* test_fn(void* arg)
 #ifdef ENABLE_SHOW
 	mp->InfoShow("Free After: ");
 #endif
-	printf("Memory Pool Size: %.4lf MB\n", (double)mp->GetPtrMP()->total_mem_pool_size / 1024 / 1024);
+	printf("Memory Pool Size: %.4lf MB\n", (double)mp->getPtrMP()->total_mem_pool_size / 1024 / 1024);
 #endif
 	printf("Total Usage Size: %.4lf MB\n", (double)total_size / 1024 / 1024);
 
@@ -229,7 +229,7 @@ int main()
 	info.maxMemPoolSize = MAX_MEM_SIZE;
 	info.memPoolSize = MEM_SIZE;
 	CmnMemoryPool mp;
-	mp.Init(&info);
+	mp.init(&info);
 #endif
 
 	// 第一次执行
@@ -266,7 +266,7 @@ int main()
 	// t3.join();
 
 #ifdef _SZNET_MEMORY_MEMORYPOOL_H_
-	mp.Fini();
+	mp.fini();
 #endif
 
 	sz_mutex_fini(&mutex);

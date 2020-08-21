@@ -1,6 +1,7 @@
 ﻿#ifndef _SZNET_THREAD_COUNTDOWNLATCH_H_
 #define _SZNET_THREAD_COUNTDOWNLATCH_H_
 
+#include "../base/NonCopyable.h"
 #include "Condition.h"
 #include "Mutex.h"
 
@@ -29,5 +30,6 @@ private:
 	int m_count;
 };
 
-} // namespace sznet
+} // end namespace sznet
+
 #endif // _SZNET_THREAD_COUNTDOWNLATCH_H_

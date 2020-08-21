@@ -1,6 +1,7 @@
 ﻿#ifndef _SZNET_LOG_ASYNCLOGGING_H_
 #define _SZNET_LOG_ASYNCLOGGING_H_
 
+#include "../base/NonCopyable.h"
 #include "../ds/BlockingQueue.h"
 #include "../thread/Mutex.h"
 #include "../thread/ThreadClass.h"
@@ -80,6 +81,6 @@ private:
 	BufferVector m_buffers;
 };
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_LOG_ASYNCLOGGING_H_

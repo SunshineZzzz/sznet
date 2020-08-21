@@ -120,5 +120,5 @@ string LogFile::getLogFileName(const string& basename, time_t* now)
 	return filename;
 }
 
-} // namespace sznet
+} // end namespace sznet
 

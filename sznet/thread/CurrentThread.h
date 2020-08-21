@@ -63,8 +63,8 @@ bool isMainThread();
 // 堆栈信息，demangle是否解析mangle
 string stackTrace(bool demangle);
 
-}  // namespace CurrentThread
+} // end namespace CurrentThread
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_THREAD_CURRENTTHREAD_H_

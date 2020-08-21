@@ -38,6 +38,6 @@ private:
 	string m_stack;
 };
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_BASE_EXCEPTION_H_

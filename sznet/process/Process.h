@@ -23,6 +23,6 @@ sz_pid_t sz_process_getpid();
 // 获取主机名称
 string sz_gethostname();
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZ_PROCESS_H_

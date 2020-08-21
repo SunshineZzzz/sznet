@@ -1,6 +1,7 @@
 ﻿#ifndef _SZNET_THREAD_THREADPOOL_H_
 #define _SZNET_THREAD_THREADPOOL_H_
 
+#include "../base/NonCopyable.h"
 #include "Condition.h"
 #include "Mutex.h"
 #include "ThreadClass.h"
@@ -83,6 +84,6 @@ private:
 	bool m_running;
 };
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_THREAD_THREADPOOL_H_

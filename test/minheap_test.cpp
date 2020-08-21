@@ -68,11 +68,11 @@ int main()
 	{
 		inserted[i] = (event*)malloc(sizeof(event));
 		set_random_timeout(inserted[i]);
-		MinHeap.Push(inserted[i]);
+		MinHeap.push(inserted[i]);
 	}
 
-	MinHeap.CheckHeap();
-	assert(MinHeap.Size() == 1024);
+	MinHeap.checkHeap();
+	assert(MinHeap.size() == 1024);
 	// MinHeap.LevelPrint(event_getstr);
 
 	int sum = 512;
@@ -80,28 +80,28 @@ int main()
 	while (sum > 0)
 	{
 		uint32_t index = rand() % 1024;
-		if (index < MinHeap.Size() && inserted[index]->min_heap_idx != -1)
+		if (index < MinHeap.size() && inserted[index]->min_heap_idx != -1)
 		{
-			rst = MinHeap.Erase(inserted[index]);
+			rst = MinHeap.erase(inserted[index]);
 			assert(rst == 0);
 			--sum;
 		}
 	}
-	MinHeap.CheckHeap();
-	assert(MinHeap.Size() == 512);
+	MinHeap.checkHeap();
+	assert(MinHeap.size() == 512);
 
 	sum = 500;
 	event* e = nullptr;
 	while (sum > 0)
 	{
-		e = MinHeap.Pop();
+		e = MinHeap.pop();
 		assert(e != nullptr);
 		--sum;
 	}
 
-	MinHeap.CheckHeap();
-	assert(MinHeap.Size() == 12);
-	MinHeap.LevelPrint(event_getstr);
+	MinHeap.checkHeap();
+	assert(MinHeap.size() == 12);
+	MinHeap.levelPrint(event_getstr);
 
 	for (int i = 0; i < 1024; ++i)
 	{

@@ -1,6 +1,7 @@
 ﻿#ifndef _SZNET_THREAD_THREADCLASS_H_
 #define _SZNET_THREAD_THREADCLASS_H_
 
+#include "../base/NonCopyable.h"
 #include "Thread.h"
 #include "CountDownLatch.h"
 #include <atomic>
@@ -64,5 +65,6 @@ private:
 	static std::atomic<int> m_numCreated;
 };
 
-} // namespace sznet
+} // end namespace sznet
+
 #endif // _SZNET_THREAD_THREADCLASS_H_

@@ -15,6 +15,6 @@ protected:
 	~NonCopyable() = default;
 };
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_BASE_NONCOPYABLE_H_

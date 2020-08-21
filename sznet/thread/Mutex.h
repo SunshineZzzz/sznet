@@ -3,7 +3,7 @@
 
 #include "Thread.h"
 #include "CurrentThread.h"
-#include "../base/noncopyable.h"
+#include "../base/NonCopyable.h"
 #include <assert.h>
 
 namespace sznet
@@ -120,6 +120,6 @@ private:
 	MutexLock& m_mutex;
 };
 
-}  // namespace sznet
+}  // end namespace sznet
 
 #endif // _SZNET_THREAD_MUTEX_H_

@@ -308,7 +308,4 @@ template<> struct __type_traits<sznet::StringPiece> {
 // allow StringPiece to be logged
 std::ostream& operator<<(std::ostream& o, const sznet::StringPiece& piece);
 
-
-
-
 #endif  // _SZNET_STRING_STRINGPIECE_H_

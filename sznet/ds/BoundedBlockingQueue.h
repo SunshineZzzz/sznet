@@ -1,6 +1,7 @@
 ﻿#ifndef _SZNET_DS_BOUNDEDBLOCKINGQUEUE_H_
 #define _SZNET_DS_BOUNDEDBLOCKINGQUEUE_H_
 
+#include "../base/NonCopyable.h"
 #include "../thread/Condition.h"
 #include "../thread/Mutex.h"
 

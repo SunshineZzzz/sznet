@@ -64,4 +64,4 @@ int sz_fstat(int fd, struct stat* const stat)
 	return fstat(fd, stat);
 }
 
-}
+} // end namespace sznet

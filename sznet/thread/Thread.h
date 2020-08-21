@@ -59,6 +59,6 @@ int sz_cond_wait(sz_cond_t* cond, sz_mutex_t* mutex);
 // 限时等待条件变量被触发
 int sz_cond_timewait(sz_cond_t* cond, sz_mutex_t* mutex, int& millisec);
 
-}  // namespace sznet
+}  // end namespace sznet
 
 #endif // _SZNET_THREAD_THREAD_H_

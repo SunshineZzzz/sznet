@@ -1,6 +1,7 @@
 ﻿#ifndef _SZNET_DS_BLOCKINGQUEUE_H_
 #define _SZNET_DS_BLOCKINGQUEUE_H_
 
+#include "../base/NonCopyable.h"
 #include "../thread/Condition.h"
 #include "../thread/Mutex.h"
 
@@ -65,6 +66,6 @@ private:
 	std::deque<T> m_queue;
 };
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_DS_BLOCKINGQUEUE_H_

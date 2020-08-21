@@ -67,6 +67,6 @@ inline Timestamp addTime(Timestamp timestamp, double seconds)
 	return Timestamp(timestamp.microSecondsSinceEpoch() + delta);
 }
 
-}  // namespace sznet
+}  // end namespace sznet
 
 #endif // _SZNET_TIME_TIMESTAMP_H_

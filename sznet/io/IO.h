@@ -40,6 +40,6 @@ int sz_read(int fd, void* buf, size_t nbyte);
 // 获取文件描述符状态
 int sz_fstat(int fd, struct stat* const stat);
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_IO_H_

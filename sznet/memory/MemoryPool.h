@@ -128,29 +128,29 @@ public:
 	~CmnMemoryPool();
 
 	// 初始化
-	int Init(info_t* info);
+	int init(info_t* info);
 	// 结束
-	void Fini();
+	void fini();
 	// 分配内存
-	void* Allocate(mem_size_t wantsize, bool align = true);
+	void* allocate(mem_size_t wantsize, bool align = true);
 	// 释放内存
-	int Deallocate(void* p);
+	int deallocate(void* p);
 	// 没事别瞎用，测试的呢
-	MemoryPool* GetPtrMP();
+	MemoryPool* getPtrMP();
 
 public:
 	// 总空间
-	mem_size_t InfoGetTotalMemory();
+	mem_size_t infoGetTotalMemory();
 	// 实际分配空间
-	mem_size_t InfoGetUsedMemory();
+	mem_size_t infoGetUsedMemory();
 	// 数据分配空间
-	mem_size_t InfoGetProgMemory();
+	mem_size_t infoGetProgMemory();
 	// 实际分配空间占比
-	float InfoMemoryPoolGetUsage();
+	float infoMemoryPoolGetUsage();
 	// 数据分配占比
-	float InfoMemoryPoolGetProgUsage();
+	float infoMemoryPoolGetProgUsage();
 	// 显示内存池信息
-	void InfoShow(const char* x);
+	void infoShow(const char* x);
 
 private:
 	// 配置
@@ -161,5 +161,5 @@ private:
 	sz_mutex_t m_mutex;
 };
 
-} // namespace sznet
+} // end namespace sznet
 #endif // _SZNET_MEMORY_MEMORYPOOL_H_

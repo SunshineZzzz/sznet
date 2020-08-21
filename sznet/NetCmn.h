@@ -71,6 +71,6 @@ void sz_safedeletearray(_Ty*& pT)
 void sztool_memcheck();
 void sztool_setbreakalloc(int size);
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_NETCMN_H_

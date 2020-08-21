@@ -165,4 +165,4 @@ int Thread::join()
 	return sz_waitfor_thread_terminate(m_pthreadId);
 }
 
-} // namespace sznet
+} // end namespace sznet

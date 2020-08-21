@@ -22,6 +22,6 @@ int sz_gettimeofday(struct timeval* tv);
 // 休眠毫秒
 void sz_sleep(int millisec);
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_TIME_TIME_H_

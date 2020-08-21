@@ -33,4 +33,4 @@ sz_pid_t sz_process_getpid()
 
 #endif
 
-} // namespace sznet
+} // end namespace sznet

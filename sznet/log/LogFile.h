@@ -13,7 +13,7 @@ namespace FileUtil
 {
 // 非线程安全，写文件封装
 class AppendFile;
-}
+} // end namespace FileUtil
 
 // 用于把日志记录到文件的类
 class LogFile : NonCopyable
@@ -66,6 +66,6 @@ private:
 	const static int m_kRollPerSeconds = 60 * 60 * 24;
 };
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_LOG_LOGFILE_H_

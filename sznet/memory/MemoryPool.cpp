@@ -516,10 +516,10 @@ CmnMemoryPool::~CmnMemoryPool()
 		return;
 	}
 
-	Fini();
+	fini();
 }
 
-int CmnMemoryPool::Init(info_t* info)
+int CmnMemoryPool::init(info_t* info)
 {
 	memcpy(&m_info, info, sizeof(m_info));
 
@@ -534,14 +534,14 @@ int CmnMemoryPool::Init(info_t* info)
 	return 0;
 }
 
-void CmnMemoryPool::Fini()
+void CmnMemoryPool::fini()
 {
 	MemoryPoolDestroy(m_memeryPool);
 	m_memeryPool = nullptr;
 	sz_mutex_fini(&m_mutex);
 }
 
-void* CmnMemoryPool::Allocate(mem_size_t wantsize, bool align)
+void* CmnMemoryPool::allocate(mem_size_t wantsize, bool align)
 {
 	if (!m_memeryPool)
 	{
@@ -551,7 +551,7 @@ void* CmnMemoryPool::Allocate(mem_size_t wantsize, bool align)
 	return MemoryPoolAlloc(m_memeryPool, wantsize, align);
 }
 
-int CmnMemoryPool::Deallocate(void* p)
+int CmnMemoryPool::deallocate(void* p)
 {
 	if (!m_memeryPool)
 	{
@@ -561,12 +561,12 @@ int CmnMemoryPool::Deallocate(void* p)
 	return MemoryPoolFree(m_memeryPool, p);
 }
 
-MemoryPool* CmnMemoryPool::GetPtrMP()
+MemoryPool* CmnMemoryPool::getPtrMP()
 {
 	return m_memeryPool;
 }
 
-mem_size_t CmnMemoryPool::InfoGetTotalMemory()
+mem_size_t CmnMemoryPool::infoGetTotalMemory()
 {
 	if (!m_memeryPool)
 	{
@@ -576,7 +576,7 @@ mem_size_t CmnMemoryPool::InfoGetTotalMemory()
 	return GetTotalMemory(m_memeryPool);
 }
 
-mem_size_t CmnMemoryPool::InfoGetUsedMemory()
+mem_size_t CmnMemoryPool::infoGetUsedMemory()
 {
 	if (!m_memeryPool)
 	{
@@ -586,7 +586,7 @@ mem_size_t CmnMemoryPool::InfoGetUsedMemory()
 	return GetUsedMemory(m_memeryPool);
 }
 
-mem_size_t CmnMemoryPool::InfoGetProgMemory()
+mem_size_t CmnMemoryPool::infoGetProgMemory()
 {
 	if (!m_memeryPool)
 	{
@@ -596,7 +596,7 @@ mem_size_t CmnMemoryPool::InfoGetProgMemory()
 	return GetProgMemory(m_memeryPool);
 }
 
-float CmnMemoryPool::InfoMemoryPoolGetUsage()
+float CmnMemoryPool::infoMemoryPoolGetUsage()
 {
 	if (!m_memeryPool)
 	{
@@ -606,7 +606,7 @@ float CmnMemoryPool::InfoMemoryPoolGetUsage()
 	return MemoryPoolGetUsage(m_memeryPool);
 }
 
-float CmnMemoryPool::InfoMemoryPoolGetProgUsage()
+float CmnMemoryPool::infoMemoryPoolGetProgUsage()
 {
 	if (!m_memeryPool)
 	{
@@ -616,7 +616,7 @@ float CmnMemoryPool::InfoMemoryPoolGetProgUsage()
 	return MemoryPoolGetProgUsage(m_memeryPool);
 }
 
-void CmnMemoryPool::InfoShow(const char* x)
+void CmnMemoryPool::infoShow(const char* x)
 {
 	if (!m_memeryPool)
 	{
@@ -654,4 +654,4 @@ void CmnMemoryPool::InfoShow(const char* x)
 #undef MP_LOCK
 #undef MP_ALIGN_SIZE
 
-}
+} // end namespace sznet

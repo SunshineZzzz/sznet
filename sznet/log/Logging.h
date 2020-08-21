@@ -150,6 +150,6 @@ T* CheckNotNull(Logger::SourceFile file, int line, const char* names, T* ptr)
 	return ptr;
 }
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_LOG_LOGGING_H_

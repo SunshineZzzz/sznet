@@ -82,9 +82,9 @@ private:
 	size_t m_writtenBytes;
 };
 
-} // namespace FileUtil
+} // end namespace FileUtil
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_IO_FILEUTIL_H_
 

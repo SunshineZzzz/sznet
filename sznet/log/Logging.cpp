@@ -206,4 +206,4 @@ void Logger::setFlush(FlushFunc flush)
 	g_flush = flush;
 }
 
-} // namespace sznet
+} // end namespace sznet

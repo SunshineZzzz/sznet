@@ -151,5 +151,5 @@ void AsyncLogging::threadFunc()
 	output.flush();
 }
 
-} // namespace sznet
+} // end namespace sznet
 

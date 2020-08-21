@@ -1,6 +1,7 @@
 ﻿#ifndef _SZNET_THREAD_CONDITION_H_
 #define _SZNET_THREAD_CONDITION_H_
 
+#include "../base/NonCopyable.h"
 #include "Mutex.h"
 
 namespace sznet
@@ -50,6 +51,6 @@ private:
 	sz_cond_t m_cond;
 };
 
-} // namespace sznet
+} // end namespace sznet
 
 #endif // _SZNET_THREAD_CONDITION_H_

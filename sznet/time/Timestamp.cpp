@@ -92,4 +92,4 @@ Timestamp Timestamp::fromUnixTime(time_t t, int microseconds)
 	return Timestamp(static_cast<int64_t>(t) * kMicroSecondsPerSecond + microseconds);
 }
 
-} // namespace sznet
+} // end namespace sznet
