@@ -1,12 +1,13 @@
 #ifndef _SZNET_NET_POLLER_H_
 #define _SZNET_NET_POLLER_H_
 
-#include <map>
-#include <vector>
-
 #include "../base/NonCopyable.h"
 #include "../time/Timestamp.h"
+#include "SocketsOps.h"
 #include "EventLoop.h"
+
+#include <map>
+#include <vector>
 
 namespace sznet
 {
@@ -14,6 +15,7 @@ namespace sznet
 namespace net
 {
 
+// 事件分发
 class Channel;
 
 // IO复用类的基类
@@ -38,16 +40,16 @@ public:
 	// virtual bool hasChannel(Channel* channel) const;
 	// 
 	static Poller* newDefaultPoller(EventLoop* loop);
-	// 
-	// void assertInLoopThread() const
-	// {
-	// m_ownerLoop->assertInLoopThread();
-	// }
+	// 断言运行loop函数的线程必须是拥有EventLoop对象的线程
+	void assertInLoopThread() const
+	{
+		m_ownerLoop->assertInLoopThread();
+	}
 
 protected:
 	// 记录fd到Channel的对应关系 
 	// 底层的多路复用API每次检查完成fd，要根据这个映射关系去寻找对应的Channel
-	typedef std::map<int, Channel*> ChannelMap;
+	typedef std::map<sockets::sz_fd, Channel*> ChannelMap;
 	// 保存epoll监听的fd,及其对应的Channel指针
 	ChannelMap m_channels;
 

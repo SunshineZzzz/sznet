@@ -6,7 +6,7 @@ namespace sznet
 string sz_gethostname()
 {
 	char buf[256];
-	if (::gethostname(buf, sizeof buf) == 0)
+	if (::gethostname(buf, sizeof(buf)) == 0)
 	{
 		buf[sizeof(buf) - 1] = '\0';
 		return buf;
@@ -15,6 +15,16 @@ string sz_gethostname()
 	{
 		return "unknownhost";
 	}
+}
+
+int sz_getlasterr()
+{
+#ifdef SZ_OS_LINUX
+	return errno;
+#endif
+#ifdef SZ_OS_WINDOWS
+	return WSAGetLastError();
+#endif
 }
 
 #if defined(SZ_OS_WINDOWS)

@@ -92,7 +92,7 @@ private:
 	// 返回结尾地址
 	const char* _end() const
 	{
-		return m_data + sizeof(m_cur);
+		return m_data + sizeof(m_data);
 	}
 
 	// 缓冲区数据，大小为size

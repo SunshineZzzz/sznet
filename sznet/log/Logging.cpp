@@ -2,6 +2,7 @@
 #include "../thread/CurrentThread.h"
 #include "../time/Timestamp.h"
 #include "../time/Time.h"
+#include "../process/Process.h"
 
 #include <thread>
 #include <errno.h>
@@ -25,7 +26,24 @@ thread_local time_t t_lastSecond;
 const char* strerror_tl(int savedErrno)
 {
 #if defined(SZ_OS_WINDOWS)
-	strerror_s(t_errnobuf, sizeof(t_errnobuf), savedErrno);
+	// strerror_s(t_errnobuf, sizeof(t_errnobuf), savedErrno);
+	auto chars = FormatMessage(
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		nullptr,
+		savedErrno,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)t_errnobuf,
+		sizeof(t_errnobuf) - 1,
+		nullptr);
+	if (chars != 0)
+	{
+		if (chars >= 2 && t_errnobuf[chars - 2] == '\r' && t_errnobuf[chars - 1] == '\n')
+		{
+			chars -= 2;
+			t_errnobuf[chars] = 0;
+		}
+	}
 #elif defined(SZ_OS_LINUX)
 	strerror_r(savedErrno, t_errnobuf, sizeof(t_errnobuf));
 #endif
@@ -149,8 +167,8 @@ void Logger::Impl::formatTime()
 		(void)len;
 	}
 	Fmt us(".%06d ", microSeconds);
-	assert(us.length() == 9);
-	m_stream << T(t_time, 17) << T(us.data(), 9);
+	assert(us.length() == 8);
+	m_stream << T(t_time, 17) << T(us.data(), 8);
 }
 
 void Logger::Impl::finish()
@@ -175,7 +193,7 @@ Logger::Logger(SourceFile file, int line, LogLevel level):
 }
 
 Logger::Logger(SourceFile file, int line, bool toAbort): 
-	m_impl(toAbort ? FATAL : ERROR, errno, file, line)
+	m_impl(toAbort ? FATAL : ERROR, sz_getlasterr(), file, line)
 {
 }
 

@@ -1,6 +1,7 @@
 ﻿#include "FileUtil.h"
-#include "../log/Logging.h"
 #include "IO.h"
+#include "../log/Logging.h"
+#include "../process/Process.h"
 
 #include <assert.h>
 #include <errno.h>
@@ -79,7 +80,7 @@ FileUtil::ReadSmallFile::ReadSmallFile(StringArg filename) :
 	m_buf[0] = '\0';
 	if (m_fd < 0)
 	{
-		m_err = errno;
+		m_err = sz_getlasterr();
 	}
 }
 
@@ -126,7 +127,7 @@ int FileUtil::ReadSmallFile::readToString(int maxSize, String* content, int64_t*
 			}
 			else
 			{
-				err = errno;
+				err = sz_getlasterr();
 			}
 		}
 
@@ -145,7 +146,7 @@ int FileUtil::ReadSmallFile::readToString(int maxSize, String* content, int64_t*
 				// 结尾或者出错，都停止
 				if (n < 0)
 				{
-					err = errno;
+					err = sz_getlasterr();
 				}
 				break;
 			}
@@ -174,7 +175,7 @@ int FileUtil::ReadSmallFile::readToBuffer(int* size)
 		}
 		else
 		{
-			err = errno;
+			err = sz_getlasterr();
 		}
 	}
 	return err;

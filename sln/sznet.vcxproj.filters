@@ -144,6 +144,9 @@
     <ClInclude Include="..\sznet\net\SelectPoller.h">
       <Filter>sznet\net</Filter>
     </ClInclude>
+    <ClInclude Include="..\sznet\net\SocketsOps.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\sznet\memory\MemoryPool.cpp">
@@ -213,6 +216,9 @@
       <Filter>sznet\net</Filter>
     </ClCompile>
     <ClCompile Include="..\sznet\net\DefaultPoller.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\SocketsOps.cpp">
       <Filter>sznet\net</Filter>
     </ClCompile>
   </ItemGroup>

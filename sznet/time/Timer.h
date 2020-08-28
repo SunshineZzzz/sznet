@@ -29,7 +29,7 @@ public:
 	{
 		m_callback();
 	}
-	// 获取到期时间戳
+	// 获取到期时间戳对象
 	Timestamp expiration() const 
 	{ 
 		return m_expiration;
@@ -55,7 +55,7 @@ public:
 private:
 	// 到期回调函数
 	const net::TimerCallback m_callback;
-	// 到期时间戳 
+	// 到期时间戳对象
 	Timestamp m_expiration;
 	// 时间间隔，如果是一次性定时器，该值为0
 	const double m_interval;

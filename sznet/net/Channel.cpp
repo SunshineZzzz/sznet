@@ -9,11 +9,7 @@ namespace sznet
 namespace net
 {
 
-const int Channel::kNoneEvent = 0;
-const int Channel::kReadEvent = 0;
-const int Channel::kWriteEvent = 0;
-
-Channel::Channel(EventLoop* loop, int fd__): 
+Channel::Channel(EventLoop* loop, sockets::sz_sock fd__):
 	m_loop(loop),
 	m_fd(fd__),
 	m_events(0),
@@ -45,14 +41,14 @@ void Channel::tie(const std::shared_ptr<void>& obj)
 void Channel::update()
 {
 	m_addedToLoop = true;
-	// m_loop->updateChannel(this);
+	m_loop->updateChannel(this);
 }
 
 void Channel::remove()
 {
 	assert(isNoneEvent());
 	m_addedToLoop = false;
-	// m_loop->removeChannel(this);
+	m_loop->removeChannel(this);
 }
 
 void Channel::handleEvent(Timestamp receiveTime)
@@ -86,7 +82,7 @@ string Channel::eventsToString() const
 	return eventsToString(m_fd, m_events);
 }
 
-string Channel::eventsToString(int fd, int ev)
+string Channel::eventsToString(sockets::sz_sock fd, int ev)
 {
 	return "";
 }

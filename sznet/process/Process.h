@@ -22,6 +22,8 @@ namespace sznet
 sz_pid_t sz_process_getpid();
 // 获取主机名称
 string sz_gethostname();
+// 返回上一次错误
+int sz_getlasterr();
 
 } // end namespace sznet
 

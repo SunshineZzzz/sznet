@@ -12,6 +12,7 @@
 #		define NOGDI
 #		define NOMINMAX 
 #			include <Windows.h>
+#			pragma comment(lib, "ws2_32.lib")
 #		undef NOMINMAX
 #		undef NOGDI
 #	undef WIN32_LEAN_AND_MEAN
@@ -21,6 +22,7 @@
 #if SZ_OS_LINUX
 #	include <unistd.h>
 #	include <sys/types.h>
+
 #endif
 
 #if SZ_COMPILER_MSVC

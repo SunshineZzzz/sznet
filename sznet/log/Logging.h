@@ -1,8 +1,9 @@
 ﻿#ifndef _SZNET_LOG_LOGGING_H_
 #define _SZNET_LOG_LOGGING_H_
 
-#include "LogStream.h"
+#include "../NetCmn.h"
 #include "../time/Timestamp.h"
+#include "LogStream.h"
 
 namespace sznet
 {
@@ -47,7 +48,11 @@ public:
 			m_data(arr),
 			m_size(N - 1)
 		{
+#if defined(SZ_OS_WINDOWS)
+			const char* slash = strrchr(m_data, '\\');
+#else
 			const char* slash = strrchr(m_data, '/');
+#endif
 			if (slash)
 			{
 				m_data = slash + 1;

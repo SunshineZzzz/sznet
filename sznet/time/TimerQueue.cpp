@@ -70,7 +70,7 @@ void TimerQueue::cancelInLoop(TimerId timerId)
 
 void TimerQueue::expiredProcess(Timestamp now)
 {
-	while (1)
+	while (true)
 	{
 		Timer* timer = m_timerMinHeap.pop();
 		if (!timer)

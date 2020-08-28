@@ -10,7 +10,7 @@ namespace sznet
 // timer定时器
 class Timer;
 
-// 带有唯一标识的Timer，主要用于取消Timer 
+// 带有唯一标识的Timer
 class TimerId : public Copyable
 {
 public:
@@ -25,7 +25,7 @@ public:
 	{
 	}
 
-	// 
+	// 定时器队列
 	friend class TimerQueue;
 
 private:

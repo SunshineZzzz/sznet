@@ -14,7 +14,7 @@ void Timer::restart(Timestamp now)
 	}
 	else
 	{
-		// 不可以重复，无效的时间戳
+		// 不可以重复，无效的时间戳对象
 		m_expiration = Timestamp::invalid();
 	}
 }
