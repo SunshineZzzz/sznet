@@ -179,6 +179,12 @@ public:
 
 		return -1;
 	}
+	// 康康
+	T* top()
+	{
+		return m_size ? m_ptrArr[0] : nullptr;
+	}
+	// 弹出
 	T* pop()
 	{
 		if (m_size)

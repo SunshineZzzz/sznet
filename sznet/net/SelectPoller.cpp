@@ -1,4 +1,4 @@
-#include "SelectPoller.h"
+ï»¿#include "SelectPoller.h"
 #include "../log/Logging.h"
 
 #include <assert.h>
@@ -19,12 +19,12 @@ SelectPoller::~SelectPoller()
 {
 }
 
-Timestamp SelectPoller::poll(int timeoutMs, ChannelList* activeChannels)
+void SelectPoller::poll(ChannelList* activeChannels, int timeoutMs)
 {
 	if (m_pollfds.empty())
 	{
 		LOG_TRACE << "m_pollfds is empty, nothing happened";
-		return Timestamp::now();
+		return;
 	}
 
 	FD_ZERO(&m_rfds);
@@ -57,7 +57,6 @@ Timestamp SelectPoller::poll(int timeoutMs, ChannelList* activeChannels)
 	timeout.tv_usec = static_cast<int>(timeoutMs % 1000) * 1000;
 	int numEvents = select(static_cast<int>(maxfd + 1), &m_rfds, &m_wfds, &m_efds, &timeout);
 
-	Timestamp now(Timestamp::now());
 	if (numEvents > 0)
 	{
 		LOG_TRACE << numEvents << " events happened";
@@ -74,14 +73,14 @@ Timestamp SelectPoller::poll(int timeoutMs, ChannelList* activeChannels)
 			LOG_SYSERR << "SelectPoller::poll()";
 		}
 	}
-	return now;
+	return;
 }
 
 void SelectPoller::fillActiveChannels(int numEvents, ChannelList* activeChannels) const
 {
 	for (auto it = m_pollfds.begin(); it != m_pollfds.end() && numEvents > 0; ++it)
 	{
-		unsigned char revents = 0;
+		unsigned int revents = 0;
 		if (FD_ISSET(it->fd, &m_rfds))
 		{
 			revents |= Channel::kReadEvent;
@@ -126,7 +125,7 @@ void SelectPoller::updateChannel(Channel* channel)
 	// mod
 	else
 	{
-		// channelÊÂ¼þÓÐÄÜÎªkNoneEvent
+		// channeläº‹ä»¶æœ‰èƒ½ä¸ºkNoneEvent
 		assert(m_channels.find(channel->fd()) != m_channels.end());
 		assert(m_channels[channel->fd()] == channel);
 		int idx = channel->index();
@@ -148,7 +147,7 @@ void SelectPoller::removeChannel(Channel* channel)
 	assert(0 <= idx && idx < static_cast<int>(m_pollfds.size()));
 	const Channel::Event_t& event = m_pollfds[idx];
 	assert(event.ev == channel->events());
-	// ÒÆ³ý
+	// ç§»é™¤
 	size_t n = m_channels.erase(channel->fd());
 	assert(n == 1); 
 	if (implicit_cast<size_t>(idx) == m_pollfds.size() - 1)
@@ -157,11 +156,11 @@ void SelectPoller::removeChannel(Channel* channel)
 	}
 	else
 	{
-		// Õâ¸öÊÂ¼þ¸´ÔÓ¶ÈÓ¦¸ÃÊÇO(1)
+		// è¿™ä¸ªäº‹ä»¶å¤æ‚åº¦åº”è¯¥æ˜¯O(1)
 		auto channelAtEndFd = m_pollfds.back().fd;
-		// ²»ÒªÓ°ÏìÆäËûchannelµÄÏÂ±ê
+		// ä¸è¦å½±å“å…¶ä»–channelçš„ä¸‹æ ‡
 		std::iter_swap(m_pollfds.begin() + idx, m_pollfds.end() - 1);
-		// ÒòÎª½»»»ÁËÎ»ÖÃ£¬ËùÒÔindex·¢ÉúÁË±ä»¯
+		// å› ä¸ºäº¤æ¢äº†ä½ç½®ï¼Œæ‰€ä»¥indexå‘ç”Ÿäº†å˜åŒ–
 		m_channels[channelAtEndFd]->set_index(idx);
 		m_pollfds.pop_back();
 	}

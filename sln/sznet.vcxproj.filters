@@ -147,6 +147,9 @@
     <ClInclude Include="..\sznet\net\SocketsOps.h">
       <Filter>sznet\net</Filter>
     </ClInclude>
+    <ClInclude Include="..\sznet\net\EventLoopThread.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\sznet\memory\MemoryPool.cpp">
@@ -219,6 +222,9 @@
       <Filter>sznet\net</Filter>
     </ClCompile>
     <ClCompile Include="..\sznet\net\SocketsOps.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\EventLoopThread.cpp">
       <Filter>sznet\net</Filter>
     </ClCompile>
   </ItemGroup>

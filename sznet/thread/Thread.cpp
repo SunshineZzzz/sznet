@@ -48,44 +48,33 @@ void sz_thread_detach(sz_thread_t thread)
 
 void sz_cond_init(sz_cond_t* cond)
 {
-	*cond = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	InitializeConditionVariable(cond);
 }
 
 void sz_cond_fini(sz_cond_t* cond)
 {
-	CloseHandle(*cond);
+	// Windows does not have a destroy for conditionals
+	(void)cond;
 }
 
 void sz_cond_notify(sz_cond_t* cond)
 {
-	SetEvent(*cond);
+	WakeConditionVariable(cond);
 }
 
 void sz_cond_notifyall(sz_cond_t* cond)
 {
-	PulseEvent(*cond);
+	WakeAllConditionVariable(cond);
 }
 
 int sz_cond_wait(sz_cond_t* cond, sz_mutex_t* mutex)
 {
-	EnterCriticalSection(mutex);
-
-	auto rst = WaitForSingleObject(*cond, INFINITE) == WAIT_OBJECT_0 ? 0 : -1;
-	
-	LeaveCriticalSection(mutex);
-
-	return rst;
+	return SleepConditionVariableCS(cond, mutex, INFINITE) ? 0 : -1;
 }
 
-int sz_cond_timewait(sz_cond_t* cond, sz_mutex_t* mutex, int& millisec)
+int sz_cond_timewait(sz_cond_t* cond, sz_mutex_t* mutex, uint32_t millisec)
 {
-	EnterCriticalSection(mutex);
-
-	auto rst = WaitForSingleObject(*cond, millisec) == WAIT_OBJECT_0 ? 0 : -1;
-
-	LeaveCriticalSection(mutex);
-
-	return rst;
+	return SleepConditionVariableCS(cond, mutex, static_cast<DWORD>(millisec)) ? 0 : -1;
 }
 
 #elif defined(SZ_OS_LINUX)
@@ -152,38 +141,19 @@ void sz_cond_notifyall(sz_cond_t* cond)
 
 int sz_cond_wait(sz_cond_t* cond, sz_mutex_t* mutex)
 {
-	if (pthread_mutex_lock(mutex) != 0)
-	{
-		return -2;
-	}
-
-	auto rst = pthread_cond_wait(event, mutex) == 0 ? 0 : -1;
-
-	pthread_mutex_unlock(mutex);
-
-	return rst;
+	return pthread_cond_wait(cond, mutex)
 }
 
-int sz_cond_timewait(sz_cond_t* cond, sz_mutex_t* mutex, int& millisec)
+int sz_cond_timewait(sz_cond_t* cond, sz_mutex_t* mutex, uint32_t millisec)
 {
-	if (pthread_mutex_lock(mutex) != 0)
-	{
-		return -2;
-	}
-
 	struct timespec abstime;
 	clock_gettime(CLOCK_REALTIME, &abstime);
 
-	const int64_t kNanoSecondsPerSecond = 1000000000;
-	int64_t nanoseconds = static_cast<int64_t>(millisec * (kNanoSecondsPerSecond / 1000));
-
+	const int64_t kNanoSecondsPerMilliSecond = 1000000;
+	int64_t nanoseconds = static_cast<int64_t>(millisec * kNanoSecondsPerMilliSecond);
 	abstime.tv_sec += static_cast<time_t>((abstime.tv_nsec + nanoseconds) / kNanoSecondsPerSecond);
 	abstime.tv_nsec = static_cast<long>((abstime.tv_nsec + nanoseconds) % kNanoSecondsPerSecond);
-	rst = pthread_cond_timedwait(event, mutex, &abstime) == 0 ? 0 : -1;
-
-	pthread_mutex_unlock(mutex);
-
-	return rst;
+	return pthread_cond_timedwait(event, mutex, &abstime);
 }
 
 #endif

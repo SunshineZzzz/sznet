@@ -1,4 +1,4 @@
-#ifndef _SZNET_TIME_TIMER_H_
+ï»¿#ifndef _SZNET_TIME_TIMER_H_
 #define _SZNET_TIME_TIMER_H_
 
 #include <atomic>
@@ -11,7 +11,7 @@
 namespace sznet
 {
 
-// ¶¨Ê±Æ÷
+// å®šæ—¶å™¨
 class Timer : public MinHeapbaseElem, NonCopyable
 {
 public:
@@ -24,46 +24,46 @@ public:
 	{ 
 	}
 
-	// µ½ÆÚºóÖ´ĞĞ»Øµ÷º¯Êı
+	// åˆ°æœŸåæ‰§è¡Œå›è°ƒå‡½æ•°
 	void run() const
 	{
 		m_callback();
 	}
-	// »ñÈ¡µ½ÆÚÊ±¼ä´Á¶ÔÏó
+	// è·å–åˆ°æœŸæ—¶é—´æˆ³å¯¹è±¡
 	Timestamp expiration() const 
 	{ 
 		return m_expiration;
 	}
-	// ÊÇ·ñÖÜÆÚĞÔ¶¨Ê±
+	// æ˜¯å¦å‘¨æœŸæ€§å®šæ—¶
 	bool repeat() const 
 	{ 
 		return m_repeat;
 	}
-	// ·µ»Ø¶¨Ê±Æ÷µÄĞòÁĞºÅ
+	// è¿”å›å®šæ—¶å™¨çš„åºåˆ—å·
 	int64_t sequence() const 
 	{ 
 		return m_sequence;
 	}
-	// ÖØÆô¶¨Ê±Æ÷ 
+	// é‡å¯å®šæ—¶å™¨ 
 	void restart(Timestamp now);
-	// ·µ»Ø¶¨Ê±Æ÷ĞòÁĞºÅÉú³ÉÆ÷
+	// è¿”å›å®šæ—¶å™¨åºåˆ—å·ç”Ÿæˆå™¨
 	static int64_t numCreated() 
 	{ 
 		return m_s_numCreated;
 	}
 
 private:
-	// µ½ÆÚ»Øµ÷º¯Êı
+	// åˆ°æœŸå›è°ƒå‡½æ•°
 	const net::TimerCallback m_callback;
-	// µ½ÆÚÊ±¼ä´Á¶ÔÏó
+	// åˆ°æœŸæ—¶é—´æˆ³å¯¹è±¡
 	Timestamp m_expiration;
-	// Ê±¼ä¼ä¸ô£¬Èç¹ûÊÇÒ»´ÎĞÔ¶¨Ê±Æ÷£¬¸ÃÖµÎª0
+	// æ—¶é—´é—´éš”ï¼Œå¦‚æœæ˜¯ä¸€æ¬¡æ€§å®šæ—¶å™¨ï¼Œè¯¥å€¼ä¸º0
 	const double m_interval;
-	// ÊÇ·ñÖÜÆÚĞÔ¶¨Ê±
+	// æ˜¯å¦å‘¨æœŸæ€§å®šæ—¶
 	const bool m_repeat;
-	// ±¾¶¨Ê±ÈÎÎñµÄĞòºÅ
+	// æœ¬å®šæ—¶ä»»åŠ¡çš„åºå·
 	const int64_t m_sequence;
-	// ¶¨Ê±Æ÷ĞòÁĞºÅÉú³ÉÆ÷£¬Í¬ÑùÓÃÀ´¼ÇÂ¼ÒÑ¾­´´½¨µÄ¶¨Ê±Æ÷ÊıÁ¿
+	// å®šæ—¶å™¨åºåˆ—å·ç”Ÿæˆå™¨ï¼ŒåŒæ ·ç”¨æ¥è®°å½•å·²ç»åˆ›å»ºçš„å®šæ—¶å™¨æ•°é‡
 	static std::atomic_int64_t m_s_numCreated;
 };
 

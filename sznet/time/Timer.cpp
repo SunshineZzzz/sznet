@@ -1,4 +1,4 @@
-#include "Timer.h"
+ï»¿#include "Timer.h"
 
 namespace sznet
 {
@@ -9,12 +9,12 @@ void Timer::restart(Timestamp now)
 {
 	if (m_repeat)
 	{
-		// ¿ÉÒÔÖØ¸´£¬ÏÂÒ»´Îµ½ÆÚÊ±¼ä
+		// å¯ä»¥é‡å¤ï¼Œä¸‹ä¸€æ¬¡åˆ°æœŸæ—¶é—´
 		m_expiration = addTime(now, m_interval);
 	}
 	else
 	{
-		// ²»¿ÉÒÔÖØ¸´£¬ÎŞĞ§µÄÊ±¼ä´Á¶ÔÏó
+		// ä¸å¯ä»¥é‡å¤ï¼Œæ— æ•ˆçš„æ—¶é—´æˆ³å¯¹è±¡
 		m_expiration = Timestamp::invalid();
 	}
 }

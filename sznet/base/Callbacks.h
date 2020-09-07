@@ -1,4 +1,4 @@
-#ifndef _SZNET_NET_CALLBACKS_H_
+ï»¿#ifndef _SZNET_NET_CALLBACKS_H_
 #define _SZNET_NET_CALLBACKS_H_
 
 #include "../base/Types.h"
@@ -10,7 +10,7 @@
 namespace sznet
 {
 
-// »ñÈ¡ÖÇÄÜÖ¸ÕëÖĞµÄµØÖ·
+// è·å–æ™ºèƒ½æŒ‡é’ˆä¸­çš„åœ°å€
 template<typename T>
 inline T* get_pointer(const std::shared_ptr<T>& ptr)
 {
@@ -22,7 +22,7 @@ inline T* get_pointer(const std::unique_ptr<T>& ptr)
 	return ptr.get();
 }
 
-// ÖÇÄÜÖ¸Õë°²È«µÄÏòÏÂ×ª»»
+// æ™ºèƒ½æŒ‡é’ˆå®‰å…¨çš„å‘ä¸‹è½¬æ¢
 template<typename To, typename From>
 inline ::std::shared_ptr<To> down_pointer_cast(const ::std::shared_ptr<From>& f) {
 	if (false)
@@ -50,7 +50,7 @@ namespace net
 // class TcpConnection;
 // 
 // typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
-// Timerµ½ÆÚ»Øµ÷º¯ÊıÀàĞÍ
+// Timeråˆ°æœŸå›è°ƒå‡½æ•°ç±»å‹
 typedef std::function<void()> TimerCallback;
 // 
 // typedef std::function<void(const TcpConnectionPtr&)> ConnectionCallback;

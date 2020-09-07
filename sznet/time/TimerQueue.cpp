@@ -1,14 +1,16 @@
-#include "TimerQueue.h"
+ï»¿#include "TimerQueue.h"
 #include "Timer.h"
 #include "TimerId.h"
 #include "../log/Logging.h"
 #include "../net/EventLoop.h"
 
+#include <algorithm>
+
 namespace sznet
 {
 
-// ÓÃÓÚ×îÐ¡¶ÑµÄ±È½Ïº¯Êý
-// 1 - ×ó±ß´óÓÚÓÒ±ß£¬ 0 - ×ó±ßµÈÓÚÓÒ±ß£¬ - 1 - ×ó±ßÐ¡ÓÚÓÒ±ß
+// ç”¨äºŽæœ€å°å †çš„æ¯”è¾ƒå‡½æ•°
+// 1 - å·¦è¾¹å¤§äºŽå³è¾¹ï¼Œ 0 - å·¦è¾¹ç­‰äºŽå³è¾¹ï¼Œ - 1 - å·¦è¾¹å°äºŽå³è¾¹
 int event_greater(Timer* lhs, Timer* rhs)
 {
 	auto key1 = lhs->expiration().microSecondsSinceEpoch();
@@ -29,50 +31,72 @@ int event_greater(Timer* lhs, Timer* rhs)
 
 TimerQueue::TimerQueue(net::EventLoop* loop):
 	m_loop(loop),
-	m_timerSet(),
 	m_timerMinHeap(event_greater)
 {
 }
 
 TimerQueue::~TimerQueue()
 {
-	for (TimerSet::iterator it = m_timerSet.begin(); it != m_timerSet.end(); ++it)
+	assert(m_timerMinHeap.size() == m_activeTimers.size());
+	while (true)
 	{
-		delete *it;
+		Timer* timer = m_timerMinHeap.pop();
+		if (!timer)
+		{
+			break;
+		}
+		delete timer;
+		timer = nullptr;
 	}
+	m_activeTimers.clear();
+	assert(m_timerMinHeap.size() == m_activeTimers.size());
 }
 
 TimerId TimerQueue::addTimer(const net::TimerCallback cb, Timestamp when, double interval)
 {
 	Timer* timer = new Timer(cb, when, interval);
-	// m_loop->runInLoop(std::bind(&TimerQueue::addTimerInLoop, this, timer));
+	m_loop->runInLoop(std::bind(&TimerQueue::addTimerInLoop, this, timer));
 	return TimerId(timer, timer->sequence());
 }
 
 void TimerQueue::cancel(TimerId timerId)
 {
-	// m_loop->runInLoop(std::bind(&TimerQueue::cancelInLoop, this, timerId));
+	m_loop->runInLoop(std::bind(&TimerQueue::cancelInLoop, this, timerId));
 }
 
 void TimerQueue::addTimerInLoop(Timer* timer)
 {
-	// m_loop->assertInLoopThread();
-	Timestamp when = timer->expiration();
+	m_loop->assertInLoopThread();
+	assert(m_timerMinHeap.size() == m_activeTimers.size());
 	m_timerMinHeap.push(timer);
-	m_timerSet.insert(timer);
+	std::pair<ActiveTimerSet::iterator, bool> result = m_activeTimers.insert(ActiveTimer(timer, timer->sequence()));
+	assert(result.second); (void)result;
+	assert(m_timerMinHeap.size() == m_activeTimers.size());
 }
 
 void TimerQueue::cancelInLoop(TimerId timerId)
 {
-	// m_loop->assertInLoopThread();
-	m_timerMinHeap.erase(timerId.m_timer);
+	m_loop->assertInLoopThread();
+	assert(m_timerMinHeap.size() == m_activeTimers.size());
+	ActiveTimer timer(timerId.m_timer, timerId.m_sequence);
+	ActiveTimerSet::iterator it = m_activeTimers.find(timer);
+	if (it != m_activeTimers.end())
+	{
+		assert(m_timerMinHeap.erase(timerId.m_timer) == 0);
+		delete timerId.m_timer;
+		timerId.m_timer = nullptr;
+		m_activeTimers.erase(it);
+	}
+	assert(m_timerMinHeap.size() == m_activeTimers.size());
 }
 
 void TimerQueue::expiredProcess(Timestamp now)
 {
+	m_loop->assertInLoopThread();
+	assert(m_timerMinHeap.size() == m_activeTimers.size());
 	while (true)
 	{
-		Timer* timer = m_timerMinHeap.pop();
+		Timer* timer = m_timerMinHeap.top();
 		if (!timer)
 		{
 			break;
@@ -81,18 +105,40 @@ void TimerQueue::expiredProcess(Timestamp now)
 		{
 			break;
 		}
-		// m_loop->runInLoop(std::bind(&Timer::run, timer));
+		ActiveTimer activeTimer(timer, timer->sequence());
+		m_timerMinHeap.pop();
+		size_t n = m_activeTimers.erase(activeTimer);
+		assert(n == 1); (void)n;
+		// æ‰§è¡Œè¶…æ—¶å‡½æ•°
+		timer->run();
 		if (timer->repeat())
 		{
 			timer->restart(now);
-			m_timerMinHeap.push(timer);
+			addTimerInLoop(timer);
+		}
+		else 
+		{
+			delete timer;
+			timer = nullptr;
 		}
 	}
+	assert(m_timerMinHeap.size() == m_activeTimers.size());
 }
 
-int TimerQueue::earliestExpiredTime(Timestamp now)
+int TimerQueue::earliestExpiredTime(Timestamp now, int defaultTimeMs)
 {
-	return 0;
+	Timer* timer = m_timerMinHeap.top();
+	if (!timer)
+	{
+		return defaultTimeMs;
+	}
+
+	if (timer->expiration().microSecondsSinceEpoch() > now.microSecondsSinceEpoch())
+	{
+		return std::min(timeDifferenceMs(timer->expiration(), now), defaultTimeMs);
+	}
+
+	return defaultTimeMs;
 }
 
 } // namespace sznet

@@ -1,4 +1,4 @@
-#ifndef _SZNET_NET_CHANNEL_H_
+ï»¿#ifndef _SZNET_NET_CHANNEL_H_
 #define _SZNET_NET_CHANNEL_H_
 
 #include "SocketsOps.h"
@@ -14,32 +14,61 @@ namespace sznet
 namespace net
 {
 
-// ÊÂ¼şÑ­»·
+// äº‹ä»¶å¾ªç¯
 class EventLoop;
 
-// ÊÂ¼ş·Ö·¢
+// äº‹ä»¶åˆ†å‘
 class Channel : NonCopyable
 {
 public:
-	// ÊÂ¼şÀàĞÍ
+	// äº‹ä»¶ç±»å‹
+	// https://stackoverflow.com/questions/52976152/tcp-when-is-epollhup-generated
+	// https://stackoverflow.com/questions/56177060/pollhup-vs-pollrdhup
+	// https://stackoverflow.com/questions/24791625/how-to-handle-the-linux-socket-revents-pollerr-pollhup-and-pollnval
+	// You can have a look at net/ipv4/tcp.c the kernel source:
+	// if (sk->sk_shutdown == SHUTDOWN_MASK || state == TCP_CLOSE)
+	//		mask |= EPOLLHUP;
+	// if (sk->sk_shutdown & RCV_SHUTDOWN)
+	//		mask |= EPOLLIN | EPOLLRDNORM | EPOLLRDHUP;
+	// SHUTDOWN_MASK is RCV_SHUTDOWN | SEND_SHUTDOWN. 
+	// RCV_SHUTDOWN is set when a FIN packet is received, 
+	// and SEND_SHUTDOWN is set when a FIN packet is acknowledged by the other end, 
+	// and the socket moves to the FIN - WAIT2 state.
 	enum 
 	{
-		// ÎŞ
+		// none
 		kNoneEvent = 0x00,
-		// ÊÇ·ñ¿É¶Á
+		// POLLINï¼ŒEPOLLIN
+		// There is data to read
 		kReadEvent = 0x01,
-		// ÊÇ·ñ¿ÉĞ´
-		kWriteEvent = 0x02,
-		// ÊÇ·ñ¹Ø±Õ
-		kCloseEvent = 0x04,
-		// ÊÇ·ñ³ö´í
-		kErrorEvent = 0x08,
+		// POLLPRIï¼ŒEPOLLPRI
+		// out-of-band data on TCP socket
+		kPriEvent = 0x02,
+		// POLLRDHUPï¼ŒEPOLLRDHUP since Linux 2.6.17
+		// POLLRDHUP will be set when the other end has called shutdown(SHUT_WR) or 
+		// when this end has called shutdown(SHUT_RD), 
+		// but the connection may still be alive in the other direction.
+		kRdHupEvent = 0x04,
+		// POLLOUTï¼ŒEPOLLOUT
+		// The associated file is available for write operations.
+		kWriteEvent = 0x08,
+		// POLLERRï¼ŒEPOLLERR
+		// Error condition happened on the associated file descriptor.
+		kErrorEvent = 0x10,
+		// POLLHUPï¼ŒEPOLLHUP
+		// when poll()ing a socket, POLLHUP will signal that the connection was closed in both directions.
+		kHupEvent = 0x20,
+		// POLLNVAL
+		// A POLLNVAL means the socket file descriptor is not open. 
+		// It would be an error to close() it.
+		kNvalEvent = 0x40,
+		// kCloseEvent = 0x80,
 	};
-	// ÊÂ¼ş
+	// äº‹ä»¶
 	struct Event_t
 	{
 		sockets::sz_fd fd;
-		unsigned char ev;
+		unsigned int ev;
 		Event_t()
 		{
 			clear();
@@ -52,9 +81,9 @@ public:
 	};
 
 public:
-	// ÊÂ¼ş»Øµ÷º¯Êı
+	// äº‹ä»¶å›è°ƒå‡½æ•°
 	typedef std::function<void()> EventCallback;
-	// ¶ÁÊÂ¼ş»Øµ÷º¯Êı
+	// è¯»äº‹ä»¶å›è°ƒå‡½æ•°
 	typedef std::function<void(Timestamp)> ReadEventCallback;
 
 	Channel(EventLoop* loop, sockets::sz_sock fd);
@@ -62,157 +91,158 @@ public:
 
 	// 
 	void handleEvent(Timestamp receiveTime);
-	// ÉèÖÃ¿É¶Á»Øµ÷º¯Êı
+	// è®¾ç½®å¯è¯»å›è°ƒå‡½æ•°
 	void setReadCallback(ReadEventCallback cb)
 	{
 		m_readCallback = std::move(cb);
 	}
-	// ÉèÖÃĞ´»Øµ÷º¯Êı
+	// è®¾ç½®å†™å›è°ƒå‡½æ•°
 	void setWriteCallback(EventCallback cb)
 	{
 		m_writeCallback = std::move(cb);
 	}
-	// ÉèÖÃ¹Ø±Õ»Øµ÷º¯Êı
+	// è®¾ç½®å…³é—­å›è°ƒå‡½æ•°
 	void setCloseCallback(EventCallback cb)
 	{
 		m_closeCallback = std::move(cb);
 	}
-	// ÉèÖÃ´íÎó»Øµ÷º¯Êı
+	// è®¾ç½®é”™è¯¯å›è°ƒå‡½æ•°
 	void setErrorCallback(EventCallback cb)
 	{
 		m_errorCallback = std::move(cb);
 	}
 	// 
 	void tie(const std::shared_ptr<void>&);
-	// ·µ»Ø¸ÃChannel¸ºÔğµÄfd
+	// è¿”å›è¯¥Channelè´Ÿè´£çš„fd
 	sockets::sz_fd fd() const 
 	{ 
 		return m_fd; 
 	}
-	// ·µ»Øfd×¢²áµÄÊÂ¼ş
-	unsigned char events() const
+	// è¿”å›fdæ³¨å†Œçš„äº‹ä»¶
+	unsigned int events() const
 	{ 
 		return m_events; 
 	}
-	// ½øĞĞ¶àÂ·¸´ÓÃAPIºó£¬¸ù¾İfdµÄ·µ»ØÊÂ¼şµ÷ÓÃ´Ëº¯Êı, Éè¶¨fdµÄ¾ÍĞ÷ÊÂ¼şÀàĞÍ
-	// handleEvent¸ù¾İ¾ÍĞ÷ÊÂ¼şÀàĞÍ(m_revents)À´¾ö¶¨Ö´ĞĞÄÄ¸öÊÂ¼ş»Øµ÷º¯Êı
-	void set_revents(unsigned char revt)
+	// è¿›è¡Œå¤šè·¯å¤ç”¨APIåï¼Œæ ¹æ®fdçš„è¿”å›äº‹ä»¶è°ƒç”¨æ­¤å‡½æ•°, è®¾å®šfdçš„å°±ç»ªäº‹ä»¶ç±»å‹
+	// handleEventæ ¹æ®å°±ç»ªäº‹ä»¶ç±»å‹(m_revents)æ¥å†³å®šæ‰§è¡Œå“ªä¸ªäº‹ä»¶å›è°ƒå‡½æ•°
+	void set_revents(unsigned int revt)
 	{ 
 		m_revents = revt;
 	}
-	// ·µ»Øm_revents
+	// è¿”å›m_revents
 	// int revents() const 
 	// { 
 	//	 return m_revents;
 	// }
-	// ÅĞ¶ÏfdÊÇ²»ÊÇÃ»ÓĞÊÂ¼ş¼àÌı
+	// åˆ¤æ–­fdæ˜¯ä¸æ˜¯æ²¡æœ‰äº‹ä»¶ç›‘å¬
 	bool isNoneEvent() const 
 	{ 
 		return m_events == kNoneEvent;
 	}
-	// fd×¢²á¿É¶ÁÊÂ¼ş
+	// fdæ³¨å†Œå¯è¯»äº‹ä»¶
 	void enableReading() 
 	{ 
 		m_events |= kReadEvent; 
 		update();
 	}
-	// Ïú»Ùfd¿É¶ÁÊÂ¼ş
+	// é”€æ¯fdå¯è¯»äº‹ä»¶
 	void disableReading() 
 	{ 
 		m_events &= ~kReadEvent; 
 		update();
 	}
-	// fd×¢²á¿ÉĞ´ÊÂ¼ş
+	// fdæ³¨å†Œå¯å†™äº‹ä»¶
 	void enableWriting() 
 	{ 
 		m_events |= kWriteEvent; 
 		update();
 	}
-	// Ïú»Ùfd¿ÉĞ´ÊÂ¼ş
+	// é”€æ¯fdå¯å†™äº‹ä»¶
 	void disableWriting() 
 	{ 
 		m_events &= ~kWriteEvent; 
 		update();
 	}
-	// Í£Ö¹fdËùÓĞÊÂ¼ş
+	// åœæ­¢fdæ‰€æœ‰äº‹ä»¶
 	void disableAll() 
 	{ 
 		m_events = kNoneEvent; 
 		update();
 	}
-	// ÊÇ·ñ×¢²áÁËĞ´ÊÂ¼ş
+	// æ˜¯å¦æ³¨å†Œäº†å†™äº‹ä»¶
 	bool isWriting() const 
 	{ 
 		return m_events & kWriteEvent;
 	}
-	// ÊÇ·ñ×¢²áÁË¶ÁÊÂ¼ş
+	// æ˜¯å¦æ³¨å†Œäº†è¯»äº‹ä»¶
 	bool isReading() const 
 	{ 
 		return m_events & kReadEvent;
 	}
-	// »ñÈ¡ÏÂ±ê
+	// è·å–ä¸‹æ ‡
 	int index() 
 	{ 
 		return m_index; 
 	}
-	// ÉèÖÃÏÂ±ê
+	// è®¾ç½®ä¸‹æ ‡
 	void set_index(int idx) 
 	{ 
 		m_index = idx;
 	}
-	// 
+	// poolåçš„äº‹ä»¶åˆ°å­—ç¬¦ä¸²
 	string reventsToString() const;
-	// 
+	// æ³¨å†Œäº‹ä»¶åˆ°å­—ç¬¦ä¸²
 	string eventsToString() const;
-	// ¹Ø±ÕÈÕÖ¾´òÓ¡
+	// å…³é—­æ—¥å¿—æ‰“å°
 	void doNotLogHup() 
 	{ 
 		m_logHup = false; 
 	}
-	// ·µ»Ø³ÖÓĞ±¾ChannelµÄEventLoopÖ¸Õë 
+	// è¿”å›æŒæœ‰æœ¬Channelçš„EventLoopæŒ‡é’ˆ 
 	EventLoop* ownerLoop() 
 	{ 
 		return m_loop; 
 	}
-	// ½«Channel´ÓEventLoopÖĞÒÆ³ı
+	// å°†Channelä»EventLoopä¸­ç§»é™¤
 	void remove();
 
 private:
-	// 
+	// æ‰“å°evå¯¹åº”çš„å­—ç¬¦ä¸²
 	static string eventsToString(sockets::sz_sock fd, int ev);
-	// updateÍ¨¹ıµ÷ÓÃm_loop->updateChannel()À´×¢²á»ò¸Ä±ä¸ÃfdÔÚ¶àÂ·¸´ÓÃÖĞµÄ×¢²áµÄÊÂ¼ş
+	// updateé€šè¿‡è°ƒç”¨m_loop->updateChannel()æ¥æ³¨å†Œæˆ–æ”¹å˜è¯¥fdåœ¨å¤šè·¯å¤ç”¨ä¸­çš„æ³¨å†Œçš„äº‹ä»¶
 	void update();
-	// 
+	// äº‹ä»¶å¤„ç†
+	// WithGuard - 
 	void handleEventWithGuard(Timestamp receiveTime);
 
-	// ÊÂ¼şÑ­»·
+	// äº‹ä»¶å¾ªç¯
 	EventLoop* m_loop;
-	// ±¾Channel¸ºÔğµÄÎÄ¼şÃèÊö·û£¬Channel²»ÓµÓĞfd
+	// æœ¬Channelè´Ÿè´£çš„æ–‡ä»¶æè¿°ç¬¦ï¼ŒChannelä¸æ‹¥æœ‰fd
 	const sockets::sz_fd m_fd;
-	// fd×¢²áµÄÊÂ¼ş
-	unsigned char m_events;
-	// Í¨¹ı¶àÂ·¸´ÓÃAPIºóµÄ¾ÍĞ÷ÊÂ¼ş
-	unsigned char m_revents;
-	// pollerÖĞ±£´æchannelµÄÈİÆ÷µÄÏÂ±ê
-	// Í¨¹ıÕâ¸öÒ²¿ÉÒÔÅĞ¶ÏÊÇaddÊÂ¼ş»¹ÊÇmodÊÂ¼ş
+	// fdæ³¨å†Œçš„äº‹ä»¶
+	unsigned int m_events;
+	// é€šè¿‡å¤šè·¯å¤ç”¨APIåçš„å°±ç»ªäº‹ä»¶
+	unsigned int m_revents;
+	// æ•°ç»„ä¸‹æ ‡ï¼Œpollerä¸­ä¿å­˜channelçš„æ•°ç»„çš„ä¸‹æ ‡
+	// é€šè¿‡è¿™ä¸ªä¹Ÿå¯ä»¥åˆ¤æ–­æ˜¯addäº‹ä»¶è¿˜æ˜¯modäº‹ä»¶
 	int m_index;
-	// ÊÇ·ñÉú³ÉÄ³Ğ©ÈÕÖ¾
+	// æ˜¯å¦è¾“å‡ºPOLLHUPæŒ‚èµ·æ—¥å¿—
 	bool m_logHup;
 	// 
 	std::weak_ptr<void> m_tie;
 	// 
 	bool m_tied;
-	// 
+	// å½“å‰æ˜¯å¦æ­£åœ¨å¤„ç†äº‹ä»¶
 	bool m_eventHandling;
-	// ÊÂ¼şÊÇ·ñÒÑ¾­×¢²áµ½loopÖĞ
+	// äº‹ä»¶æ˜¯å¦å·²ç»æ³¨å†Œåˆ°loopä¸­
 	bool m_addedToLoop;
-	// ¶ÁÊÂ¼ş»Øµ÷º¯Êı
+	// è¯»äº‹ä»¶å›è°ƒå‡½æ•°
 	ReadEventCallback m_readCallback;
-	// Ğ´ÊÂ¼ş»Øµ÷º¯Êı
+	// å†™äº‹ä»¶å›è°ƒå‡½æ•°
 	EventCallback m_writeCallback;
-	// ¹Ø±ÕÊÂ¼ş»Øµ÷º¯Êı
+	// å…³é—­äº‹ä»¶å›è°ƒå‡½æ•°
 	EventCallback m_closeCallback;
-	// ´íÎóÊÂ¼ş»Øµ÷º¯Êı
+	// é”™è¯¯äº‹ä»¶å›è°ƒå‡½æ•°
 	EventCallback m_errorCallback;
 };
 

@@ -1,4 +1,4 @@
-#ifndef _SZNET_NET_SELECTPOLLER_H_
+ï»¿#ifndef _SZNET_NET_SELECTPOLLER_H_
 #define _SZNET_NET_SELECTPOLLER_H_
 
 #include "Channel.h"
@@ -26,26 +26,26 @@ public:
 	SelectPoller(EventLoop* loop);
 	virtual ~SelectPoller();
 
-	// »ñÈ¡ÍøÂçIOÊÂ¼ş
-	virtual Timestamp poll(int timeoutMs, ChannelList* activeChannels);
-	// (add/mod)¸üĞÂchannelÖĞµÄÊÂ¼ş
+	// è·å–ç½‘ç»œIOäº‹ä»¶
+	virtual void poll(ChannelList* activeChannels, int timeoutMs = 0);
+	// (add/mod)æ›´æ–°channelä¸­çš„äº‹ä»¶
 	virtual void updateChannel(Channel* channel);
 	// 
 	virtual void removeChannel(Channel* channel);
 
 private:
-	// ½«ÍøÂçIOÊÂ¼ş¶ÔÓ¦µÄchannel·ÅÈëactiveChannelsÖĞ
+	// å°†ç½‘ç»œIOäº‹ä»¶å¯¹åº”çš„channelæ”¾å…¥activeChannelsä¸­
 	void fillActiveChannels(int numEvents, ChannelList* activeChannels) const;
 
-	// ´æ´¢ÊÂ¼şµÄÀàĞÍ
+	// å­˜å‚¨äº‹ä»¶çš„ç±»å‹
 	typedef std::vector<Channel::Event_t> PollFdList;
-	// 
+	// äº‹ä»¶æ•°ç»„
 	PollFdList m_pollfds;
-	// ¿É¶ÁÊÂ¼ş¼¯ºÏ
+	// å¯è¯»äº‹ä»¶é›†åˆ
 	fd_set m_rfds;
-	// ¿ÉĞ´ÊÂ¼ş¼¯ºÏ
+	// å¯å†™äº‹ä»¶é›†åˆ
 	fd_set m_wfds;
-	// ´íÎóÊÂ¼ş¼¯ºÏ
+	// é”™è¯¯äº‹ä»¶é›†åˆ
 	fd_set m_efds;
 };
 

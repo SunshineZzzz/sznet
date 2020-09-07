@@ -94,6 +94,7 @@ sz_thread_func_return startThread(void* obj)
 	ThreadData* data = static_cast<ThreadData*>(obj);
 	data->runInThread();
 	delete data;
+	data = nullptr;
 
 	return 0;
 }

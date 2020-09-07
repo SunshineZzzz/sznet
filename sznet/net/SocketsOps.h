@@ -1,4 +1,4 @@
-#ifndef _SZNET_NET_SOCKETSOPS_H_
+ï»¿#ifndef _SZNET_NET_SOCKETSOPS_H_
 #define _SZNET_NET_SOCKETSOPS_H_
 
 #include "../NetCmn.h"
@@ -62,14 +62,21 @@ namespace sockets
 #	define sz_err_eintr EINTR
 #endif
 
-// ÉèÖÃ·Ç×èÈû»òÕß·Ç×èÈû
+// socketå±æ€§
+int sz_sock_setopt(sz_sock sock, int level, int option, int val);
+int sz_sock_getopt(sz_sock sock, int level, int option, int& val);
+// è®¾ç½®éé˜»å¡æˆ–è€…éé˜»å¡
 int sz_sock_setnonblock(sz_sock sock, bool nonblock);
-// Ïú»Ùsocket
+// é”€æ¯socket
 int sz_closesocket(sz_sock sock);
-// ´´½¨eventfd
-sz_event sz_create_eventfd();
-// Ïú»Ùeventfd
+// é”€æ¯eventfd
 int sz_close_eventfd(sz_event& event);
+// ç¦ç”¨Nagle Algorithm
+int sz_sock_settcpnodelay(sz_sock sock);
+// åˆ›å»ºeventfd
+sz_event sz_create_eventfd();
+// ä¸Šä¸€æ¬¡é”™è¯¯æ˜¯å¦ä¸ºé˜»å¡
+bool sz_wouldblock();
 
 } // end namespace sockets
 

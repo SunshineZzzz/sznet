@@ -48,7 +48,7 @@ public:
 		unassignHolder();
 		sz_mutex_unlock(&m_mutex);
 	}
-	// 获得锁，由于条件变量有时候需要锁，因此返回其地址
+	// 获得锁，条件变量有时候需要锁，因此返回其地址
 	sz_mutex_t* getPthreadMutex()
 	{
 		return &m_mutex;
@@ -99,9 +99,6 @@ private:
 	sz_pid_t m_holder;
 };
 
-// 使用RAII(资源获取即初始化 - Resource Acquisition Is Initialization)
-// 手法封装MutexLockGuard：不手工调用lock()和unlock()函数，
-// 一切交给Guard对象的构造函数(上锁)和析构函数(解锁)负责
 class MutexLockGuard : NonCopyable
 {
 public:
@@ -116,7 +113,6 @@ public:
 	}
 
 private:
-
 	MutexLock& m_mutex;
 };
 

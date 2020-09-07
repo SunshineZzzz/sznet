@@ -1,4 +1,4 @@
-#ifndef _SZNET_NET_EVENTLOOP_H_
+﻿#ifndef _SZNET_NET_EVENTLOOP_H_
 #define _SZNET_NET_EVENTLOOP_H_
 
 #include "../thread/Mutex.h"
@@ -16,133 +16,144 @@
 namespace sznet
 {
 
-// ��ʱ������
+// 定时器队列
 class TimerQueue;
 
 namespace net
 {
 
-// �¼��ַ�
+// 事件分发
 class Channel;
-// ��·����
+// 多路复用
 class Poller;
 
-// �¼�ѭ��
+// 事件循环
+// one loop per thread
+// 一个线程最多只能有一个事件循环，这个线程叫做IO线程
 class EventLoop : NonCopyable
 {
 public:
-	// 
+	// 来自其他线程或者本身线程的执行函数类型
 	typedef std::function<void()> Functor;
 
 	EventLoop();
 	~EventLoop();
 
-	// �¼�ѭ��
+	// 事件循环，该函数不能跨线程调用
+	// 只能在创建该对象的线程中调用
 	void loop();
-	// ��ֹ�¼�ѭ��
+	// 终止事件循环
+	// 可以跨线程调用
 	void quit();
-	// 
-	// Timestamp pollReturnTime() const { return pollReturnTime_; }
-	// 
-	// int64_t iteration() const { return iteration_; }
-	// 
+	// 返回IO多路复用的时间
+	Timestamp pollReturnTime() const 
+	{ 
+		return m_pollTime; 
+	}
+	// 返回IO循环次是
+	int64_t iteration() const 
+	{ 
+		return m_iteration; 
+	}
+	// 在IO线程中执行某个回调函数，该函数可以跨线程调用
 	void runInLoop(Functor cb);
-	// 
+	// 将需要在IO线程执行的回调函数执行或者放入待执行数组中后续执行
 	void queueInLoop(Functor cb);
-	// 
-	// size_t queueSize() const;
-	// timers
-	// 
+	// 返回必须在IO线程中执行的函数数组的大小
+	size_t queueSize() const;
+	// timers相关
+	// 在某个绝对时间点执行定时回调
 	TimerId runAt(Timestamp time, TimerCallback cb);
-	// 
+	// 相对当前时间delay执行定时回调
 	TimerId runAfter(double delay, TimerCallback cb);
-	// 
+	// 每隔interval执行定时回调
 	TimerId runEvery(double interval, TimerCallback cb);
-	// ȡ����ʱ��
+	// 取消定时器
 	void cancel(TimerId timerId);
-	// ����EventLoop���ڵ��̣߳�����ֹͣ�¼�ѭ��
+	// 唤醒EventLoop所在的线程，用来停止事件循环
 	void wakeup();
-	// ����channel���¼�
+	// 更新channel的事件
 	void updateChannel(Channel* channel);
-	// �Ƴ�channel
+	// 移除channel
 	void removeChannel(Channel* channel);
-	// bool hasChannel(Channel* channel);
-	// pid_t threadId() const { return threadId_; }
-	// ��������loop�������̱߳�����ӵ��EventLoop������߳�
+	// 
+	bool hasChannel(Channel* channel);
+	// 返回创建loop对象的线程ID
+	sz_pid_t threadId() const 
+	{
+		return m_threadId; 
+	}
+	// 断言运行loop函数的线程必须是拥有EventLoop对象的线程
 	void assertInLoopThread()
 	{
-		// �������̲߳�ӵ��EventLoop�������˳�����֤one loop per thread
+		// 若运行线程不拥有EventLoop对象则退出，保证one loop per thread
 		if (!isInLoopThread())
 		{
 			abortNotInLoopThread();
 		}
 	}
-	// �жϵ�ǰ�߳��Ƿ���ӵ�д�EventLoop���߳�
+	// 判断当前线程是否是拥有此EventLoop的线程
 	bool isInLoopThread() const 
 	{ 
 		return m_threadId == CurrentThread::tid();
 	}
-	// bool callingPendingFunctors() const { return callingPendingFunctors_; }
-	// bool eventHandling() const { return eventHandling_; }
-	// void setContext(const boost::any& context)
-	// {
-	//	context_ = context;
-	// }
-	// const boost::any& getContext() const
-	// {
-	// 	return context_;
-	// }
-	// 
-	// boost::any* getMutableContext()
-	// {
-	// 	return &context_;
-	// }
-	// 
+	// 返回是否正在执行用户任务函数(来自其他线程的请求)回调
+	bool callingPendingFunctors() const 
+	{ 
+		return m_callingPendingFunctors; 
+	}
+	// 是否正在处理poll后的事件
+	bool eventHandling() const 
+	{ 
+		return m_eventHandling; 
+	}
 	// static EventLoop* getEventLoopOfCurrentThread();
 
 private:
-	// �ڲ�ӵ��EventLoop�߳�����ֹ
+	// 在不拥有EventLoop线程中终止
 	void abortNotInLoopThread();
-	// m_wakeupFd�ɶ�ʱ�ص�����
+	// m_wakeupFd可读时回调函数
 	void handleRead();
-	// 
+	// 执行待执行数组中的人物
+	// 该函数只会被当前IO线程调用
 	void doPendingFunctors();
-	// 
+	// 调试打印就绪事件数组
 	void printActiveChannels() const;
-	// 
+	// 就绪事件数组类型
 	typedef std::vector<Channel*> ChannelList;
-	// �¼�ѭ���Ƿ�����
+	// 事件循环是否运行
 	bool m_looping;
-	// �¼�ѭ��ǰ���жϸñ������˳��¼�ѭ�����
+	// 事件循环前会判断该变量，退出事件循环标记
 	std::atomic<bool> m_quit;
-	// �Ƿ����ڴ����¼�
+	// 是否正在处理poll后的事件
+	// 没有修改的需求，就看看，不原子了
 	bool m_eventHandling;
-	// �Ƿ�����ִ���û��������ص�
+	// 是否正在执行用户任务函数(来自其他线程的请求)回调
+	// 没有修改的需求，就看看，不原子了
 	bool m_callingPendingFunctors;
-	// loop����
+	// loop次数
 	int64_t m_iteration;
-	// ��ǰ�̵߳�tid
+	// 当前线程的tid
 	const sz_pid_t m_threadId;
-	// 
-	Timestamp pollReturnTime_;
-	// ��·���ö���
+	// IO多路复用的时间
+	Timestamp m_pollTime;
+	// 多路复用对象
 	std::unique_ptr<Poller> m_poller;
-	// ��ʱ���������ڴ�Ŷ�ʱ��
+	// 定时器队列用于存放定时器
 	std::unique_ptr<TimerQueue> m_timerQueue;
-	// ����EventLoop���ڵ��߳�
+	// 唤醒EventLoop所在的线程
 	sockets::sz_event m_wakeupFd;
-	// m_wakeupFd��Ӧ���¼��ַ�����
+	// m_wakeupFd对应的事件分发对象
 	std::unique_ptr<Channel> m_wakeupChannel;
-	// 
-	// boost::any context_;
-	// 
+	// 就绪事件集合
 	ChannelList m_activeChannels;
-	// ��ǰ���ڴ����ľ����¼�
+	// 当前正在处理的就绪事件
 	Channel* m_currentActiveChannel;
-	// 
-	mutable MutexLock mutex_;
-	// 
-	std::vector<Functor> pendingFunctors_;
+	// 保护下面
+	mutable MutexLock m_mutex;
+	// 需要在IO线程中执行的函数数组
+	// 这些任务显然必须是要求在IO线程中执行
+	std::vector<Functor> m_pendingFunctors;
 };
 
 } // end namespace net

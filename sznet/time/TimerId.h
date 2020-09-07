@@ -1,4 +1,4 @@
-#ifndef _SZNET_TIME_TIMERID_H_
+ï»¿#ifndef _SZNET_TIME_TIMERID_H_
 #define _SZNET_TIME_TIMERID_H_
 
 #include <inttypes.h>
@@ -7,10 +7,10 @@
 namespace sznet
 {
 
-// timer¶¨Ê±Æ÷
+// timerå®šæ—¶å™¨
 class Timer;
 
-// ´øÓĞÎ¨Ò»±êÊ¶µÄTimer
+// å¸¦æœ‰å”¯ä¸€æ ‡è¯†çš„Timerï¼Œä¸»è¦ç”¨äºå–æ¶ˆTimer
 class TimerId : public Copyable
 {
 public:
@@ -25,13 +25,13 @@ public:
 	{
 	}
 
-	// ¶¨Ê±Æ÷¶ÓÁĞ
+	// å®šæ—¶å™¨é˜Ÿåˆ—
 	friend class TimerQueue;
 
 private:
-	// timer¶¨Ê±Æ÷
+	// timerå®šæ—¶å™¨
 	Timer* m_timer;
-	// timer¶¨Ê±Æ÷µÄĞòÁĞºÅ
+	// timerå®šæ—¶å™¨çš„åºåˆ—å·
 	int64_t m_sequence;
 };
 

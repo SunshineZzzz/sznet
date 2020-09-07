@@ -1,4 +1,4 @@
-#include "../log/Logging.h"
+﻿#include "../log/Logging.h"
 #include "Channel.h"
 #include "EventLoop.h"
 #include <sstream>
@@ -9,9 +9,9 @@ namespace sznet
 namespace net
 {
 
-Channel::Channel(EventLoop* loop, sockets::sz_sock fd__):
+Channel::Channel(EventLoop* loop, sockets::sz_sock fd):
 	m_loop(loop),
-	m_fd(fd__),
+	m_fd(fd),
 	m_events(0),
 	m_revents(0),
 	m_index(-1),
@@ -70,6 +70,58 @@ void Channel::handleEvent(Timestamp receiveTime)
 
 void Channel::handleEventWithGuard(Timestamp receiveTime)
 {
+	// 事件处理时，设置下此状态
+	// Channel析构时，用到此状态 
+	m_eventHandling = true;
+	LOG_TRACE << reventsToString();
+	// RCV_SHUTDOWN | SEND_SHUTDOWN
+	if ((m_revents & kHupEvent) && !(m_revents & kReadEvent))
+	{
+		if (m_logHup)
+		{
+			LOG_WARN << "fd = " << m_fd << " Channel::handle_event() kHupEvent";
+		}
+		if (m_closeCallback)
+		{
+			m_closeCallback();
+		}
+	}
+
+	// A POLLNVAL means the socket file descriptor is not open. 
+	// It would be an error to close() it.
+	if (m_revents & kNvalEvent)
+	{
+		LOG_WARN << "fd = " << m_fd << " Channel::handle_event() KNvalEvent";
+	}
+
+	// A POLLERR means error condition happened on the associated file descriptor.
+	if (m_revents & (kErrorEvent | kNvalEvent))
+	{
+		if (m_errorCallback)
+		{
+			m_errorCallback();
+		}
+	}
+
+	// 读事件
+	if (m_revents & (kReadEvent | kPriEvent | kRdHupEvent))
+	{
+		if (m_readCallback)
+		{
+			m_readCallback(receiveTime);
+		}
+	}
+
+	// 写事件
+	if (m_revents & kWriteEvent)
+	{
+		if (m_writeCallback)
+		{
+			m_writeCallback();
+		}
+	}
+
+	m_eventHandling = false;
 }
 
 string Channel::reventsToString() const
@@ -84,7 +136,37 @@ string Channel::eventsToString() const
 
 string Channel::eventsToString(sockets::sz_sock fd, int ev)
 {
-	return "";
+	std::ostringstream oss;
+	oss << fd << ": ";
+	if (ev & kReadEvent)
+	{
+		oss << "IN ";
+	}
+	if (ev & kPriEvent)
+	{
+		oss << "PRI ";
+	}
+	if (ev & kRdHupEvent)
+	{
+		oss << "RDHUP ";
+	}
+	if (ev & kWriteEvent)
+	{
+		oss << "OUT ";
+	}
+	if (ev & kErrorEvent)
+	{
+		oss << "ERROR ";
+	}
+	if (ev & kHupEvent)
+	{
+		oss << "HUP ";
+	}
+	if (ev & kNvalEvent)
+	{
+		oss << "NVAL ";
+	}
+	return oss.str();
 }
 
 } // namespace net

@@ -26,7 +26,7 @@ namespace sznet
 #ifdef SZ_OS_WINDOWS
 	using sz_mutex_t = CRITICAL_SECTION;
 	using sz_thread_t = HANDLE;
-	using sz_cond_t = HANDLE;
+	using sz_cond_t = CONDITION_VARIABLE;
 #	define sz_invalid_thread nullptr
 #	define sz_thread_func_return unsigned int
 	using xd_thread_func_t = sz_thread_func_return(__stdcall *)(void*);
@@ -57,7 +57,7 @@ void sz_cond_notifyall(sz_cond_t* cond);
 // 等待条件变量被触发
 int sz_cond_wait(sz_cond_t* cond, sz_mutex_t* mutex);
 // 限时等待条件变量被触发
-int sz_cond_timewait(sz_cond_t* cond, sz_mutex_t* mutex, int& millisec);
+int sz_cond_timewait(sz_cond_t* cond, sz_mutex_t* mutex, uint32_t millisec);
 
 }  // end namespace sznet
 

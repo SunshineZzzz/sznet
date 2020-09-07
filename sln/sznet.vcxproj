@@ -39,6 +39,7 @@
     <ClInclude Include="..\sznet\NetCmn.h" />
     <ClInclude Include="..\sznet\net\Channel.h" />
     <ClInclude Include="..\sznet\net\EventLoop.h" />
+    <ClInclude Include="..\sznet\net\EventLoopThread.h" />
     <ClInclude Include="..\sznet\net\Poller.h" />
     <ClInclude Include="..\sznet\net\SelectPoller.h" />
     <ClInclude Include="..\sznet\net\SocketsOps.h" />
@@ -69,6 +70,7 @@
     <ClCompile Include="..\sznet\net\Channel.cpp" />
     <ClCompile Include="..\sznet\net\DefaultPoller.cpp" />
     <ClCompile Include="..\sznet\net\EventLoop.cpp" />
+    <ClCompile Include="..\sznet\net\EventLoopThread.cpp" />
     <ClCompile Include="..\sznet\net\Poller.cpp" />
     <ClCompile Include="..\sznet\net\SelectPoller.cpp" />
     <ClCompile Include="..\sznet\net\SocketsOps.cpp" />

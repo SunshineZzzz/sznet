@@ -1,6 +1,7 @@
 ﻿#ifndef _SZNET_THREAD_CONDITION_H_
 #define _SZNET_THREAD_CONDITION_H_
 
+#include "../log/Logging.h"
 #include "../base/NonCopyable.h"
 #include "Mutex.h"
 
@@ -25,7 +26,11 @@ public:
 	void wait()
 	{
 		MutexLock::UnassignGuard ug(m_mutex);
-		sz_cond_wait(&m_cond, m_mutex.getPthreadMutex());
+		auto rst = sz_cond_wait(&m_cond, m_mutex.getPthreadMutex());
+		if (rst != 0)
+		{
+			LOG_SYSFATAL << "Failed in sz_cond_wait";
+		}
 	}
 	// 限时等待条件变量被触发
 	bool waitForSeconds(int millisec)

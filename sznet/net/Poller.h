@@ -1,8 +1,7 @@
-#ifndef _SZNET_NET_POLLER_H_
+ï»¿#ifndef _SZNET_NET_POLLER_H_
 #define _SZNET_NET_POLLER_H_
 
 #include "../base/NonCopyable.h"
-#include "../time/Timestamp.h"
 #include "SocketsOps.h"
 #include "EventLoop.h"
 
@@ -15,22 +14,22 @@ namespace sznet
 namespace net
 {
 
-// ÊÂ¼ş·Ö·¢
+// äº‹ä»¶åˆ†å‘
 class Channel;
 
-// IO¸´ÓÃÀàµÄ»ùÀà
+// IOå¤ç”¨ç±»çš„åŸºç±»
 class Poller : NonCopyable
 {
 public:
-	// ¾ÍĞ÷ÊÂ¼şÈİÆ÷ÀàĞÍ
+	// å°±ç»ªäº‹ä»¶å®¹å™¨ç±»å‹
 	typedef std::vector<Channel*> ChannelList;
 
 	Poller(EventLoop* loop);
 	virtual ~Poller();
 
-	// PollerµÄºËĞÄ¹¦ÄÜ£¬½«¾ÍĞ÷ÊÂ¼ş¼ÓÈëµ½ activeChannels ÖĞ
-	virtual Timestamp poll(int timeoutMs, ChannelList* activeChannels) = 0;
-	// ¸üĞÂfdµÄ×¢²áÊÂ¼ş
+	// Pollerçš„æ ¸å¿ƒåŠŸèƒ½ï¼Œå°†å°±ç»ªäº‹ä»¶åŠ å…¥åˆ° activeChannels ä¸­
+	virtual void poll(ChannelList* activeChannels, int timeoutMs = 0) = 0;
+	// æ›´æ–°fdçš„æ³¨å†Œäº‹ä»¶
 	// Channel::update()->EventLoop::updateChannel(Channel* channel)->Poller::updateChannel(Channel* channel)
 	virtual void updateChannel(Channel* channel) = 0;
 	// 
@@ -38,23 +37,23 @@ public:
 	virtual void removeChannel(Channel* channel) = 0;
 	// 
 	// virtual bool hasChannel(Channel* channel) const;
-	// 
+	// åˆ›å»ºIOå¤šè·¯å¤ç”¨å¯¹è±¡
 	static Poller* newDefaultPoller(EventLoop* loop);
-	// ¶ÏÑÔÔËĞĞloopº¯ÊıµÄÏß³Ì±ØĞëÊÇÓµÓĞEventLoop¶ÔÏóµÄÏß³Ì
+	// æ–­è¨€è¿è¡Œloopå‡½æ•°çš„çº¿ç¨‹å¿…é¡»æ˜¯æ‹¥æœ‰EventLoopå¯¹è±¡çš„çº¿ç¨‹
 	void assertInLoopThread() const
 	{
 		m_ownerLoop->assertInLoopThread();
 	}
 
 protected:
-	// ¼ÇÂ¼fdµ½ChannelµÄ¶ÔÓ¦¹ØÏµ 
-	// µ×²ãµÄ¶àÂ·¸´ÓÃAPIÃ¿´Î¼ì²éÍê³Éfd£¬Òª¸ù¾İÕâ¸öÓ³Éä¹ØÏµÈ¥Ñ°ÕÒ¶ÔÓ¦µÄChannel
+	// è®°å½•fdåˆ°Channelçš„å¯¹åº”å…³ç³» 
+	// åº•å±‚çš„å¤šè·¯å¤ç”¨APIæ¯æ¬¡æ£€æŸ¥å®Œæˆfdï¼Œè¦æ ¹æ®è¿™ä¸ªæ˜ å°„å…³ç³»å»å¯»æ‰¾å¯¹åº”çš„Channel
 	typedef std::map<sockets::sz_fd, Channel*> ChannelMap;
-	// ±£´æepoll¼àÌıµÄfd,¼°Æä¶ÔÓ¦µÄChannelÖ¸Õë
+	// ä¿å­˜epollç›‘å¬çš„fd,åŠå…¶å¯¹åº”çš„ChannelæŒ‡é’ˆ
 	ChannelMap m_channels;
 
 private:
-	// Õâ¸öPoller¶ÔÏóËùÊôµÄEventLoop
+	// è¿™ä¸ªPollerå¯¹è±¡æ‰€å±çš„EventLoop
 	EventLoop* m_ownerLoop;
 };
 

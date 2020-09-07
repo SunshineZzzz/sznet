@@ -5,7 +5,7 @@
 #include "base/Compiler.h"
 #include "base/Types.h"
 
-#include <inttypes.h>  
+#include <inttypes.h>
 
 #if SZ_OS_WINDOWS
 #	define WIN32_LEAN_AND_MEAN
