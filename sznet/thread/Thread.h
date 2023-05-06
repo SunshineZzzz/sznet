@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_THREAD_THREAD_H_
+﻿// Comment: 线程和线程同步接口
+
+#ifndef _SZNET_THREAD_THREAD_H_
 #define _SZNET_THREAD_THREAD_H_
 
 #include "../NetCmn.h"

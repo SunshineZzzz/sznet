@@ -1,11 +1,19 @@
-﻿#ifndef _SZNET_IO_H_
+﻿// Comment: IO相关接口
+
+#ifndef _SZNET_IO_H_
 #define _SZNET_IO_H_
 
 #include "../NetCmn.h"
 #include "stdio.h"
+#include "fcntl.h"
 
 #if defined(SZ_OS_WINDOWS)
 #	include <io.h>
+#endif
+
+#if defined(SZ_OS_LINUX)
+#	include <sys/types.h>
+#	include <sys/stat.h>
 #endif
 
 // 是否是一个常规文件
@@ -36,9 +44,11 @@ int sz_open(const char* pathname, int flags);
 // 关闭文件描述符
 int sz_close(int fd);
 // 读取文件描述符
-int sz_read(int fd, void* buf, size_t nbyte);
+sz_ssize_t sz_read(int fd, void* buf, size_t nbyte);
 // 获取文件描述符状态
 int sz_fstat(int fd, struct stat* const stat);
+// 删除文件
+int sz_fdel(const char* name);
 
 } // end namespace sznet
 

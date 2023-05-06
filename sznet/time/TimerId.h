@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_TIME_TIMERID_H_
+﻿// Comment: 暴露给使用者的定时器对象，方便多次取消定时器
+
+#ifndef _SZNET_TIME_TIMERID_H_
 #define _SZNET_TIME_TIMERID_H_
 
 #include <inttypes.h>
@@ -29,7 +31,7 @@ public:
 	friend class TimerQueue;
 
 private:
-	// timer定时器
+	// timer定时器指针，有可能失效
 	Timer* m_timer;
 	// timer定时器的序列号
 	int64_t m_sequence;

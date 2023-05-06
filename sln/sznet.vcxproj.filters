@@ -150,6 +150,39 @@
     <ClInclude Include="..\sznet\net\EventLoopThread.h">
       <Filter>sznet\net</Filter>
     </ClInclude>
+    <ClInclude Include="..\sznet\string\StringOpt.h">
+      <Filter>sznet\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\Acceptor.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\Buffer.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\Connector.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\Endian.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\EventLoopThreadPool.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\InetAddress.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\Socket.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\TcpClient.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\TcpConnection.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\TcpServer.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\sznet\memory\MemoryPool.cpp">
@@ -225,6 +258,36 @@
       <Filter>sznet\net</Filter>
     </ClCompile>
     <ClCompile Include="..\sznet\net\EventLoopThread.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\string\StringOpt.cpp">
+      <Filter>sznet\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\Acceptor.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\Buffer.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\Connector.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\EventLoopThreadPool.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\InetAddress.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\Socket.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\TcpClient.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\TcpConnection.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\TcpServer.cpp">
       <Filter>sznet\net</Filter>
     </ClCompile>
   </ItemGroup>

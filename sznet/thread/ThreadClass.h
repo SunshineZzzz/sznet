@@ -1,10 +1,13 @@
-﻿#ifndef _SZNET_THREAD_THREADCLASS_H_
+﻿// Comment: 线程实现
+
+#ifndef _SZNET_THREAD_THREADCLASS_H_
 #define _SZNET_THREAD_THREADCLASS_H_
 
 #include "../base/NonCopyable.h"
 #include "Thread.h"
 #include "CountDownLatch.h"
 #include <atomic>
+#include <functional>
 
 namespace sznet
 {

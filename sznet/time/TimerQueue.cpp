@@ -83,6 +83,8 @@ void TimerQueue::cancelInLoop(TimerId timerId)
 	if (it != m_activeTimers.end())
 	{
 		assert(m_timerMinHeap.erase(timerId.m_timer) == 0);
+		// FIXME move to a free list
+		// FIXME: no delete please
 		delete timerId.m_timer;
 		timerId.m_timer = nullptr;
 		m_activeTimers.erase(it);
@@ -109,7 +111,6 @@ void TimerQueue::expiredProcess(Timestamp now)
 		m_timerMinHeap.pop();
 		size_t n = m_activeTimers.erase(activeTimer);
 		assert(n == 1); (void)n;
-		// 执行超时函数
 		timer->run();
 		if (timer->repeat())
 		{
@@ -138,7 +139,8 @@ int TimerQueue::earliestExpiredTime(Timestamp now, int defaultTimeMs)
 		return std::min(timeDifferenceMs(timer->expiration(), now), defaultTimeMs);
 	}
 
-	return defaultTimeMs;
+	// 走到这里说明已经有超时的timer了
+	return 0;
 }
 
 } // namespace sznet

@@ -14,16 +14,16 @@ namespace sznet
 
 // 'e' for O_CLOEXEC => close-on-exec => 句柄在fork子进程后执行exec时就关闭
 FileUtil::AppendFile::AppendFile(StringArg filename):
-#ifdef SZ_OS_LINUX
-	m_fp(sz_fopen(filename.c_str(), "ae")),
-#else
+#ifdef SZ_OS_WINDOWS
 	m_fp(sz_fopen(filename.c_str(), "a+")),
+#else
+	m_fp(sz_fopen(filename.c_str(), "ae")),
 #endif
 	m_writtenBytes(0)
 {
 	assert(m_fp);
 	// 设置文件指针m_fp的缓冲区设定64K，也就是文件的stream大小
-	// _IOFBF 全缓存
+	// 全缓存(_IOFBF)。在这种情况下，当填满标准I/O缓存后才进行实际I/O操作。
 	::setvbuf(m_fp, m_buffer, _IOFBF, sizeof(m_buffer));
 }
 
@@ -47,7 +47,7 @@ void FileUtil::AppendFile::append(const char* logline, const size_t len)
 			int err = ferror(m_fp);
 			if (err)
 			{
-				fprintf(stderr, "AppendFile::append() failed %s\n", strerror_tl(err));
+				fprintf(stderr, "AppendFile::append() failed %s\n", sz_strerror_tl(err));
 			}
 			break;
 		}
@@ -70,10 +70,10 @@ size_t FileUtil::AppendFile::write(const char* logline, size_t len)
 }
 
 FileUtil::ReadSmallFile::ReadSmallFile(StringArg filename) :
-#ifdef SZ_OS_LINUX
-	m_fd(sz_open(filename.c_str(), O_RDONLY | O_CLOEXEC)),
-#else
+#ifdef SZ_OS_WINDOWS
 	m_fd(sz_open(filename.c_str(), O_RDONLY)),
+#else
+	m_fd(sz_open(filename.c_str(), O_RDONLY | O_CLOEXEC)),
 #endif
 	m_err(0)
 {
@@ -88,6 +88,7 @@ FileUtil::ReadSmallFile::~ReadSmallFile()
 {
 	if (m_fd >= 0)
 	{
+		// FIXME: check EINTR 
 		sz_close(m_fd);
 	}
 }
@@ -110,6 +111,7 @@ int FileUtil::ReadSmallFile::readToString(int maxSize, String* content, int64_t*
 				if (S_ISREG(statbuf.st_mode))
 				{
 					*fileSize = statbuf.st_size;
+					// 预分配大小
 					content->reserve(static_cast<int>(std::min(implicit_cast<int64_t>(maxSize), *fileSize)));
 				}
 				else if (S_ISDIR(statbuf.st_mode))
@@ -136,7 +138,7 @@ int FileUtil::ReadSmallFile::readToString(int maxSize, String* content, int64_t*
 		{
 			// 这次允许读取的最多数量
 			size_t toRead = std::min(implicit_cast<size_t>(maxSize) - content->size(), sizeof(m_buf));
-			size_t n = sz_read(m_fd, m_buf, toRead);
+			sz_ssize_t n = sz_read(m_fd, m_buf, toRead);
 			if (n > 0)
 			{
 				content->append(m_buf, n);
@@ -160,11 +162,10 @@ int FileUtil::ReadSmallFile::readToBuffer(int* size)
 	int err = m_err;
 	if (m_fd >= 0)
 	{
-		// pread, pwrite - read from or write to a file descriptor at a given offset
-		// pread和read区别，pread读取完文件offset不会更改，而read会引发offset随读到的字节数移动
-		// 返回已读的字节数
+
+		// 后面再说
 		// ssize_t n = ::pread(fd_, buf_, sizeof(buf_) - 1, 0);
-		size_t n = sz_read(m_fd, m_buf, sizeof(m_buf) - 1);
+		sz_ssize_t n = sz_read(m_fd, m_buf, sizeof(m_buf) - 1);
 		if (n >= 0)
 		{
 			if (size)

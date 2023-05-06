@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_TIME_TIMESTAMP_H_
+﻿// Comment: 时间戳实现
+
+#ifndef _SZNET_TIME_TIMESTAMP_H_
 #define _SZNET_TIME_TIMESTAMP_H_
 
 #include <string>
@@ -10,6 +12,7 @@
 namespace sznet
 {
 
+// 时间戳
 class Timestamp : public Copyable
 {
 public:
@@ -65,7 +68,7 @@ inline double timeDifference(Timestamp high, Timestamp low)
 // 实现两个时间的差MS
 inline int timeDifferenceMs(Timestamp high, Timestamp low)
 {
-	int64_t diff = static_cast<int64_t>(high.microSecondsSinceEpoch() - low.microSecondsSinceEpoch());
+	int64_t diff = high.microSecondsSinceEpoch() - low.microSecondsSinceEpoch();
 	return static_cast<int>(diff / Timestamp::kMicroSecondsPerMillisecond);
 }
 

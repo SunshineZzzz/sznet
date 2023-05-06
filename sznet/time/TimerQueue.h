@@ -1,5 +1,7 @@
-﻿#ifndef _SZNET_NET_TIMERQUEUE_H_
-#define _SZNET_NET_TIMERQUEUE_H_
+﻿// Comment: 定时器队列的实现
+
+#ifndef _SZNET_TIME_TIMERQUEUE_H_
+#define _SZNET_TIME_TIMERQUEUE_H_
 
 #include <set>
 #include <vector>
@@ -22,7 +24,7 @@ class EventLoop;
 
 // 定时器
 class Timer;
-// 唯一标识一个Timer定时器
+// 唯一标识Timer定时器
 class TimerId;
 
 // 定时器队列，管理所有定时器
@@ -58,11 +60,12 @@ private:
 	// 使用最小堆，保存所有的定时任务，到期时间最早的在前面
 	MinHeap<Timer> m_timerMinHeap;
 	// 当前活跃定时器
-	// m_timerMinHeap 与 m_activeTimers 都保存了相同的Timer 地址
+	// m_timerMinHeap 与 m_activeTimers 都保存了相同的 Timer 地址
 	// m_timerMinHeap 是按超时时间排序，m_activeTimers 是按定时器地址排序
+	// 保证 TimerId 不被多次删除，造成coredump
 	ActiveTimerSet m_activeTimers;
 };
 
 } // end namespace sznet
 
-#endif // _SZNET_NET_TIMERQUEUE_H_
+#endif // _SZNET_TIME_TIMERQUEUE_H_

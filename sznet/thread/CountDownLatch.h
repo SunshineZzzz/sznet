@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_THREAD_COUNTDOWNLATCH_H_
+﻿// Comment: 倒计时计数器实现
+
+#ifndef _SZNET_THREAD_COUNTDOWNLATCH_H_
 #define _SZNET_THREAD_COUNTDOWNLATCH_H_
 
 #include "../base/NonCopyable.h"
@@ -22,7 +24,7 @@ public:
 	int getCount() const;
 
 private:
-	// 互斥量，const成员函数中加锁，所以加上mutable
+	// 互斥量
 	mutable MutexLock m_mutex;
 	// 条件变量
 	Condition m_condition;

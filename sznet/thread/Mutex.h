@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_THREAD_MUTEX_H_
+﻿// Comment: 互斥量实现
+
+#ifndef _SZNET_THREAD_MUTEX_H_
 #define _SZNET_THREAD_MUTEX_H_
 
 #include "Thread.h"
@@ -20,7 +22,7 @@ public:
 	}
 	~MutexLock()
 	{
-		assert(m_holder == 0);
+		assert(m_holder == sz_invalid_pid);
 		sz_mutex_fini(&m_mutex);
 	}
 
@@ -80,7 +82,7 @@ private:
 
 	private:
 		// 引用
-		MutexLock & m_owner;
+		MutexLock& m_owner;
 	};
 	// 解除锁的持有者
 	void unassignHolder()
@@ -99,6 +101,7 @@ private:
 	sz_pid_t m_holder;
 };
 
+// RAII
 class MutexLockGuard : NonCopyable
 {
 public:

@@ -1,5 +1,7 @@
-﻿#ifndef _SZNET_NET_CALLBACKS_H_
-#define _SZNET_NET_CALLBACKS_H_
+﻿// Comment: 一些回调类型声明
+
+#ifndef _SZNET_BASE_CALLBACKS_H_
+#define _SZNET_BASE_CALLBACKS_H_
 
 #include "../base/Types.h"
 #include "../time/Timestamp.h"
@@ -44,32 +46,32 @@ inline ::std::shared_ptr<To> down_pointer_cast(const ::std::shared_ptr<From>& f)
 namespace net
 {
 
-// 
-// class Buffer;
-// 
-// class TcpConnection;
-// 
-// typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
+// 网络消息缓冲区前置声明
+class Buffer;
+// TCP连接前置声明
+class TcpConnection;
+// TCP连接的智能指针类型
+typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 // Timer到期回调函数类型
 typedef std::function<void()> TimerCallback;
-// 
-// typedef std::function<void(const TcpConnectionPtr&)> ConnectionCallback;
-// 
-// typedef std::function<void(const TcpConnectionPtr&)> CloseCallback;
-// 
-// typedef std::function<void(const TcpConnectionPtr&)> WriteCompleteCallback;
-// 
-// typedef std::function<void(const TcpConnectionPtr&, size_t)> HighWaterMarkCallback;
-// 
-// typedef std::function<void(const TcpConnectionPtr&, Buffer*, Timestamp)> MessageCallback;
-
-// 
-// void defaultConnectionCallback(const TcpConnectionPtr& conn);
-// 
-// void defaultMessageCallback(const TcpConnectionPtr& conn, Buffer* buffer, Timestamp receiveTime);
+// TcpConnection相关回调函数类型
+// 外部连接建立/断开回调函数
+typedef std::function<void(const TcpConnectionPtr&)> ConnectionCallback;
+// 内部连接断开回调函数
+typedef std::function<void(const TcpConnectionPtr&)> CloseCallback;
+// 数据发送完成的回调函数，直接发送成功/发送缓冲区发送完毕
+typedef std::function<void(const TcpConnectionPtr&)> WriteCompleteCallback;
+// 发送高水位线回调函数，上升沿触发一次
+typedef std::function<void(const TcpConnectionPtr&, size_t)> HighWaterMarkCallback;
+// 外部处理收到消息的回调调函数
+typedef std::function<void(const TcpConnectionPtr&, Buffer*, Timestamp)> MessageCallback;
+// 默认外部连接建立/断开回调函数
+void defaultConnectionCallback(const TcpConnectionPtr& conn);
+// 默认外部处理收到消息的回调调函数
+void defaultMessageCallback(const TcpConnectionPtr& conn, Buffer* buffer, Timestamp receiveTime);
 
 } // end namespace net
 
 } // end namespace sznet
 
-#endif // _SZNET_NET_CALLBACKS_H_
+#endif // _SZNET_BASE_CALLBACKS_H_

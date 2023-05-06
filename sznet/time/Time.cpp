@@ -14,9 +14,9 @@ void sz_localtime(struct tm& t, time_t n)
 	{
 		lt = n;
 	}
-#if SZ_OS_LINUX || SZ_OS_CYGWIN
+#if SZ_OS_LINUX
 	localtime_r(&lt, &t);
-#elif SZ_OS_WINDOWS
+#else
 	t = *(localtime(&lt));
 #endif
 }
@@ -28,7 +28,7 @@ void sz_sleep(int millisec)
 	ts.tv_sec = millisec / 1000;
 	ts.tv_nsec = (millisec % 1000) * 1000000;
 	nanosleep(&ts, nullptr);
-#elif SZ_OS_WINDOWS
+#else
 	Sleep(millisec);
 #endif
 }
@@ -60,11 +60,11 @@ int sz_gettimeofday(struct timeval* tv)
 	return 0;
 }
 
-#elif defined(SZ_OS_LINUX)
+#else
 
 int sz_gettimeofday(struct timeval *tv)
 {
-	return gettimeofday(tv, nullptr);
+	return ::gettimeofday(tv, nullptr);
 }
 
 #endif

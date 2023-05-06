@@ -13,42 +13,12 @@
 namespace sznet
 {
 
-// 根据errno转换的错误字符串
-thread_local char t_errnobuf[512];
 // 日志时间格式：%4d%02d%02d %02d:%02d:%02d
 // 20180426 14:50:34 
 thread_local char t_time[64];
 // 上一次记录日志的时间戳
 // 同1s内打印的日志，只有微秒部分是需要被格式化的。避免反复格式化
 thread_local time_t t_lastSecond;
-
-// 线程安全根据errno获取错误字符串(C runtime library)
-const char* strerror_tl(int savedErrno)
-{
-#if defined(SZ_OS_WINDOWS)
-	// strerror_s(t_errnobuf, sizeof(t_errnobuf), savedErrno);
-	auto chars = FormatMessage(
-		FORMAT_MESSAGE_FROM_SYSTEM |
-		FORMAT_MESSAGE_IGNORE_INSERTS,
-		nullptr,
-		savedErrno,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR)t_errnobuf,
-		sizeof(t_errnobuf) - 1,
-		nullptr);
-	if (chars != 0)
-	{
-		if (chars >= 2 && t_errnobuf[chars - 2] == '\r' && t_errnobuf[chars - 1] == '\n')
-		{
-			chars -= 2;
-			t_errnobuf[chars] = 0;
-		}
-	}
-#elif defined(SZ_OS_LINUX)
-	strerror_r(savedErrno, t_errnobuf, sizeof(t_errnobuf));
-#endif
-	return t_errnobuf;
-}
 
 // 根据环境变量获取日志等级
 Logger::LogLevel initLogLevel()
@@ -114,6 +84,7 @@ inline LogStream& operator<<(LogStream& s, const Logger::SourceFile& v)
 void defaultOutput(const char* msg, int len)
 {
 	size_t n = fwrite(msg, 1, len, stdout);
+	// FIXME check n
 	(void)n;
 }
 
@@ -146,7 +117,7 @@ Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file, int l
 	// 有errno，写入错误原因
 	if (savedErrno != 0)
 	{
-		m_stream << strerror_tl(savedErrno) << " (errno=" << savedErrno << ") ";
+		m_stream << sz_strerror_tl(savedErrno) << " (errno=" << savedErrno << ") ";
 	}
 }
 

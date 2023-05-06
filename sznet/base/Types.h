@@ -1,9 +1,14 @@
-ï»¿#ifndef _SZNET_BASE_TYPES_H_
+// Comment: implicit_cast<ToType>(expr)£¬ °²È«µÄup_cast£¬ÆäËûÓÃ·¨
+//		  : 1.µ±Ò»¸ö±í´ïÊ½µÄÀàĞÍ±ØĞë±»¾«È·¿ØÖÆÊ±£¬±ÈÈçËµ£¬ÎªÁË±ÜÃâÖØÔØ£¨overload£©
+//		  : 2.static_cast²»½øĞĞÕæÕıµÄÀàĞÍ¼ì²é(ÔÚdown_castºÍup_castµÄÊ±ºò)¡£implicit_castÖ»ÄÜÓÃÔÚup_cast£¬¼ì²éÀàĞÍÏòÉÏ×ª»»ÊÇ·ñÕıÈ·
+//		  : 3.¶Á´úÂëµÄÈË¿ÉÒÔÁ¢¼´¾ÍÃ÷°×£¬ÕâÖ»ÊÇÒ»¸ö¼òµ¥µÄÒşÊ½×ª»»£¬²»ÊÇÒ»¸öÇ±ÔÚµÄÎ£ÏÕµÄ×ªĞÍ
+//		  : 4.Ä³Ğ©ÀàĞÍµÄ×ª»»£¬±ÈÈç£¬Ã¶¾Ù¼äµÄ×ªĞÍ£¬ÓĞĞ©±àÒëÆ÷²»Ï²»¶Ã¶¾Ùµ½Ã¶¾ÙµÄ×ªĞÍ£¬Òò´ËÎÒÃÇÏÈimplicit_castµ½int
+//		  : down_cast<T*>(foo)£¬°²È«µÄdown_cast
+
+#ifndef _SZNET_BASE_TYPES_H_
 #define _SZNET_BASE_TYPES_H_
 
 #include <stdint.h>
-// memset
-#include <string.h>
 #include <string>
 
 #ifndef NDEBUG

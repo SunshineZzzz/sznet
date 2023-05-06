@@ -1,11 +1,12 @@
-﻿#ifndef _SZNET_TIME_TIME_H_
+﻿// Comment: 时间相关接口
+
+#ifndef _SZNET_TIME_TIME_H_
 #define _SZNET_TIME_TIME_H_
 
 #include "../NetCmn.h"
 #include <time.h>
 
 #if defined(SZ_OS_WINDOWS)
-#	include <WinSock2.h>
 #endif
 
 #if defined(SZ_OS_LINUX)

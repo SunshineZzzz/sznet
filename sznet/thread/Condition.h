@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_THREAD_CONDITION_H_
+﻿// Comment: 条件变量实现
+
+#ifndef _SZNET_THREAD_CONDITION_H_
 #define _SZNET_THREAD_CONDITION_H_
 
 #include "../log/Logging.h"

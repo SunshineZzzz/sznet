@@ -7,7 +7,6 @@
 #endif
 
 #if SZ_OS_WINDOWS
-
 #endif
 
 #include <stdlib.h>
@@ -24,32 +23,28 @@ thread_local int t_tidStringLength = 6;
 thread_local const char* t_threadName = "unknown";
 
 // 缓存线程tid，写写t_cachedTid & t_tidString & t_tidStringLength
-void CurrentThread::cacheTid()
+void cacheTid()
 {
 	if (t_cachedTid == 0)
 	{
 #if defined(SZ_OS_WINDOWS)
 		t_cachedTid = GetCurrentThreadId();
-#elif defined(SZ_OS_LINUX)
-		t_cachedTid = syscall(SYS_gettid)
+#else
+		t_cachedTid = syscall(SYS_gettid);
 #endif
 		t_tidStringLength = snprintf(t_tidString, sizeof(t_tidString), "%5d ", t_cachedTid);
 	}
-}
-
-bool CurrentThread::isMainThread()
-{
-	return tid() == sz_process_getpid();
 }
 
 #if defined(SZ_OS_WINDOWS)
 
 string stackTrace(bool demangle)
 {
+	(void)demangle;
 	return "";
 }
 
-#elif defined(SZ_OS_LINUX)
+#else
 
 string stackTrace(bool demangle)
 {

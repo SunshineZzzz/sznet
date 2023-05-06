@@ -1,8 +1,9 @@
-﻿#ifndef _SZNET_LOG_ASYNCLOGGING_H_
+﻿// Comment: 配合LogFile实现异步日志文件
+
+#ifndef _SZNET_LOG_ASYNCLOGGING_H_
 #define _SZNET_LOG_ASYNCLOGGING_H_
 
 #include "../base/NonCopyable.h"
-#include "../ds/BlockingQueue.h"
 #include "../thread/Mutex.h"
 #include "../thread/ThreadClass.h"
 #include "../log/LogStream.h"
@@ -53,11 +54,12 @@ private:
 	typedef detail::FixedBuffer<detail::kLargeBuffer> Buffer;
 	// buffer容器，自动管理动态内存的生命期
 	typedef std::vector<std::unique_ptr<Buffer>> BufferVector;
-	// buffer容器元素类型，自动管理自身的生命期 std::unique_ptr<Buffer>
+	// buffer容器元素类型，自动管理自身的生命期 
+	// std::unique_ptr<Buffer>
 	typedef BufferVector::value_type BufferPtr;
 
-	// 超时时间，在超时时间内前端没有写满，
-	// 也要将这块缓冲区的数据添加到文件当中
+	// 后端线程等待前端线程日志buffer填满时间
+	// 时间到后，无论前端线程是否有日志都进行日志相关操作，以便于刷新文件，更换文件
 	const int m_flushInterval;
 	// 线程是否处于工作状态
 	std::atomic<bool> m_running;

@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_LOG_LOGSTREAM_H_
+﻿// Comment: 日志流缓冲区实现
+
+#ifndef _SZNET_LOG_LOGSTREAM_H_
 #define _SZNET_LOG_LOGSTREAM_H_
 
 #include "../string/StringPiece.h"
@@ -24,7 +26,7 @@ template<int SIZE>
 class FixedBuffer : sznet::NonCopyable
 {
 public:
-	FixedBuffer():
+	FixedBuffer() :
 		m_cur(m_data)
 	{
 	}
@@ -43,39 +45,45 @@ public:
 		}
 	}
 	// 返回缓冲区首地址
-	const char* data() const 
-	{ 
+	const char* data() const
+	{
 		return m_data;
 	}
 	// 返回缓冲区已有数据长度
-	int length() const 
-	{ 
+	int length() const
+	{
 		return static_cast<int>(m_cur - m_data);
 	}
 	// 返回当前可写位置
-	char* current() const 
-	{ 
+	char* current() const
+	{
 		return m_cur;
 	}
 	// 返回剩余可用BUFF长度
-	int avail() const 
-	{ 
+	int avail() const
+	{
 		return static_cast<int>(_end() - m_cur);
 	}
 	// cur前移，写了多少增加多少
-	void add(size_t len) 
-	{ 
+	void add(size_t len)
+	{
 		m_cur += len;
 	}
 	// 重置，不清数据，只需要让cur指回首地址即可
-	void reset() 
-	{ 
+	void reset()
+	{
 		m_cur = m_data;
 	}
 	// 清零
 	void bzero()
 	{
 		memset(m_data, 0, sizeof(m_data));
+	}
+	// 调试
+	const char* debugString()
+	{
+		*m_cur = '\0';
+		return m_data;
 	}
 	// 返回string
 	string toString() const
@@ -97,12 +105,13 @@ private:
 
 	// 缓冲区数据，大小为size
 	char m_data[SIZE];
-	// 当前可写位置的指针，永远指向已有数据的最右端
+	// 当前可写位置的指针
 	char* m_cur;
 }; // end class FixedBuffer
 
 } // end namespace detail
 
+// 日志流缓冲区
 // 重载了各种<<，负责把各个类型的数据转换成字符串，
 // 再添加到FixedBuffer中
 // 该类主要负责将要记录的日志内容放到这个Buffer里面
@@ -175,18 +184,20 @@ public:
 	{
 		m_buffer.append(data, len);
 	}
-	// 返回buffer_对象
-	const Buffer& buffer() const 
-	{ 
-		return m_buffer; 
-	}
-	// 重置buffer_ 
-	void resetBuffer() 
+	// 返回m_buffer对象
+	const Buffer& buffer() const
 	{
-		m_buffer.reset(); 
+		return m_buffer;
+	}
+	// 重置m_buffer
+	void resetBuffer()
+	{
+		m_buffer.reset();
 	}
 
 private:
+	// 静态检测
+	void staticCheck();
 	// 将整数转化为字符串放入缓冲区
 	template<typename T>
 	void _formatInteger(T);
@@ -196,19 +207,19 @@ private:
 	static const int kMaxNumericSize = 32;
 }; // end class LogStream
 
-// 使用snprintf来格式化（format）成字符串
-// 格式化字符串，从而方便缓存LogStream
+// 数字类型的格式化，配合snprintf使用
+// 方便写入LogStream中
 class Fmt
 {
 public:
 	template<typename T>
 	Fmt(const char* fmt, T val);
-	const char* data()const 
-	{ 
+	const char* data()const
+	{
 		return m_buf;
 	}
-	int length() const 
-	{ 
+	int length() const
+	{
 		return m_length;
 	}
 

@@ -1,4 +1,4 @@
-﻿#include "NetCmn.h"
+#include "NetCmn.h"
 
 namespace sznet
 {

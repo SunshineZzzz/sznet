@@ -1,4 +1,6 @@
-Ôªø#ifndef _SZNET_BASE_NONCOPYABLE_H_
+// Comment: ≤ªø…øΩ±¥ª˘¿‡ µœ÷
+
+#ifndef _SZNET_BASE_NONCOPYABLE_H_
 #define _SZNET_BASE_NONCOPYABLE_H_
 
 namespace sznet

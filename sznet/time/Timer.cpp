@@ -3,7 +3,7 @@
 namespace sznet
 {
 
-std::atomic_int64_t Timer::m_s_numCreated = 0;
+std::atomic<std::uint64_t> Timer::m_s_numCreated(0);
 
 void Timer::restart(Timestamp now)
 {

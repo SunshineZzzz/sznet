@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_THREAD_CURRENTTHREAD_H_
+﻿// Comment: 当前线程信息
+
+#ifndef _SZNET_THREAD_CURRENTTHREAD_H_
 #define _SZNET_THREAD_CURRENTTHREAD_H_
 
 #include "../NetCmn.h"

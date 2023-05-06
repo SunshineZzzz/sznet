@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_IO_FILEUTIL_H_
+﻿// Comment: 文件操作
+
+#ifndef _SZNET_IO_FILEUTIL_H_
 #define _SZNET_IO_FILEUTIL_H_
 
 #include "../base/NonCopyable.h"
@@ -45,7 +47,7 @@ private:
 	char m_buf[kBufferSize];
 };
 
-// 一个全局函数，readFile函数，调用ReadSmallFile类中的readToString方法，供外部将文件中的内容转化为字符串。
+// 一个全局函数，调用ReadSmallFile类中的readToString方法，供外部将文件中的内容转化为字符串。
 template<typename String>
 int readFile(StringArg filename, int maxSize, String* content, int64_t* fileSize = nullptr, int64_t* modifyTime = nullptr, int64_t* createTime = nullptr)
 {

@@ -1,4 +1,5 @@
 ﻿#include "ThreadClass.h"
+#include "CurrentThread.h"
 #include "../log/Logging.h"
 #include "../base/Exception.h"
 // move
@@ -19,8 +20,9 @@ public:
 		// 设置主线程名称
 		sznet::CurrentThread::t_threadName = "main";
 		// 缓存线程id
-		CurrentThread::tid();
+		m_mainPid = CurrentThread::tid();
 	}
+	sz_pid_t m_mainPid = sz_invalid_pid;
 };
 ThreadNameInitializer init;
 
@@ -81,7 +83,7 @@ struct ThreadData
 		{
 			sznet::CurrentThread::t_threadName = "crashed";
 			fprintf(stderr, "unknown exception caught in Thread %s\n", m_name.c_str());
-			// rethrow
+			// re throw
 			throw;
 		}
 	}
@@ -99,10 +101,18 @@ sz_thread_func_return startThread(void* obj)
 	return 0;
 }
 
-
 } // namespace detail
 
-std::atomic<int> Thread::m_numCreated = 0;
+bool CurrentThread::isMainThread()
+{
+#if defined(SZ_OS_WINDOWS)
+	return detail::init.m_mainPid == GetCurrentThreadId();
+#else
+	return tid() == sz_getpid();
+#endif
+}
+
+std::atomic<int> Thread::m_numCreated(0);
 
 // 一般传递普通函数指针或者std::function都会拷贝生成
 // func，所以使用std::move节省资源
@@ -141,7 +151,7 @@ void Thread::start()
 {
 	assert(!m_started);
 	m_started = true;
-
+	// FIXME: move(m_func)
 	detail::ThreadData* data = new detail::ThreadData(m_func, m_name, &m_tid, &m_latch);
 	m_pthreadId = sz_thread_create(&detail::startThread, data);
 	if (m_pthreadId < 0)

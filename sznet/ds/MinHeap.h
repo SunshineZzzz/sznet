@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_DS_MINHEAP_H_
+﻿// Comemnt: 最小堆实现
+
+#ifndef _SZNET_DS_MINHEAP_H_
 #define _SZNET_DS_MINHEAP_H_
 
 #include "../NetCmn.h"
@@ -11,12 +13,12 @@ namespace sznet
 {
 
 // 最小堆元素必须要继承
-struct MinHeapbaseElem
+struct MinHeaBaseElem
 {
-	uint32_t min_heap_idx = -1;
+	int32_t min_heap_idx = -1;
 };
 
-//  最小对实现
+//  最小堆实现
 template<typename T>
 class MinHeap
 {
@@ -26,7 +28,7 @@ public:
 	// 打印函数
 	using GetStrFunc = void(*)(T*, char* buffer, size_t size);
 
-public:
+private:
 	// 最小堆元素数组 
 	T** m_ptrArr;
 	// 当前堆大小
@@ -59,6 +61,9 @@ public:
 	{
 		// 用于记录值较小的子结点的下标
 		uint32_t min_child_index = rightChild(hole_index);
+		// min_child_index小于m_size的情况说明有左孩子也有右孩子
+		// min_child_index等于m_size的情况说明只有左孩子没有右孩子
+		// min_child_index大于m_size的情况说明没有左孩子也没有右孩子
 		while (min_child_index <= m_size)
 		{
 			// 没有右孩子 或者 左孩子小于右孩子
@@ -94,6 +99,14 @@ public:
 			assert(0);
 		}
 	}
+	~MinHeap()
+	{
+		if (m_ptrArr)
+		{
+			free(m_ptrArr);
+			m_ptrArr = nullptr;
+		}
+	}
 
 	// 返回指定下标的父亲下标
 	uint32_t parent(uint32_t n)
@@ -126,7 +139,8 @@ public:
 			{
 				capacity = n;
 			}
-			if (!(p = (T**)realloc(m_ptrArr, capacity * (sizeof(T)))))
+			p = (T**)realloc(m_ptrArr, capacity * (sizeof(T)));
+			if (!p)
 			{
 				assert(0);
 			}
@@ -160,7 +174,7 @@ public:
 			T* last = m_ptrArr[--m_size];
 			// 要删除元素的父亲元素下标
 			uint32_t parent_index = parent(e->min_heap_idx);
-			// 最后元素小于父结点，需要向上调整
+			// 不是根节点 并且 要删除元素小于父结点，需要向上调整
 			if (e->min_heap_idx > 0 && m_pCmpFunc(m_ptrArr[parent_index], last) == 1)
 			{
 				// 从删除元素的下标处向上给last找个合适的位置

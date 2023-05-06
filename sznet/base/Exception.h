@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_BASE_EXCEPTION_H_
+﻿// 异常基类实现
+
+#ifndef _SZNET_BASE_EXCEPTION_H_
 #define _SZNET_BASE_EXCEPTION_H_
 
 #include "../NetCmn.h"

@@ -1,8 +1,10 @@
-﻿#ifndef _SZNET_LOG_LOGFILE_H_
+﻿// Comment: 日志文件实现
+
+#ifndef _SZNET_LOG_LOGFILE_H_
 #define _SZNET_LOG_LOGFILE_H_
 
 #include "../base/NonCopyable.h"
-#include "../THREAD/Mutex.h"
+#include "../thread/Mutex.h"
 
 #include <memory>
 
@@ -45,7 +47,7 @@ private:
 	const string m_basename;
 	// 日志文件达到m_rollSize换一个新文件
 	const size_t m_rollSize;
-	// 日志写入文件超时间隔时间
+	// 日志文件刷新间隔
 	const int m_flushInterval;
 	// 文件append次数上限，这个暂时就不用了
 	// const int m_checkEveryN;
@@ -54,7 +56,7 @@ private:
 	// 多线程写入，保护m_file
 	std::unique_ptr<MutexLock> m_mutex;
 	// 开始记录日志时间
-	// (调整到这一天的零时时间, 时间戳/kRollPerSeconds_ * kRollPerSeconds_)
+	// (调整到这一天的零时时间, 时间戳/m_kRollPerSeconds * m_kRollPerSeconds)
 	time_t m_startOfPeriod;
 	// 上一次更换日志文件时间，这个没有调整到这一天的零时
 	time_t m_lastRoll;

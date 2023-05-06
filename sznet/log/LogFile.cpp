@@ -21,7 +21,11 @@ LogFile::LogFile(const string& basename, size_t rollSize, bool threadSafe, int f
 	m_lastRoll(0),
 	m_lastFlush(0)
 {
+#if defined(SZ_OS_WINDOWS)
+	assert(basename.find('\\') == string::npos);
+#else
 	assert(basename.find('/') == string::npos);
+#endif
 	rollFile();
 }
 
@@ -70,8 +74,11 @@ void LogFile::append_unlocked(const char* logline, int len)
 		rollFile();
 	}
 	++m_count;
-	// FileUtil.h中的AppendFile的不加锁apeend方法
-	m_file->append(logline, len);
+	if (len > 0)
+	{
+		// FileUtil.h中的AppendFile的不加锁apeend方法
+		m_file->append(logline, len);
+	}
 	// 是时候刷新了
 	if (now - m_lastFlush > m_flushInterval)
 	{
@@ -102,7 +109,7 @@ string LogFile::getLogFileName(const string& basename, time_t* now)
 	char timebuf[32];
 	struct tm tm;
 	*now = time(nullptr);
-	// 获取UTC时间，_r是线程安全
+	// 获取UTC时间
 	sz_localtime(tm, *now);
 	// 格式化时间，strftime函数
 	strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm);
@@ -112,7 +119,7 @@ string LogFile::getLogFileName(const string& basename, time_t* now)
 	filename += sz_gethostname();
 
 	char pidbuf[32];
-	snprintf(pidbuf, sizeof pidbuf, ".%d", sz_process_getpid());
+	snprintf(pidbuf, sizeof(pidbuf), ".%d", sz_getpid());
 	// 拼接上进程ID
 	filename += pidbuf;
 	// 拼接上日志标记.log

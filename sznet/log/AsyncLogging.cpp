@@ -118,6 +118,7 @@ void AsyncLogging::threadFunc()
 		// 写入文件
 		for (const auto& buffer : buffersToWrite)
 		{
+			// FIXME: use unbuffered stdio FILE ? or use ::writev ?
 			output.append(buffer->data(), buffer->length());
 		}
 		// 仅保留两个buffer，用于newBuffer1 newBuffer2

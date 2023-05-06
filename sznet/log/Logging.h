@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_LOG_LOGGING_H_
+﻿// Comment: 日志实现
+
+#ifndef _SZNET_LOG_LOGGING_H_
 #define _SZNET_LOG_LOGGING_H_
 
 #include "../NetCmn.h"
@@ -62,7 +64,11 @@ public:
 		explicit SourceFile(const char* filename): 
 			m_data(filename)
 		{
+#if defined(SZ_OS_WINDOWS)
+			const char* slash = strrchr(filename, '\\');
+#else
 			const char* slash = strrchr(filename, '/');
+#endif
 			if (slash)
 			{
 				m_data = slash + 1;
@@ -132,19 +138,29 @@ inline Logger::LogLevel Logger::logLevel()
 }
 
 // 各种日志宏
-#define LOG_TRACE if (sznet::Logger::logLevel() <= sznet::Logger::TRACE) sznet::Logger(__FILE__, __LINE__, sznet::Logger::TRACE, __func__).stream()
-#define LOG_DEBUG if (sznet::Logger::logLevel() <= sznet::Logger::DEBUG) sznet::Logger(__FILE__, __LINE__, sznet::Logger::DEBUG, __func__).stream()
-#define LOG_INFO if (sznet::Logger::logLevel() <= sznet::Logger::INFO) sznet::Logger(__FILE__, __LINE__).stream()
-#define LOG_WARN sznet::Logger(__FILE__, __LINE__, sznet::Logger::WARN).stream()
-#define LOG_ERROR sznet::Logger(__FILE__, __LINE__, sznet::Logger::ERROR).stream()
-#define LOG_FATAL sznet::Logger(__FILE__, __LINE__, sznet::Logger::FATAL).stream()
-#define LOG_SYSERR sznet::Logger(__FILE__, __LINE__, false).stream()
-#define LOG_SYSFATAL sznet::Logger(__FILE__, __LINE__, true).stream()
-// 线程安全根据errno获取错误字符串
-const char* strerror_tl(int savedErrno);
-
+#define LOG_TRACE \
+	if (sznet::Logger::logLevel() <= sznet::Logger::TRACE) \
+		sznet::Logger(__FILE__, __LINE__, sznet::Logger::TRACE, __func__).stream()
+#define LOG_DEBUG \
+	if (sznet::Logger::logLevel() <= sznet::Logger::DEBUG) \
+		sznet::Logger(__FILE__, __LINE__, sznet::Logger::DEBUG, __func__).stream()
+#define LOG_INFO \
+	if (sznet::Logger::logLevel() <= sznet::Logger::INFO) \
+		sznet::Logger(__FILE__, __LINE__).stream()
+#define LOG_WARN \
+	sznet::Logger(__FILE__, __LINE__, sznet::Logger::WARN).stream()
+#define LOG_ERROR \
+	sznet::Logger(__FILE__, __LINE__, sznet::Logger::ERROR).stream()
+#define LOG_FATAL \
+	sznet::Logger(__FILE__, __LINE__, sznet::Logger::FATAL).stream()
+#define LOG_SYSERR \
+	sznet::Logger(__FILE__, __LINE__, false).stream()
+#define LOG_SYSFATAL \
+	sznet::Logger(__FILE__, __LINE__, true).stream()
 // 用来检查某个对象是否为nullptr，为nullptr，打印日志，并且abort
-#define CHECK_NOTNULL(val) ::sznet::CheckNotNull(__FILE__, __LINE__, "'" #val "' Must be non NULL", (val))
+#define CHECK_NOTNULL(val) \
+	sznet::CheckNotNull(__FILE__, __LINE__, "'" #val "' Must be non NULL", (val))
+
 template <typename T>
 T* CheckNotNull(Logger::SourceFile file, int line, const char* names, T* ptr)
 {

@@ -1,4 +1,5 @@
-Ôªø// From https://sourceforge.net/p/predef/wiki/Compilers/
+// From: https://sourceforge.net/p/predef/wiki/Compilers/
+// Comment: ±‡“Îª∑æ≥∫Í∂®“Â
 
 #ifndef _SZNET_BASE_COMPILER_H_
 #define _SZNET_BASE_COMPILER_H_

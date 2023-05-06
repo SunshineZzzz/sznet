@@ -77,7 +77,7 @@ int sz_cond_timewait(sz_cond_t* cond, sz_mutex_t* mutex, uint32_t millisec)
 	return SleepConditionVariableCS(cond, mutex, static_cast<DWORD>(millisec)) ? 0 : -1;
 }
 
-#elif defined(SZ_OS_LINUX)
+#else
 
 void sz_mutex_init(sz_mutex_t* mutex)
 {
@@ -93,6 +93,7 @@ void sz_mutex_lock(sz_mutex_t* mutex)
 {
 	pthread_mutex_lock(mutex);
 }
+
 void sz_mutex_unlock(sz_mutex_t* mutex)
 {
 	pthread_mutex_unlock(mutex);
@@ -141,7 +142,7 @@ void sz_cond_notifyall(sz_cond_t* cond)
 
 int sz_cond_wait(sz_cond_t* cond, sz_mutex_t* mutex)
 {
-	return pthread_cond_wait(cond, mutex)
+	return pthread_cond_wait(cond, mutex);
 }
 
 int sz_cond_timewait(sz_cond_t* cond, sz_mutex_t* mutex, uint32_t millisec)
@@ -150,10 +151,11 @@ int sz_cond_timewait(sz_cond_t* cond, sz_mutex_t* mutex, uint32_t millisec)
 	clock_gettime(CLOCK_REALTIME, &abstime);
 
 	const int64_t kNanoSecondsPerMilliSecond = 1000000;
+	const int64_t kNanoSecondsPerSecond = 1000000000;
 	int64_t nanoseconds = static_cast<int64_t>(millisec * kNanoSecondsPerMilliSecond);
 	abstime.tv_sec += static_cast<time_t>((abstime.tv_nsec + nanoseconds) / kNanoSecondsPerSecond);
 	abstime.tv_nsec = static_cast<long>((abstime.tv_nsec + nanoseconds) % kNanoSecondsPerSecond);
-	return pthread_cond_timedwait(event, mutex, &abstime);
+	return pthread_cond_timedwait(cond, mutex, &abstime);
 }
 
 #endif

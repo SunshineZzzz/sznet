@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_TIME_TIMER_H_
+﻿// Comment: 定时器实现
+
+#ifndef _SZNET_TIME_TIMER_H_
 #define _SZNET_TIME_TIMER_H_
 
 #include <atomic>
@@ -12,7 +14,7 @@ namespace sznet
 {
 
 // 定时器
-class Timer : public MinHeapbaseElem, NonCopyable
+class Timer : public MinHeaBaseElem, NonCopyable
 {
 public:
 	Timer(net::TimerCallback cb, Timestamp when, double interval): 
@@ -64,7 +66,7 @@ private:
 	// 本定时任务的序号
 	const int64_t m_sequence;
 	// 定时器序列号生成器，同样用来记录已经创建的定时器数量
-	static std::atomic_int64_t m_s_numCreated;
+	static std::atomic<std::uint64_t> m_s_numCreated;
 };
 
 } // end namespace sznet

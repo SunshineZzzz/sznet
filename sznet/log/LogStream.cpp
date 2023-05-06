@@ -129,6 +129,7 @@ LogStream& LogStream::operator<<(const void* p)
 	return *this;
 }
 
+// FIXME: replace this with Grisu3 by Florian Loitsch.
 LogStream& LogStream::operator<<(double v)
 {
 	if (m_buffer.avail() > kMaxNumericSize)
@@ -142,7 +143,9 @@ LogStream& LogStream::operator<<(double v)
 template<typename T>
 Fmt::Fmt(const char* fmt, T val)
 {
+	static_assert(std::is_arithmetic<T>::value == true, "Must be arithmetic type");
 	m_length = snprintf(m_buf, sizeof(m_buf), fmt, val);
+	assert(static_cast<size_t>(m_length) < sizeof(m_buf));
 }
 
 // Explicit instantiations

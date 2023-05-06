@@ -1,4 +1,5 @@
-ï»¿// From https://github.com/google/googletest/blob/master/googletest/include/gtest/internal/gtest-port-arch.h
+// From: https://github.com/google/googletest/blob/master/googletest/include/gtest/internal/gtest-port-arch.h
+// Comment: Ëù´¦Æ½Ì¨ºê¶¨Òå
 
 #ifndef _SZNET_BASE_PLATFORM_H_
 #define _SZNET_BASE_PLATFORM_H_
@@ -76,4 +77,4 @@
 #	define SZ_OS_ESP32 1
 #endif // __CYGWIN__
 
-#endif // _SZNET_BASE_PLATFORM_H_// 
+#endif // _SZNET_BASE_PLATFORM_H_

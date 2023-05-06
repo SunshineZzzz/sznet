@@ -1,9 +1,12 @@
-ï»¿#ifndef _SZNET_BASE_COPYABLE_H_
+// Comment: ¿É¿½±´»ùÀàµÄÊµÏÖ
+
+#ifndef _SZNET_BASE_COPYABLE_H_
 #define _SZNET_BASE_COPYABLE_H_
 
 namespace sznet
 {
 
+// ¿É¿½±´»ùÀà
 class Copyable
 {
 protected:
