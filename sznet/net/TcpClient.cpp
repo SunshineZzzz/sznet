@@ -65,7 +65,7 @@ TcpClient::~TcpClient()
 	bool unique = false;
 	{
 		MutexLockGuard lock(m_mutex);
-		unique = m_connection.unique();
+		unique = m_connection.use_count() == 1;
 		// TcpClient对象都要析构了，内部不要持有了
 		conn = m_connection;
 	}

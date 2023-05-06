@@ -13,7 +13,7 @@ struct mytimeval
 	long tv_sec;
 	long tv_usec;
 };
-struct event : public MinHeapbaseElem
+struct event : public MinHeaBaseElem
 {
 	mytimeval ev_timeout;
 };
