@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_NET_POLLER_H_
+﻿// Comment: IO复用基类实现
+
+#ifndef _SZNET_NET_POLLER_H_
 #define _SZNET_NET_POLLER_H_
 
 #include "../base/NonCopyable.h"
@@ -30,13 +32,11 @@ public:
 	// Poller的核心功能，将就绪事件加入到 activeChannels 中
 	virtual void poll(ChannelList* activeChannels, int timeoutMs = 0) = 0;
 	// 更新fd的注册事件
-	// Channel::update()->EventLoop::updateChannel(Channel* channel)->Poller::updateChannel(Channel* channel)
 	virtual void updateChannel(Channel* channel) = 0;
-	// 
-	// EventLoop::removeChannel(Channel*)->Poller::removeChannel(Channel*)
+	// 删除channel
 	virtual void removeChannel(Channel* channel) = 0;
-	// 
-	// virtual bool hasChannel(Channel* channel) const;
+	// 是否有channel
+	virtual bool hasChannel(Channel* channel) const;
 	// 创建IO多路复用对象
 	static Poller* newDefaultPoller(EventLoop* loop);
 	// 断言运行loop函数的线程必须是拥有EventLoop对象的线程

@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_NET_SELECTPOLLER_H_
+﻿// Comment: select IO复用实现
+
+#ifndef _SZNET_NET_SELECTPOLLER_H_
 #define _SZNET_NET_SELECTPOLLER_H_
 
 #include "Channel.h"
@@ -7,7 +9,6 @@
 #include <vector>
 
 #ifdef SZ_OS_WINDOWS
-#	include <WinSock2.h>
 #endif
 
 #ifdef SZ_OS_LINUX
@@ -30,7 +31,7 @@ public:
 	virtual void poll(ChannelList* activeChannels, int timeoutMs = 0);
 	// (add/mod)更新channel中的事件
 	virtual void updateChannel(Channel* channel);
-	// 
+	// 删除channel
 	virtual void removeChannel(Channel* channel);
 
 private:

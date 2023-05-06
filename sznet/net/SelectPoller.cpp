@@ -147,16 +147,17 @@ void SelectPoller::removeChannel(Channel* channel)
 	assert(0 <= idx && idx < static_cast<int>(m_pollfds.size()));
 	const Channel::Event_t& event = m_pollfds[idx];
 	assert(event.ev == channel->events());
+	(void)event;
 	// 移除
 	size_t n = m_channels.erase(channel->fd());
 	assert(n == 1); 
+	(void)n;
 	if (implicit_cast<size_t>(idx) == m_pollfds.size() - 1)
 	{
 		m_pollfds.pop_back();
 	}
 	else
 	{
-		// 这个事件复杂度应该是O(1)
 		auto channelAtEndFd = m_pollfds.back().fd;
 		// 不要影响其他channel的下标
 		std::iter_swap(m_pollfds.begin() + idx, m_pollfds.end() - 1);

@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_NET_CHANNEL_H_
+﻿// Comment: 事件分发
+
+#ifndef _SZNET_NET_CHANNEL_H_
 #define _SZNET_NET_CHANNEL_H_
 
 #include "SocketsOps.h"
@@ -73,7 +75,7 @@ public:
 		{
 			clear();
 		}
-		inline void clear()
+		void clear()
 		{
 			fd = sz_invalid_socket;
 			ev = kNoneEvent;
@@ -89,7 +91,7 @@ public:
 	Channel(EventLoop* loop, sockets::sz_sock fd);
 	~Channel();
 
-	// 
+	// 处理事件
 	void handleEvent(Timestamp receiveTime);
 	// 设置可读回调函数
 	void setReadCallback(ReadEventCallback cb)
@@ -111,7 +113,7 @@ public:
 	{
 		m_errorCallback = std::move(cb);
 	}
-	// 
+	// 设置m_tie
 	void tie(const std::shared_ptr<void>&);
 	// 返回该Channel负责的fd
 	sockets::sz_fd fd() const 
@@ -211,8 +213,7 @@ private:
 	static string eventsToString(sockets::sz_sock fd, int ev);
 	// update通过调用m_loop->updateChannel()来注册或改变该fd在多路复用中的注册的事件
 	void update();
-	// 事件处理
-	// WithGuard - 
+	// 保护的处理事件
 	void handleEventWithGuard(Timestamp receiveTime);
 
 	// 事件循环
@@ -228,9 +229,9 @@ private:
 	int m_index;
 	// 是否输出POLLHUP挂起日志
 	bool m_logHup;
-	// 
+	// 防止owner对象析构，延长owner生命期
 	std::weak_ptr<void> m_tie;
-	// 
+	// 是否已经设置m_tie
 	bool m_tied;
 	// 当前是否正在处理事件
 	bool m_eventHandling;

@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_NET_EVENTLOOP_H_
+﻿// Comment: 事件循环实现
+
+#ifndef _SZNET_NET_EVENTLOOP_H_
 #define _SZNET_NET_EVENTLOOP_H_
 
 #include "../thread/Mutex.h"
@@ -35,6 +37,20 @@ class EventLoop : NonCopyable
 public:
 	// 来自其他线程或者本身线程的执行函数类型
 	typedef std::function<void()> Functor;
+	// 每帧执行函数包装
+	struct PerTickFuncWrap
+	{
+		int idx;
+		Functor func;
+
+		PerTickFuncWrap(Functor f) :
+			idx(-1),
+			func(std::move(f))
+		{
+		}
+		~PerTickFuncWrap() = default;
+	};
+
 
 	EventLoop();
 	~EventLoop();
@@ -50,14 +66,18 @@ public:
 	{ 
 		return m_pollTime; 
 	}
-	// 返回IO循环次是
+	// 返回IO循环次数
 	int64_t iteration() const 
 	{ 
 		return m_iteration; 
 	}
 	// 在IO线程中执行某个回调函数，该函数可以跨线程调用
 	void runInLoop(Functor cb);
-	// 将需要在IO线程执行的回调函数执行或者放入待执行数组中后续执行
+	// 只允许在loop所在线程调用，增加每帧执行函数
+	int runPerTick(PerTickFuncWrap* ptfw);
+	// 只允许在loop所在线程调用，删除每帧执行函数
+	int delRunPerTick(PerTickFuncWrap* ptfw);
+	// 来自其他线程的回调函数放入队列中等待执行
 	void queueInLoop(Functor cb);
 	// 返回必须在IO线程中执行的函数数组的大小
 	size_t queueSize() const;
@@ -76,7 +96,7 @@ public:
 	void updateChannel(Channel* channel);
 	// 移除channel
 	void removeChannel(Channel* channel);
-	// 
+	// 是否有channel
 	bool hasChannel(Channel* channel);
 	// 返回创建loop对象的线程ID
 	sz_pid_t threadId() const 
@@ -107,16 +127,20 @@ public:
 	{ 
 		return m_eventHandling; 
 	}
-	// static EventLoop* getEventLoopOfCurrentThread();
+	// 当前线程的事件循环
+	static EventLoop* getEventLoopOfCurrentThread();
 
 private:
-	// 在不拥有EventLoop线程中终止
+	// 在不拥有EventLoop对象的线程中终止程序
 	void abortNotInLoopThread();
 	// m_wakeupFd可读时回调函数
 	void handleRead();
-	// 执行待执行数组中的人物
-	// 该函数只会被当前IO线程调用
+	// 执行待执行数组中的任务
+	// 该函数只会被EventLoop对象所在的线程执行
 	void doPendingFunctors();
+	// 执行每帧都执行的函数
+	// 该函数只会被EventLoop对象所在的线程执行
+	void doPerTickFunctors();
 	// 调试打印就绪事件数组
 	void printActiveChannels() const;
 	// 就绪事件数组类型
@@ -126,10 +150,8 @@ private:
 	// 事件循环前会判断该变量，退出事件循环标记
 	std::atomic<bool> m_quit;
 	// 是否正在处理poll后的事件
-	// 没有修改的需求，就看看，不原子了
 	bool m_eventHandling;
 	// 是否正在执行用户任务函数(来自其他线程的请求)回调
-	// 没有修改的需求，就看看，不原子了
 	bool m_callingPendingFunctors;
 	// loop次数
 	int64_t m_iteration;
@@ -149,15 +171,17 @@ private:
 	ChannelList m_activeChannels;
 	// 当前正在处理的就绪事件
 	Channel* m_currentActiveChannel;
-	// 保护下面
+	// 互斥量
 	mutable MutexLock m_mutex;
 	// 需要在IO线程中执行的函数数组
 	// 这些任务显然必须是要求在IO线程中执行
 	std::vector<Functor> m_pendingFunctors;
+	// 每帧都要运行的函数组
+	std::vector<PerTickFuncWrap*> m_perTickFunctos;
 };
 
 } // end namespace net
 
-} // end namespace muduo
+} // end namespace sznet
 
-#endif  // MUDUO_NET_EVENTLOOP_H
+#endif  // _SZNET_NET_EVENTLOOP_H_

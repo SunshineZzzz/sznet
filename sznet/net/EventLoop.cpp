@@ -8,14 +8,20 @@
 #include <algorithm>
 #include <thread>
 
+#if defined(SZ_OS_LINUX)
+#	include <signal.h>
+#endif
+
 namespace sznet
 {
 
 namespace net
 {
 
-// 记录事件循环对象
+// 记录当前线程的事件循环对象
 thread_local EventLoop* t_loopInThisThread = 0;
+// 默认reactor tick时间
+const int kPollTimeMs = 10000;
 
 // linux下忽略pipe信号
 class IgnoreSigPipe
@@ -42,7 +48,7 @@ EventLoop::EventLoop():
 	m_wakeupFd(sockets::sz_create_eventfd()),
 #if defined(SZ_OS_WINDOWS)
 	m_wakeupChannel(new Channel(this, m_wakeupFd.event_read)),
-#elif defined(SZ_OS_LINUX)
+#else
 	m_wakeupChannel(new Channel(this, m_wakeupFd)),
 #endif
 	m_currentActiveChannel(nullptr)
@@ -65,18 +71,22 @@ EventLoop::~EventLoop()
 {
 	LOG_DEBUG << "EventLoop " << this << " of thread " << m_threadId
 		<< " destructs in thread " << CurrentThread::tid();
-	// 
+	assertInLoopThread();
+	for (const Functor& functor : m_pendingFunctors)
+	{
+		functor();
+	}
+	// 停止fd所有事件
 	m_wakeupChannel->disableAll();
-	// 
+	// poll中也移除
 	m_wakeupChannel->remove();
 	sockets::sz_close_eventfd(m_wakeupFd);
-	t_loopInThisThread = NULL;
+	t_loopInThisThread = nullptr;
 }
 
 void EventLoop::loop()
 {
 	assert(!m_looping);
-	// 断言当前处于创建该对象的线程中
 	assertInLoopThread();
 	m_looping = true;
 	m_quit = false;
@@ -87,7 +97,7 @@ void EventLoop::loop()
 		m_activeChannels.clear();
 		m_pollTime = Timestamp::now();
 		// IO
-		m_poller->poll(&m_activeChannels, m_timerQueue->earliestExpiredTime(m_pollTime, 0));
+		m_poller->poll(&m_activeChannels, m_timerQueue->earliestExpiredTime(m_pollTime, kPollTimeMs));
 		++m_iteration;
 		if (Logger::logLevel() <= Logger::TRACE)
 		{
@@ -108,6 +118,7 @@ void EventLoop::loop()
 		// 这种设计使得IO线程也能执行一些计算任务，避免了IO线程在不忙时长期阻塞在IO multiplexing调用中
 		// 这些任务显然必须是要求在IO线程中执行
 		doPendingFunctors();
+		doPerTickFunctors();
 	}
 	
 	LOG_TRACE << "EventLoop " << this << " stop looping";
@@ -136,6 +147,44 @@ void EventLoop::runInLoop(Functor cb)
 	{
 		queueInLoop(std::move(cb));
 	}
+}
+
+int EventLoop::runPerTick(PerTickFuncWrap* ptfw)
+{
+	assert(ptfw);
+	if (isInLoopThread())
+	{
+		ptfw->idx = static_cast<int>(m_perTickFunctos.size());
+		m_perTickFunctos.emplace_back(ptfw);
+		wakeup();
+		return 0;
+	}
+	LOG_ERROR << "Call runPerTick must in loop thread";
+	return -1;
+}
+
+int EventLoop::delRunPerTick(PerTickFuncWrap* ptfw)
+{
+	assert(ptfw);
+	if (isInLoopThread())
+	{
+		auto idx = ptfw->idx;
+		assert(0 <= idx && idx < static_cast<int>(m_perTickFunctos.size()));
+		if (implicit_cast<size_t>(idx) == m_perTickFunctos.size() - 1)
+		{
+			m_perTickFunctos.pop_back();
+		}
+		else
+		{
+			auto lastElem = m_perTickFunctos.back();
+			std::iter_swap(m_perTickFunctos.begin() + idx, m_perTickFunctos.end() - 1);
+			lastElem->idx = idx;
+			m_perTickFunctos.pop_back();
+		}
+		return 0;
+	}
+	LOG_ERROR << "Call delRunPerTick must in loop thread";
+	return -1;
 }
 
 void EventLoop::queueInLoop(Functor cb)
@@ -206,10 +255,14 @@ void EventLoop::removeChannel(Channel* channel)
 
 bool EventLoop::hasChannel(Channel* channel)
 {
-	//assert(channel->ownerLoop() == this);
-	//assertInLoopThread();
-	//return m_poller->hasChannel(channel);
-	return false;
+	assert(channel->ownerLoop() == this);
+	assertInLoopThread();
+	return m_poller->hasChannel(channel);
+}
+
+EventLoop* EventLoop::getEventLoopOfCurrentThread()
+{
+	return t_loopInThisThread;
 }
 
 void EventLoop::abortNotInLoopThread()
@@ -225,8 +278,8 @@ void EventLoop::wakeup()
 	int n = 0;
 #if defined(SZ_OS_WINDOWS)
 	n = ::send(m_wakeupFd.event_write, reinterpret_cast<const char*>(&one), sizeof(one), 0);
-#elif defined(SZ_OS_LINUX)
-	n = ::send(m_wakeupFd, &one, sizeof(one), 0);
+#else
+	n = ::write(m_wakeupFd, &one, sizeof(one));
 #endif
 	if (n > 0) 
 	{
@@ -238,18 +291,18 @@ void EventLoop::wakeup()
 	}
 	else if (n == 0) 
 	{
-		LOG_ERROR << "EventLoop::wakeup() m_wakeupFd has been closed";
+		LOG_ERROR << "EventLoop::wakeup() send return equal zero";
 	}
 	else 
 	{
 		if (sz_getlasterr() == sz_err_eintr || sockets::sz_wouldblock())
 		{
-			LOG_WARN << "EventLoop::wakeup() send sz_getlasterr() rst " 
-				<< sz_getlasterr() 
-				<< " is sz_err_eintr or sockets::sz_wouldblock()";
+			//LOG_WARN << "EventLoop::wakeup() send sz_getlasterr() rst " 
+			//	<< sz_getlasterr() 
+			//	<< " is sz_err_eintr or sockets::sz_wouldblock()";
 			return;
 		}
-		LOG_ERROR << "EventLoop::wakeup() send error";
+		LOG_ERROR << "EventLoop::wakeup() send error " << sz_getlasterr();
 	}
 }
 
@@ -259,8 +312,8 @@ void EventLoop::handleRead()
 	int n = 0;
 #if defined(SZ_OS_WINDOWS)
 	n = ::recv(m_wakeupFd.event_read, reinterpret_cast<char*>(&one), sizeof(one), 0);
-#elif defined(SZ_OS_LINUX)
-	n = ::recv(m_wakeupFd, (char*)&one, sizeof(one), 0);
+#else
+	n = ::read(m_wakeupFd, (char*)&one, sizeof(one));
 #endif
 	if (n > 0)
 	{
@@ -306,6 +359,14 @@ void EventLoop::doPendingFunctors()
 	}
 
 	m_callingPendingFunctors = false;
+}
+
+void EventLoop::doPerTickFunctors()
+{
+	for (const auto& wrap : m_perTickFunctos)
+	{
+		wrap->func();
+	}
 }
 
 void EventLoop::printActiveChannels() const

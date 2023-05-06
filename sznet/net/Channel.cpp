@@ -9,7 +9,7 @@ namespace sznet
 namespace net
 {
 
-Channel::Channel(EventLoop* loop, sockets::sz_sock fd):
+Channel::Channel(EventLoop* loop, sockets::sz_fd fd):
 	m_loop(loop),
 	m_fd(fd),
 	m_events(0),

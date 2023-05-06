@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_NET_EVENTLOOPTHREAD_H_
+﻿// Comment: 线程IO事件循环实现
+
+#ifndef _SZNET_NET_EVENTLOOPTHREAD_H_
 #define _SZNET_NET_EVENTLOOPTHREAD_H_
 
 #include "../thread/Condition.h"
@@ -15,13 +17,11 @@ namespace net
 // IO事件循环
 class EventLoop;
 
-// IO事件循环线程
-// 任何一个线程，只要创建并运行了EventLoop，就是一个IO线程。
-// EventLoopThread类就是一个封装好了的IO线程。
+// 线程IO事件循环
 class EventLoopThread : NonCopyable
 {
 public:
-	// IO线程循环前的回调函数
+	// 线程IO线程循环前的回调函数类型
 	typedef std::function<void(EventLoop*)> ThreadInitCallback;
 
 	EventLoopThread(const ThreadInitCallback& cb = ThreadInitCallback(), const string& name = string());
@@ -43,7 +43,7 @@ private:
 	// 配合条件变量保护m_loop
 	MutexLock m_mutex;
 	Condition m_cond;
-	// m_loop循环前的回调函数
+	// 线程IO事件循环前的回调函数
 	ThreadInitCallback m_callback;
 };
 
