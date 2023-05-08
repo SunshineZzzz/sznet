@@ -7,9 +7,6 @@
     <Filter Include="sznet\base">
       <UniqueIdentifier>{97e51afe-4c60-4f0c-b3ab-d17c2ec7d8fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="sznet\memory">
-      <UniqueIdentifier>{3799ad73-d4f0-48ad-9865-86dced894cd5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="sznet\time">
       <UniqueIdentifier>{945cfe39-98ab-4bd0-af46-a8277dece92e}</UniqueIdentifier>
     </Filter>
@@ -62,9 +59,6 @@
     </ClInclude>
     <ClInclude Include="..\sznet\thread\Thread.h">
       <Filter>sznet\thread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\sznet\memory\MemoryPool.h">
-      <Filter>sznet\memory</Filter>
     </ClInclude>
     <ClInclude Include="..\sznet\string\StringPiece.h">
       <Filter>sznet\string</Filter>
@@ -185,9 +179,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\sznet\memory\MemoryPool.cpp">
-      <Filter>sznet\memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\sznet\thread\Thread.cpp">
       <Filter>sznet\thread</Filter>
     </ClCompile>

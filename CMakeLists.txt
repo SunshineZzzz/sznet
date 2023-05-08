@@ -16,11 +16,11 @@ set(CXX_FLAGS
 	-DCHECK_PTHREAD_RETURN_VALUE
 	-D_FILE_OFFSET_BITS=64
 	-Wall
-	-Wextra
-	-Werror
-	-Wconversion
+	# -Wextra
+	# -Werror
+	# -Wconversion
 	-Wno-unused-parameter
-	-Wold-style-cast
+	# -Wold-style-cast
 	-Woverloaded-virtual
 	-Wpointer-arith
 	-Wshadow
@@ -43,19 +43,21 @@ include_directories(${PROJECT_SOURCE_DIR})
 string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
 message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_TYPE}})
 
-add_subdirectory(sznet)
-add_subdirectory(sznet/base)
-add_subdirectory(sznet/ds)
-add_subdirectory(sznet/io)
-add_subdirectory(sznet/log)
-add_subdirectory(sznet/memory)
-add_subdirectory(sznet/net)
-add_subdirectory(sznet/process)
-add_subdirectory(sznet/string)
-add_subdirectory(sznet/thread)
-add_subdirectory(sznet/time)
+aux_source_directory("sznet/." SRC_LIST)
+
+aux_source_directory("sznet/." SRC_LIST)
+aux_source_directory("sznet/base" SRC_LIST)
+aux_source_directory("sznet/ds" SRC_LIST)
+aux_source_directory("sznet/io" SRC_LIST)
+aux_source_directory("sznet/log" SRC_LIST)
+aux_source_directory("sznet/net" SRC_LIST)
+aux_source_directory("sznet/process" SRC_LIST)
+aux_source_directory("sznet/string" SRC_LIST)
+aux_source_directory("sznet/thread" SRC_LIST)
+aux_source_directory("sznet/time" SRC_LIST)
+
+add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
 
 if(SZNET_BUILD_EXAMPLES)
-	# add_subdirectory(test)
+	add_subdirectory(test)
 endif()
-

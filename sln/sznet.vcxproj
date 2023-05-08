@@ -35,7 +35,6 @@
     <ClInclude Include="..\sznet\log\LogFile.h" />
     <ClInclude Include="..\sznet\log\Logging.h" />
     <ClInclude Include="..\sznet\log\LogStream.h" />
-    <ClInclude Include="..\sznet\memory\MemoryPool.h" />
     <ClInclude Include="..\sznet\NetCmn.h" />
     <ClInclude Include="..\sznet\net\Acceptor.h" />
     <ClInclude Include="..\sznet\net\Buffer.h" />
@@ -76,7 +75,6 @@
     <ClCompile Include="..\sznet\log\LogFile.cpp" />
     <ClCompile Include="..\sznet\log\Logging.cpp" />
     <ClCompile Include="..\sznet\log\LogStream.cpp" />
-    <ClCompile Include="..\sznet\memory\MemoryPool.cpp" />
     <ClCompile Include="..\sznet\NetCmn.cpp" />
     <ClCompile Include="..\sznet\net\Acceptor.cpp" />
     <ClCompile Include="..\sznet\net\Buffer.cpp" />

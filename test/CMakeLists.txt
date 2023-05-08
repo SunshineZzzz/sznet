@@ -1,0 +1,5 @@
+add_executable(minheap_test ds/minheap_test.cpp)
+target_link_libraries(minheap_test sznet)
+
+add_executable(timerqueue_unittest timer/timerqueue_unittest.cpp)
+target_link_libraries(timerqueue_unittest sznet)
