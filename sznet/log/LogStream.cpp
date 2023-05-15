@@ -56,6 +56,18 @@ namespace detail
 	template class FixedBuffer<kLargeBuffer>;
 } // end namespace detail
 
+void LogStream::staticCheck()
+{
+	static_assert(kMaxNumericSize - 10 > std::numeric_limits<double>::digits10,
+		"kMaxNumericSize is large enough");
+	static_assert(kMaxNumericSize - 10 > std::numeric_limits<long double>::digits10,
+		"kMaxNumericSize is large enough");
+	static_assert(kMaxNumericSize - 10 > std::numeric_limits<long>::digits10,
+		"kMaxNumericSize is large enough");
+	static_assert(kMaxNumericSize - 10 > std::numeric_limits<long long>::digits10,
+		"kMaxNumericSize is large enough");
+}
+
 template<typename T>
 void LogStream::_formatInteger(T v)
 {

@@ -100,10 +100,10 @@ private:
 	MessageCallback m_messageCallback;
 	// 发送缓冲区清空回调函数
 	WriteCompleteCallback m_writeCompleteCallback;
-	// 是否允许重连，并且m_connect为true，才可以重连
+	// 默认false，手动调用 enableRetry 设置为true
 	// atomic
 	bool m_retry;
-	// 是否允许重连，connect置为true，stop/disconnect置为false
+	// 默认true，主动断开，设置 false
 	// atomic
 	bool m_connect;
 	// 连接成功自增ID

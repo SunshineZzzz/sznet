@@ -51,7 +51,6 @@ public:
 		~PerTickFuncWrap() = default;
 	};
 
-
 	EventLoop();
 	~EventLoop();
 

@@ -1,4 +1,4 @@
-﻿// Comment:
+﻿// Comment: 网络相关接口
 
 #ifndef _SZNET_NET_SOCKETSOPS_H_
 #define _SZNET_NET_SOCKETSOPS_H_

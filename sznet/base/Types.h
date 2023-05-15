@@ -1,9 +1,5 @@
-// Comment: implicit_cast<ToType>(expr)， 安全的up_cast，其他用法
-//		  : 1.当一个表达式的类型必须被精确控制时，比如说，为了避免重载（overload）
-//		  : 2.static_cast不进行真正的类型检查(在down_cast和up_cast的时候)。implicit_cast只能用在up_cast，检查类型向上转换是否正确
-//		  : 3.读代码的人可以立即就明白，这只是一个简单的隐式转换，不是一个潜在的危险的转型
-//		  : 4.某些类型的转换，比如，枚举间的转型，有些编译器不喜欢枚举到枚举的转型，因此我们先implicit_cast到int
-//		  : down_cast<T*>(foo)，安全的down_cast
+// Comment: implicit_cast<ToType>(expr),safe up_cast
+//		  : down_cast<ToType>(expr),safe down_cast
 
 #ifndef _SZNET_BASE_TYPES_H_
 #define _SZNET_BASE_TYPES_H_

@@ -18,7 +18,7 @@ struct MinHeaBaseElem
 	int32_t min_heap_idx = -1;
 };
 
-//  最小堆实现
+// 最小堆实现
 template<typename T>
 class MinHeap
 {

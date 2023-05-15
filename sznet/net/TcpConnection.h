@@ -26,7 +26,7 @@ class EventLoop;
 // socket封装
 class Socket;
 
-// TCP连接，生命期模糊
+// TCP连接(已经连接好，无论主动还是被动)，生命期模糊
 class TcpConnection : NonCopyable, public std::enable_shared_from_this<TcpConnection>
 {
 public:

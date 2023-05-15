@@ -23,7 +23,7 @@ public:
 
 	// 开启线程
 	void start();
-	// 等待
+	// 等待子线程结束
 	int join();
 	// 线程是否已经开启
 	bool started() const 

@@ -1,8 +1,8 @@
-﻿#include "../../sznet/net/EventLoop.h"
-#include "../../sznet/net/EventLoopThread.h"
-#include "../../sznet/log/Logging.h"
-#include "../../sznet/thread/ThreadClass.h"
-#include "../../sznet/thread/CurrentThread.h"
+﻿#include <sznet/net/EventLoop.h>
+#include <sznet/net/EventLoopThread.h>
+#include <sznet/log/Logging.h>
+#include <sznet/thread/ThreadClass.h>
+#include <sznet/thread/CurrentThread.h>
 
 #include <string>
 #include <functional>

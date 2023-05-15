@@ -39,6 +39,7 @@
     <ClInclude Include="..\sznet\net\Acceptor.h" />
     <ClInclude Include="..\sznet\net\Buffer.h" />
     <ClInclude Include="..\sznet\net\Channel.h" />
+    <ClInclude Include="..\sznet\net\Codec.h" />
     <ClInclude Include="..\sznet\net\Connector.h" />
     <ClInclude Include="..\sznet\net\Endian.h" />
     <ClInclude Include="..\sznet\net\EventLoop.h" />

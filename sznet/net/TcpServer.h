@@ -124,7 +124,7 @@ private:
 	WriteCompleteCallback m_writeCompleteCallback;
 	// IO事件循环前的回调函数
 	ThreadInitCallback m_threadInitCallback;
-	// 用于启动服务器
+	// 用于只启动一次服务器
 	std::atomic<int> m_started;
 	// 生成连接ID
 	int m_nextConnId;

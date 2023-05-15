@@ -177,6 +177,9 @@
     <ClInclude Include="..\sznet\net\TcpServer.h">
       <Filter>sznet\net</Filter>
     </ClInclude>
+    <ClInclude Include="..\sznet\net\Codec.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\sznet\thread\Thread.cpp">

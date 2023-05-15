@@ -230,6 +230,8 @@ private:
 	// 是否输出POLLHUP挂起日志
 	bool m_logHup;
 	// 防止owner对象析构，延长owner生命期
+	// 一个连接到了对应的IO线程的 connectEstablished 回调以后
+	// 设置这里
 	std::weak_ptr<void> m_tie;
 	// 是否已经设置m_tie
 	bool m_tied;
