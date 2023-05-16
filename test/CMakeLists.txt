@@ -9,3 +9,9 @@ target_link_libraries(tcp_echo_client sznet pthread)
 
 add_executable(tcp_echo_server echo/tcp_echo/tcp_echo_server.cpp)
 target_link_libraries(tcp_echo_server sznet pthread)
+
+add_executable(udp_echo_client echo/udp_echo/udp_echo_client.cpp)
+target_link_libraries(udp_echo_client sznet pthread)
+
+add_executable(udp_echo_server echo/udp_echo/udp_echo_server.cpp)
+target_link_libraries(udp_echo_server sznet pthread)

@@ -106,9 +106,9 @@ int main(int argc, char* argv[])
 #endif
 
     LOG_INFO << "pid = " << sz_getpid() << ", tid = " << CurrentThread::tid();
-    if (argc <= 0)
+    if (argc <= 1)
     {
-        printf("Usage: %s host_ip [msg_size]\n", argv[0]);
+        printf("Usage: %s host_ip\n", argv[0]);
         return 0;
     }
 

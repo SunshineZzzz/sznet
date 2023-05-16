@@ -53,6 +53,7 @@
     <ClInclude Include="..\sznet\net\TcpClient.h" />
     <ClInclude Include="..\sznet\net\TcpConnection.h" />
     <ClInclude Include="..\sznet\net\TcpServer.h" />
+    <ClInclude Include="..\sznet\net\UdpOps.h" />
     <ClInclude Include="..\sznet\process\Process.h" />
     <ClInclude Include="..\sznet\string\StringOpt.h" />
     <ClInclude Include="..\sznet\string\StringPiece.h" />
@@ -93,6 +94,7 @@
     <ClCompile Include="..\sznet\net\TcpClient.cpp" />
     <ClCompile Include="..\sznet\net\TcpConnection.cpp" />
     <ClCompile Include="..\sznet\net\TcpServer.cpp" />
+    <ClCompile Include="..\sznet\net\UdpOps.cpp" />
     <ClCompile Include="..\sznet\process\Process.cpp" />
     <ClCompile Include="..\sznet\string\StringOpt.cpp" />
     <ClCompile Include="..\sznet\thread\CountDownLatch.cpp" />
@@ -171,7 +173,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

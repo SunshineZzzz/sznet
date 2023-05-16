@@ -15,8 +15,17 @@
 #	include <ws2tcpip.h>
 #endif
 
+namespace sznet
+{
+
+namespace net
+{
+
+namespace sockets
+{
+
 // 设置非阻塞 & fork exec 关闭
-void setNonBlockAndCloseOnExec(sznet::net::sockets::sz_sock sockfd)
+void sz_setnonblockandcloseonexec(sznet::net::sockets::sz_sock sockfd)
 {
 #if defined(SZ_OS_LINUX)
 	// non-block
@@ -34,15 +43,6 @@ void setNonBlockAndCloseOnExec(sznet::net::sockets::sz_sock sockfd)
 	ioctlsocket(sockfd, FIONBIO, &flag);
 #endif
 }
-
-namespace sznet
-{
-
-namespace net
-{
-
-namespace sockets
-{
 
 int sz_sock_setopt(sz_sock sock, int level, int option, int val)
 {
@@ -137,6 +137,19 @@ sz_ssize_t sz_readv(sz_sock sockfd, sz_iov_type* iov, int iovcnt)
 #else
 	return ::readv(sockfd, iov, iovcnt);
 #endif
+}
+
+sz_ssize_t sz_read(sz_sock sockfd, char* buf, int len)
+{
+#ifdef SZ_OS_WINDOWS
+	char* recvBuf = buf;
+	int recvBufLen = len;
+#else
+	void* recvBuf = reinterpret_cast<void*>(buf);
+	size_t recvBufLen = static_cast<size_t>(len);
+#endif
+
+	return ::recv(sockfd, recvBuf, recvBufLen, 0);
 }
 
 const struct sockaddr* sz_sockaddr_cast(const struct sockaddr_in* addr)
@@ -264,7 +277,7 @@ sz_sock sz_accept(sz_sock sockfd, struct sockaddr_in6* addr)
 	}
 	else
 	{
-		setNonBlockAndCloseOnExec(connfd);
+		sz_setnonblockandcloseonexec(connfd);
 	}
 
 	return connfd;
@@ -310,14 +323,21 @@ int sz_sock_geterror(sz_sock sockfd)
 	}
 }
 
-sz_sock sz_sock_createnonblockingordie(int family)
+sz_sock sz_sock_create(int family)
 {
 	sz_sock sockfd = ::socket(family, SOCK_STREAM, IPPROTO_TCP);
 	if (sockfd < 0)
 	{
-		LOG_SYSFATAL << "sockets::sz_sock_createnonblockingordie";
+		LOG_SYSFATAL << "sockets::sz_sock_create";
 	}
-	setNonBlockAndCloseOnExec(sockfd);
+
+	return sockfd;
+}
+
+sz_sock sz_sock_createnonblockingordie(int family)
+{
+	sz_sock sockfd = sz_sock_create(family);
+	sz_setnonblockandcloseonexec(sockfd);
 
 	return sockfd;
 }

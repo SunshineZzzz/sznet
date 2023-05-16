@@ -120,6 +120,8 @@ namespace sockets
 #	define sz_set_iov_buflen(iov, size) iov.iov_len=size
 #endif
 
+// 设置非阻塞 & fork exec 关闭
+void sz_setnonblockandcloseonexec(sz_sock sockfd);
 // socket属性
 int sz_sock_setopt(sz_sock sock, int level, int option, int val);
 int sz_sock_getopt(sz_sock sock, int level, int option, int& val);
@@ -141,6 +143,8 @@ sz_event sz_create_eventfd();
 bool sz_wouldblock();
 // 从socket中读取数据到多个缓冲区
 sz_ssize_t sz_readv(sz_sock sockfd, sz_iov_type* iov, int iovcnt);
+// 从socket中读取数据到缓冲区
+sz_ssize_t sz_read(sz_sock sockfd, char* buf, int len);
 // 从ip和port转化到sockaddr_in类型
 void sz_fromipport(const char* ip, uint16_t port, struct sockaddr_in* addr);
 // 从ip和port转化到sockaddr_in6类型
@@ -173,6 +177,8 @@ void sz_shutdownwrite(sz_sock sockfd);
 sz_ssize_t sz_socket_write(sz_sock sockfd, const void* buf, size_t count);
 // 获取socket错误
 int sz_sock_geterror(sz_sock sockfd);
+// 创建socket
+sz_sock sz_sock_create(int family);
 // 创建非阻塞socket
 sz_sock sz_sock_createnonblockingordie(int family);
 // 发起连接

@@ -180,6 +180,9 @@
     <ClInclude Include="..\sznet\net\Codec.h">
       <Filter>sznet\net</Filter>
     </ClInclude>
+    <ClInclude Include="..\sznet\net\UdpOps.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\sznet\thread\Thread.cpp">
@@ -282,6 +285,9 @@
       <Filter>sznet\net</Filter>
     </ClCompile>
     <ClCompile Include="..\sznet\net\TcpServer.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\UdpOps.cpp">
       <Filter>sznet\net</Filter>
     </ClCompile>
   </ItemGroup>

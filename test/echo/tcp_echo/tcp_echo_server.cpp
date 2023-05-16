@@ -126,11 +126,7 @@ int main(int argc, char* argv[])
     signal(SIGTERM, StopSignal);
 
     LOG_INFO << "pid = " << sz_getpid() << ", tid = " << CurrentThread::tid();
-    if (argc > 1)
-    {
-        numThreads = atoi(argv[1]);
-    }
-    numThreads = (numThreads == 0 ? 1 : numThreads);
+
     EventLoop loop;
     g_pLoopsRun = &loop;
     InetAddress listenAddr(2023);
