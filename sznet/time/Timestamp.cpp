@@ -66,6 +66,11 @@ int64_t Timestamp::microSecondsSinceEpoch() const
 	return m_microSecondsSinceEpoch;
 }
 
+int64_t Timestamp::milliSecondsSinceEpoch() const
+{
+	return static_cast<uint32_t>(m_microSecondsSinceEpoch / kMilliSecondsPerSecond);
+}
+
 time_t Timestamp::secondsSinceEpoch() const
 {
 	return static_cast<time_t>(m_microSecondsSinceEpoch / kMicroSecondsPerSecond);

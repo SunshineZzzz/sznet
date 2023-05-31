@@ -37,22 +37,9 @@ class EventLoop : NonCopyable
 public:
 	// 来自其他线程或者本身线程的执行函数类型
 	typedef std::function<void()> Functor;
-	// 每帧执行函数包装
-	struct PerTickFuncWrap
-	{
-		int idx;
-		Functor func;
-
-		PerTickFuncWrap(Functor f) :
-			idx(-1),
-			func(std::move(f))
-		{
-		}
-		~PerTickFuncWrap() = default;
-	};
 
 	EventLoop();
-	~EventLoop();
+	virtual ~EventLoop();
 
 	// 事件循环，该函数不能跨线程调用
 	// 只能在创建该对象的线程中调用
@@ -72,10 +59,6 @@ public:
 	}
 	// 在IO线程中执行某个回调函数，该函数可以跨线程调用
 	void runInLoop(Functor cb);
-	// 只允许在loop所在线程调用，增加每帧执行函数
-	int runPerTick(PerTickFuncWrap* ptfw);
-	// 只允许在loop所在线程调用，删除每帧执行函数
-	int delRunPerTick(PerTickFuncWrap* ptfw);
 	// 来自其他线程的回调函数放入队列中等待执行
 	void queueInLoop(Functor cb);
 	// 返回必须在IO线程中执行的函数数组的大小
@@ -129,7 +112,7 @@ public:
 	// 当前线程的事件循环
 	static EventLoop* getEventLoopOfCurrentThread();
 
-private:
+protected:
 	// 在不拥有EventLoop对象的线程中终止程序
 	void abortNotInLoopThread();
 	// m_wakeupFd可读时回调函数
@@ -137,9 +120,6 @@ private:
 	// 执行待执行数组中的任务
 	// 该函数只会被EventLoop对象所在的线程执行
 	void doPendingFunctors();
-	// 执行每帧都执行的函数
-	// 该函数只会被EventLoop对象所在的线程执行
-	void doPerTickFunctors();
 	// 调试打印就绪事件数组
 	void printActiveChannels() const;
 	// 就绪事件数组类型
@@ -175,8 +155,6 @@ private:
 	// 需要在IO线程中执行的函数数组
 	// 这些任务显然必须是要求在IO线程中执行
 	std::vector<Functor> m_pendingFunctors;
-	// 每帧都要运行的函数组
-	std::vector<PerTickFuncWrap*> m_perTickFunctos;
 };
 
 } // end namespace net

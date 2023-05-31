@@ -20,8 +20,9 @@ class InetAddress;
 class Socket : NonCopyable
 {
 public:
-	explicit Socket(sockets::sz_sock sockfd): 
-		m_sockfd(sockfd)
+	explicit Socket(sockets::sz_sock sockfd, bool ableClose = true): 
+		m_sockfd(sockfd),
+		m_ableClose(ableClose)
 	{
 	}
 	~Socket();
@@ -51,6 +52,8 @@ public:
 private:
 	// socket fd
 	const sockets::sz_sock m_sockfd;
+	// 析构的时候是否允许主动关闭fd
+	const bool m_ableClose;
 };
 
 } // end namespace net

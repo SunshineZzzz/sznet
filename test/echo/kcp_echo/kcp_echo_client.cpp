@@ -1,18 +1,16 @@
-#include <sznet/net/TcpClient.h>
-
-#include <sznet/log/Logging.h>
-#include <sznet/thread/Thread.h>
-#include <sznet/net/EventLoop.h>
+#include <sznet/net/KcpConnection.h>
+#include <sznet/net/KcpWithTcpClient.h>
 #include <sznet/net/EventLoopThread.h>
 #include <sznet/net/InetAddress.h>
 #include <sznet/net/Codec.h>
+#include <sznet/log/Logging.h>
+#include <sznet/thread/Thread.h>
 #include <sznet/string/StringOpt.h>
 #include <sznet/time/Time.h>
 
 #include <utility>
 #include <iostream>
 #include <string>
-
 #include <stdio.h>
 #include <signal.h>
 
@@ -34,51 +32,45 @@ void StopSignal(int sig)
 class EchoClient : NonCopyable
 {
 public:
-    EchoClient(EventLoop* loop, const InetAddress& listenAddr) : 
+    EchoClient(EventLoop* loop, const InetAddress& tcplistenAddr) :
         m_loop(loop),
-        m_client(loop, listenAddr, "EchoClient"),
-        m_codec(std::bind(&EchoClient::onMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)),
-        m_mutex()
+        m_client(loop, tcplistenAddr, "EchoClient"),
+        m_kcpCodec(std::bind(&EchoClient::onMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))
     {
-        m_client.setConnectionCallback(
-            std::bind(&EchoClient::onConnection, this, std::placeholders::_1));
-        m_client.setMessageCallback(std::bind(&LengthHeaderCodec<>::onMessage, &m_codec, 
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-        // m_client.enableRetry();
+        m_client.setKcpConnectionCallback(std::bind(&EchoClient::onConnection, this, std::placeholders::_1));
+        m_client.setKcpMessageCallback(std::bind(&LengthHeaderCodec<KcpConnectionPtr>::onMessage, &m_kcpCodec, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     }
 
-    // 发起连接
-    void connect()
+    // 发起连接TCP
+    void connectTcp()
     {
-        m_client.connect();
+        m_client.connectTcp();
     }
-    // 断开连接
-    void disconnect()
+    // 断开连接TCP
+    void disconnectTcp()
     {
-        m_client.disconnect();
+        m_client.disconnectTcp();
     }
     // 发送消息
     void write(const sznet::StringPiece& message)
     {
         sznet::MutexLockGuard lock(m_mutex);
-        m_codec.send(get_pointer(m_client.connection()), message);
+        if (m_client.kcpConnected())
+        {
+            m_kcpCodec.send(get_pointer(m_client.kcpConnection()), message);
+        }
     }
 
 private:
-    void onConnection(const TcpConnectionPtr& conn)
+    // 连接/断连通知
+    void onConnection(const KcpConnectionPtr& conn)
     {
-        LOG_TRACE << conn->localAddress().toIpPort() << " -> "
-            << conn->peerAddress().toIpPort() << " is "
+        LOG_INFO << conn->name() << conn->localAddress().toIpPort() 
+            << " -> " << conn->peerAddress().toIpPort() << " is "
             << (conn->connected() ? "UP" : "DOWN");
-        {
-            sznet::MutexLockGuard lock(m_mutex);
-            if (conn->connected())
-            {
-                conn->setTcpNoDelay(true);
-            }
-        }
     }
-    void onMessage(const sznet::net::TcpConnectionPtr& conn, const sznet::string& message, sznet::Timestamp receiveTime)
+    // 消息
+    void onMessage(const KcpConnectionPtr& conn, const sznet::string& message, sznet::Timestamp receiveTime)
     {
         LOG_INFO << "client recv: " << message;
     }
@@ -87,11 +79,11 @@ public:
     // 连接所属loop
     EventLoop* m_loop;
     // 客户端对象
-    TcpClient m_client;
+    KcpWithTcpClient m_client;
     // 互斥量
     sznet::MutexLock m_mutex;
     // 4字节编解码器
-    LengthHeaderCodec<> m_codec;
+    LengthHeaderCodec<KcpConnectionPtr> m_kcpCodec;
 };
 
 int main(int argc, char* argv[])
@@ -121,7 +113,8 @@ int main(int argc, char* argv[])
     InetAddress serverAddr(argv[1], 2023);
 
     EchoClient client(pLoop, serverAddr);
-    client.connect();
+
+    client.connectTcp();
 
     std::string line;
     while (std::getline(std::cin, line) && g_IsRun)
@@ -134,18 +127,18 @@ int main(int argc, char* argv[])
         }
         if (tokens[0] == "quit")
         {
-            client.disconnect();
+            // client.disconnect();
             break;
         }
         // 发送消息
         client.write(line);
     }
 
-    TcpConnectionPtr conn = client.m_client.connection();
-    while (conn.use_count() > 1)
-    {
-        sz_sleep(1 * 1000);
-    }
+    // TcpConnectionPtr conn = client.m_client.connection();
+    //while (conn.use_count() > 1)
+    //{
+    //    sznet::sz_sleep(1 * 1000);
+    //}
 
     return 0;
 }

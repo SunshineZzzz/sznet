@@ -31,6 +31,12 @@
     <Filter Include="sznet\net">
       <UniqueIdentifier>{3704e3df-f4ba-4e6d-abf9-8818505acde0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3rd">
+      <UniqueIdentifier>{8f75d0b9-dbbd-45a7-aaa9-4ee410d4a840}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rd\kcp">
+      <UniqueIdentifier>{fc581f1e-7ff7-4f26-8012-998fc6740f0b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\sznet\base\Compiler.h">
@@ -183,6 +189,27 @@
     <ClInclude Include="..\sznet\net\UdpOps.h">
       <Filter>sznet\net</Filter>
     </ClInclude>
+    <ClInclude Include="..\3rd\kcp\ikcp.h">
+      <Filter>3rd\kcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\KcpConnection.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\KcpWithTcpServer.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\KcpTcpEventLoop.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\KcpTcpEventLoopThread.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\KcpTcpEventLoopThreadPool.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\net\KcpWithTcpClient.h">
+      <Filter>sznet\net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\sznet\thread\Thread.cpp">
@@ -288,6 +315,27 @@
       <Filter>sznet\net</Filter>
     </ClCompile>
     <ClCompile Include="..\sznet\net\UdpOps.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd\kcp\ikcp.c">
+      <Filter>3rd\kcp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\KcpConnection.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\KcpWithTcpServer.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\KcpTcpEventLoop.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\KcpTcpEventLoopThread.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\KcpTcpEventLoopThreadPool.cpp">
+      <Filter>sznet\net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sznet\net\KcpWithTcpClient.cpp">
       <Filter>sznet\net</Filter>
     </ClCompile>
   </ItemGroup>

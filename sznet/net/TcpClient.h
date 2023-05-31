@@ -94,9 +94,9 @@ private:
 	ConnectorPtr m_connector; 
 	// 配合m_nextConnId，生成连接名称
 	const string m_name;
-	// 外部连接建立/断开回调函数
+	// 连接建立/断开回调函数
 	ConnectionCallback m_connectionCallback;
-	// 外部处理收到消息的回调调函数
+	// 处理收到消息的回调调函数
 	MessageCallback m_messageCallback;
 	// 发送缓冲区清空回调函数
 	WriteCompleteCallback m_writeCompleteCallback;
@@ -104,6 +104,7 @@ private:
 	// atomic
 	bool m_retry;
 	// 默认true，主动断开，设置 false
+	// 非主动断掉以后，这两都为true才会调用 m_connector->restart()
 	// atomic
 	bool m_connect;
 	// 连接成功自增ID

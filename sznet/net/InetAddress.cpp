@@ -162,6 +162,18 @@ void InetAddress::setScopeId(uint32_t scope_id)
 	}
 }
 
+void InetAddress::resetPort(uint16_t port, bool ipv6)
+{
+	if (ipv6)
+	{
+		m_addr6.sin6_port = sockets::hostToNetwork16(port);
+	}
+	else
+	{
+		m_addr.sin_port = sockets::hostToNetwork16(port);
+	}
+}
+
 } // end namespace net
 
 } // end namespace sznet

@@ -7,7 +7,7 @@ namespace sznet
 namespace net
 {
 
-EventLoopThread::EventLoopThread(const ThreadInitCallback& cb, const string& name): 
+EventLoopThread::EventLoopThread(const ThreadInitCallback& cb, const string& name):
 	m_loop(nullptr),
 	m_exiting(false),
 	m_thread(std::bind(&EventLoopThread::threadFunc, this), name),

@@ -18,7 +18,7 @@ namespace detail
 // tcp连接在断开连接的回调函数
 void removeConnection(EventLoop* loop, const TcpConnectionPtr& conn)
 {
-  loop->queueInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
+	loop->queueInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
 }
 
 // 停止发起连接，1秒后的回调函数
@@ -82,9 +82,10 @@ TcpClient::~TcpClient()
 			conn->forceClose();
 		}
 	}
-	// tcp连接已经被释放了
+	// tcp连接已经被释放了，怎么出现的？
 	else
 	{
+		LOG_INFO << "m_connection release!!!";
 		m_connector->stop();
 		// FIXME: HACK
 		m_loop->runAfter(1, std::bind(&detail::removeConnector, m_connector));
@@ -125,15 +126,14 @@ void TcpClient::newConnection(sockets::sz_sock sockfd)
 	m_loop->assertInLoopThread();
 	InetAddress peerAddr(sockets::sz_sock_getpeeraddr(sockfd));
 	char buf[32];
-	snprintf(buf, sizeof(buf), ":%s#%d", peerAddr.toIpPort().c_str(), m_nextConnId);
-	++m_nextConnId;
+	uint32_t connId = m_nextConnId++;
+	snprintf(buf, sizeof(buf), ":%s#%d", peerAddr.toIpPort().c_str(), connId);
 	string connName = m_name + buf;
 
 	InetAddress localAddr(sockets::sz_sock_getlocaladdr(sockfd));
 	// FIXME poll with zero timeout to double confirm the new connection
 	// FIXME use make_shared if necessary
-	TcpConnectionPtr conn(new TcpConnection(m_loop, connName, sockfd, localAddr, peerAddr));
-
+	TcpConnectionPtr conn(new TcpConnection(m_loop, connName, connId, sockfd, localAddr, peerAddr));
 	conn->setConnectionCallback(m_connectionCallback);
 	conn->setMessageCallback(m_messageCallback);
 	conn->setWriteCompleteCallback(m_writeCompleteCallback);

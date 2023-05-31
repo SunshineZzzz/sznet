@@ -53,6 +53,21 @@ public:
 	{ 
 		return sockets::sz_sockaddr_cast(&m_addr6); 
 	}
+	// 获取sockaddr_in
+	const struct sockaddr_in* getSockAddrIn() const
+	{
+		return &m_addr;
+	}
+	// 获取sockaddr_in6
+	const struct sockaddr_in6* getSockAddrIn6() const
+	{
+		return &m_addr6;
+	}
+	// 设置ipv4地址
+	void setSockAddrInet(const struct sockaddr_in& addr)
+	{
+		m_addr = addr;
+	}
 	// 设置ipv6地址
 	void setSockAddrInet6(const struct sockaddr_in6& addr6) 
 	{
@@ -69,6 +84,8 @@ public:
 	static bool resolve(StringArg hostname, InetAddress* result);
 	// set IPv6 ScopeID
 	void setScopeId(uint32_t scope_id);
+	// 重设端口
+	void resetPort(uint16_t port, bool ipv6 = false);
 
 private:
 	// 网络地址ipv4/ipv6

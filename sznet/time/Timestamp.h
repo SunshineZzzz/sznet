@@ -29,6 +29,8 @@ public:
 	bool valid() const;
 	// 返回从1970年到当前的时间，单位微秒
 	int64_t microSecondsSinceEpoch() const;
+	// 返回从1970年到当前的时间，单位毫秒
+	int64_t milliSecondsSinceEpoch() const;
 	// 从1970年到当前的秒
 	time_t secondsSinceEpoch() const;
 	// 获取当前的时间戳
@@ -41,6 +43,8 @@ public:
 	static Timestamp fromUnixTime(time_t t, int microseconds);
 	// 每秒等于多少微秒
 	static const int kMicroSecondsPerSecond = 1000 * 1000;
+	// 每秒等于多少毫秒
+	static const int kMilliSecondsPerSecond = 1000;
 	// 每毫秒等于多少微秒
 	static const int kMicroSecondsPerMillisecond = 1000;
 

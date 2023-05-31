@@ -43,7 +43,28 @@ public:
 	// 处理到时的timer，执行其回调函数
 	void expiredProcess(Timestamp now);
 	// 获取最早timer过期时间和now的差值，并且和defaultTimeMs比较，返回较小者
-	int earliestExpiredTime(Timestamp now = Timestamp::now(), int defaultTimeMs = 0);
+	// 再次进行优化，只要存在timer元素，就返回0
+	inline int earliestExpiredTime(Timestamp now = Timestamp::now(), int defaultTimeMs = 0)
+	{
+#if 0
+		Timer* timer = m_timerMinHeap.top();
+		if (!timer)
+		{
+			return defaultTimeMs;
+		}
+
+		if (timer->expiration().microSecondsSinceEpoch() > now.microSecondsSinceEpoch())
+		{
+			return std::min(timeDifferenceMs(timer->expiration(), now), defaultTimeMs);
+		}
+
+		// 走到这里说明已经有超时的timer了
+		return 0;
+#else
+		(void)now;
+		return (m_activeTimers.size() > 0 ? 0 : defaultTimeMs);
+#endif
+	}
 
 private:
 	// IO循环中增加timer

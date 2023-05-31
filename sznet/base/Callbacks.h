@@ -55,20 +55,39 @@ typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 // Timer到期回调函数类型
 typedef std::function<void()> TimerCallback;
 // TcpConnection相关回调函数类型
-// 外部连接建立/断开回调函数
+// TCP连接建立/断开回调函数
 typedef std::function<void(const TcpConnectionPtr&)> ConnectionCallback;
-// 内部连接断开回调函数
+// TCP连接断开回调函数
 typedef std::function<void(const TcpConnectionPtr&)> CloseCallback;
-// 数据发送完成的回调函数，直接发送成功/发送缓冲区发送完毕
+// TCP数据发送完成的回调函数，直接发送成功/发送缓冲区发送完毕
 typedef std::function<void(const TcpConnectionPtr&)> WriteCompleteCallback;
-// 发送高水位线回调函数，上升沿触发一次
+// TCP发送高水位线回调函数，上升沿触发一次
 typedef std::function<void(const TcpConnectionPtr&, size_t)> HighWaterMarkCallback;
-// 外部处理收到消息的回调调函数
+// TCP处理收到消息的回调调函数
 typedef std::function<void(const TcpConnectionPtr&, Buffer*, Timestamp)> MessageCallback;
-// 默认外部连接建立/断开回调函数
+// TCP默认连接建立/断开回调函数
 void defaultConnectionCallback(const TcpConnectionPtr& conn);
-// 默认外部处理收到消息的回调调函数
+// TCP默认处理收到消息的回调调函数
 void defaultMessageCallback(const TcpConnectionPtr& conn, Buffer* buffer, Timestamp receiveTime);
+
+// KCP连接前置声明
+class KcpConnection;
+// KCP连接的智能指针类型
+typedef std::shared_ptr<KcpConnection> KcpConnectionPtr;
+// KCP连接建立/断开回调函数
+typedef std::function<void(const KcpConnectionPtr&)> KcpConnectionCallback;
+// KCP连接断开回调函数
+typedef std::function<void(const KcpConnectionPtr&, const int oldState)> KcpCloseCallback;
+// KCP数据发送完成的回调函数，直接发送成功/发送缓冲区发送完毕
+typedef std::function<void(const KcpConnectionPtr&)> KcpWriteCompleteCallback;
+// KCP发送高水位线回调函数，上升沿触发一次
+typedef std::function<void(const KcpConnectionPtr&, size_t)> KcpHighWaterMarkCallback;
+// KCP处理连接收到消息的回调调函数
+typedef std::function<void(const KcpConnectionPtr&, Buffer*, Timestamp)> KcpMessageCallback;
+// KCP默认连接建立/断开回调函数
+void defaultKcpConnectionCallback(const KcpConnectionPtr& conn);
+// KCP默认处理收到消息的回调调函数
+void defaultKcpMessageCallback(const KcpConnectionPtr& conn, Buffer* buffer, Timestamp receiveTime);
 
 } // end namespace net
 

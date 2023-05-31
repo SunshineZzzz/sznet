@@ -126,21 +126,4 @@ void TimerQueue::expiredProcess(Timestamp now)
 	assert(m_timerMinHeap.size() == m_activeTimers.size());
 }
 
-int TimerQueue::earliestExpiredTime(Timestamp now, int defaultTimeMs)
-{
-	Timer* timer = m_timerMinHeap.top();
-	if (!timer)
-	{
-		return defaultTimeMs;
-	}
-
-	if (timer->expiration().microSecondsSinceEpoch() > now.microSecondsSinceEpoch())
-	{
-		return std::min(timeDifferenceMs(timer->expiration(), now), defaultTimeMs);
-	}
-
-	// 走到这里说明已经有超时的timer了
-	return 0;
-}
-
 } // namespace sznet

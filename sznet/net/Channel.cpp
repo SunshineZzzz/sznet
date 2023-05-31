@@ -28,7 +28,7 @@ Channel::~Channel()
 	assert(!m_addedToLoop);
 	if (m_loop->isInLoopThread())
 	{
-		// assert(!m_loop->hasChannel(this));
+		assert(!m_loop->hasChannel(this));
 	}
 }
 

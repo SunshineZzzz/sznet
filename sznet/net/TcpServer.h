@@ -63,7 +63,7 @@ public:
 		m_threadInitCallback = cb;
 	}
 	// 获取线程池IO事件循环
-	/// valid after calling start()
+	// valid after calling start()
 	std::shared_ptr<EventLoopThreadPool> threadPool()
 	{
 		return m_threadPool;
@@ -104,30 +104,30 @@ private:
 	// 只能在accept io loop中都调用，非线程安全
 	void removeConnectionInLoop(const TcpConnectionPtr& conn);
 	// 连接管理器类型
-	typedef std::map<string, TcpConnectionPtr> ConnectionMap;
+	typedef std::map<uint32_t, TcpConnectionPtr> ConnectionMap;
 
-	// 接受新连接的线程池，而新连接会用线程池返回的subReactor EventLoop来执行IO
+	// 接受新连接的线程，而新连接会用线程池返回的subReactor EventLoop来执行IO
 	EventLoop* m_loop;
 	// 监听地址端口字符串
 	const string m_ipPort;
 	// 服务器名称
 	const string m_name;
-	// 连接接收器，使用该类来创建、监听连接，并通过处理该套接字来获得新连接sockfd
+	// 连接接收器，使用该类来创建，监听连接，并通过处理该套接字来获得新连接sockfd
 	std::unique_ptr<Acceptor> m_acceptor;
 	// 线程池IO事件循环
 	std::shared_ptr<EventLoopThreadPool> m_threadPool;
-	// 外部连接/断开通知回调函数
+	// TCP连接/断开通知回调函数
 	ConnectionCallback m_connectionCallback;
-	// 外部处理收到消息的回调调函数
+	// TCP处理收到消息的回调调函数
 	MessageCallback m_messageCallback;
-	// 数据发送完成的回调函数，直接发送成功/发送缓冲区发送完毕
+	// TCP数据发送完成的回调函数，直接发送成功/发送缓冲区发送完毕
 	WriteCompleteCallback m_writeCompleteCallback;
 	// IO事件循环前的回调函数
 	ThreadInitCallback m_threadInitCallback;
 	// 用于只启动一次服务器
 	std::atomic<int> m_started;
 	// 生成连接ID
-	int m_nextConnId;
+	uint32_t m_nextConnId;
 	// 连接管理器
 	// 连接名称 <-> 连接对象的智能指针
 	ConnectionMap m_connections;

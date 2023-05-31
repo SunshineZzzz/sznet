@@ -349,7 +349,9 @@ public:
 		return m_buffer.capacity();
 	}
 	// 从socket中读取数据
-	sz_ssize_t readFd(net::sockets::sz_sock fd, int* savedErrno);
+	sz_ssize_t readvFd(sockets::sz_sock fd, int* savedErrno);
+	sz_ssize_t readFd(sockets::sz_sock fd, int* savedErrno);
+	sz_ssize_t recvFrom(sockets::sz_sock fd, struct sockaddr* addr, int* savedErrno);
 
 private:
 	// buffer缓冲区头

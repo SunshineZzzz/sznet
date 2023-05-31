@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\3rd\kcp\ikcp.h" />
     <ClInclude Include="..\sznet\base\Callbacks.h" />
     <ClInclude Include="..\sznet\base\Compiler.h" />
     <ClInclude Include="..\sznet\base\Copyable.h" />
@@ -46,6 +47,12 @@
     <ClInclude Include="..\sznet\net\EventLoopThread.h" />
     <ClInclude Include="..\sznet\net\EventLoopThreadPool.h" />
     <ClInclude Include="..\sznet\net\InetAddress.h" />
+    <ClInclude Include="..\sznet\net\KcpConnection.h" />
+    <ClInclude Include="..\sznet\net\KcpTcpEventLoop.h" />
+    <ClInclude Include="..\sznet\net\KcpTcpEventLoopThread.h" />
+    <ClInclude Include="..\sznet\net\KcpTcpEventLoopThreadPool.h" />
+    <ClInclude Include="..\sznet\net\KcpWithTcpClient.h" />
+    <ClInclude Include="..\sznet\net\KcpWithTcpServer.h" />
     <ClInclude Include="..\sznet\net\Poller.h" />
     <ClInclude Include="..\sznet\net\SelectPoller.h" />
     <ClInclude Include="..\sznet\net\Socket.h" />
@@ -71,6 +78,7 @@
     <ClInclude Include="..\sznet\time\Timestamp.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\3rd\kcp\ikcp.c" />
     <ClCompile Include="..\sznet\io\FileUtil.cpp" />
     <ClCompile Include="..\sznet\io\IO.cpp" />
     <ClCompile Include="..\sznet\log\AsyncLogging.cpp" />
@@ -87,6 +95,12 @@
     <ClCompile Include="..\sznet\net\EventLoopThread.cpp" />
     <ClCompile Include="..\sznet\net\EventLoopThreadPool.cpp" />
     <ClCompile Include="..\sznet\net\InetAddress.cpp" />
+    <ClCompile Include="..\sznet\net\KcpConnection.cpp" />
+    <ClCompile Include="..\sznet\net\KcpTcpEventLoop.cpp" />
+    <ClCompile Include="..\sznet\net\KcpTcpEventLoopThread.cpp" />
+    <ClCompile Include="..\sznet\net\KcpTcpEventLoopThreadPool.cpp" />
+    <ClCompile Include="..\sznet\net\KcpWithTcpClient.cpp" />
+    <ClCompile Include="..\sznet\net\KcpWithTcpServer.cpp" />
     <ClCompile Include="..\sznet\net\Poller.cpp" />
     <ClCompile Include="..\sznet\net\SelectPoller.cpp" />
     <ClCompile Include="..\sznet\net\Socket.cpp" />

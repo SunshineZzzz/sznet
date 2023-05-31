@@ -36,7 +36,7 @@ public:
 };
 IgnoreSigPipe initObj;
 
-EventLoop::EventLoop(): 
+EventLoop::EventLoop():
 	m_looping(false),
 	m_quit(false),
 	m_eventHandling(false),
@@ -96,6 +96,8 @@ void EventLoop::loop()
 	{
 		m_activeChannels.clear();
 		m_pollTime = Timestamp::now();
+		// 优先处理到期timer
+		m_timerQueue->expiredProcess(m_pollTime);
 		// IO
 		m_poller->poll(&m_activeChannels, m_timerQueue->earliestExpiredTime(m_pollTime, kPollTimeMs));
 		++m_iteration;
@@ -104,8 +106,6 @@ void EventLoop::loop()
 			printActiveChannels();
 		}
 		m_eventHandling = true;
-		// 处理到期timer
-		m_timerQueue->expiredProcess(m_pollTime);
 		// 处理就绪事件
 		for (Channel* channel : m_activeChannels)
 		{
@@ -118,7 +118,6 @@ void EventLoop::loop()
 		// 这种设计使得IO线程也能执行一些计算任务，避免了IO线程在不忙时长期阻塞在IO multiplexing调用中
 		// 这些任务显然必须是要求在IO线程中执行
 		doPendingFunctors();
-		doPerTickFunctors();
 	}
 	
 	LOG_TRACE << "EventLoop " << this << " stop looping";
@@ -147,44 +146,6 @@ void EventLoop::runInLoop(Functor cb)
 	{
 		queueInLoop(std::move(cb));
 	}
-}
-
-int EventLoop::runPerTick(PerTickFuncWrap* ptfw)
-{
-	assert(ptfw);
-	if (isInLoopThread())
-	{
-		ptfw->idx = static_cast<int>(m_perTickFunctos.size());
-		m_perTickFunctos.emplace_back(ptfw);
-		wakeup();
-		return 0;
-	}
-	LOG_ERROR << "Call runPerTick must in loop thread";
-	return -1;
-}
-
-int EventLoop::delRunPerTick(PerTickFuncWrap* ptfw)
-{
-	assert(ptfw);
-	if (isInLoopThread())
-	{
-		auto idx = ptfw->idx;
-		assert(0 <= idx && idx < static_cast<int>(m_perTickFunctos.size()));
-		if (implicit_cast<size_t>(idx) == m_perTickFunctos.size() - 1)
-		{
-			m_perTickFunctos.pop_back();
-		}
-		else
-		{
-			auto lastElem = m_perTickFunctos.back();
-			std::iter_swap(m_perTickFunctos.begin() + idx, m_perTickFunctos.end() - 1);
-			lastElem->idx = idx;
-			m_perTickFunctos.pop_back();
-		}
-		return 0;
-	}
-	LOG_ERROR << "Call delRunPerTick must in loop thread";
-	return -1;
 }
 
 void EventLoop::queueInLoop(Functor cb)
@@ -359,14 +320,6 @@ void EventLoop::doPendingFunctors()
 	}
 
 	m_callingPendingFunctors = false;
-}
-
-void EventLoop::doPerTickFunctors()
-{
-	for (const auto& wrap : m_perTickFunctos)
-	{
-		wrap->func();
-	}
 }
 
 void EventLoop::printActiveChannels() const

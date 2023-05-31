@@ -8,12 +8,20 @@
 #include "Endian.h"
 #include "TcpConnection.h"
 
+namespace sznet
+{
+
+namespace net
+{
+
 // 4字节编解码器
-class LengthHeaderCodec : sznet::NonCopyable
+template <typename TSPTR = TcpConnectionPtr>
+class LengthHeaderCodec : NonCopyable
 {
 public:
+	typedef typename TSPTR::element_type TPTR;
 	// 分包回调函数类型
-	typedef std::function<void(const sznet::net::TcpConnectionPtr&, const sznet::string&, sznet::Timestamp)> StringMessageCallback;
+	typedef std::function<void(const TSPTR&, const string&, Timestamp)> StringMessageCallback;
 
 	explicit LengthHeaderCodec(const StringMessageCallback& cb) :
 		m_messageCallback(cb)
@@ -21,7 +29,7 @@ public:
 	}
 
 	// 分包
-	void onMessage(const sznet::net::TcpConnectionPtr& conn, sznet::net::Buffer* buf, sznet::Timestamp receiveTime)
+	void onMessage(const TSPTR& conn, Buffer* buf, Timestamp receiveTime)
 	{
 		// kHeaderLen == 4
 		while (buf->readableBytes() >= kHeaderLen)
@@ -39,7 +47,7 @@ public:
 			else if (buf->readableBytes() >= len + kHeaderLen)
 			{
 				buf->retrieve(kHeaderLen);
-				sznet::string message(buf->peek(), len);
+				string message(buf->peek(), len);
 				m_messageCallback(conn, message, receiveTime);
 				buf->retrieve(len);
 			}
@@ -50,24 +58,24 @@ public:
 		}
 	}
 	// 打包
-	// FIXME: TcpConnectionPtr
-	void send(sznet::net::TcpConnection* conn, const sznet::StringPiece& message)
+	// FIXME: TSPTR
+	void send(TPTR* conn, const StringPiece& message)
 	{
-		sznet::net::Buffer buf;
+		Buffer buf;
 		buf.append(message.data(), message.size());
 		int32_t len = static_cast<int32_t>(message.size());
 		buf.prepend(&len, sizeof(len));
 		conn->send(&buf);
 	}
-	void send(sznet::net::TcpConnection* conn, const void* pData, size_t size)
+	void send(TPTR* conn, const void* pData, size_t size)
 	{
-		sznet::net::Buffer buf;
-		buf.append(pData, sznet::implicit_cast<size_t>(size));
+		Buffer buf;
+		buf.append(pData, implicit_cast<size_t>(size));
 		int32_t len = static_cast<int32_t>(size);
 		buf.prepend(&len, sizeof(len));
 		conn->send(&buf);
 	}
-	void send(sznet::net::TcpConnection* conn, sznet::net::Buffer& buf, size_t size)
+	void send(TPTR* conn, Buffer& buf, size_t size)
 	{
 		int32_t len = static_cast<int32_t>(size);
 		buf.prepend(&len, sizeof(len));
@@ -81,4 +89,7 @@ private:
 	const static size_t kHeaderLen = sizeof(int32_t);
 };
 
+}
+
+}
 #endif // _SZNET_NET_LENHTHHEADERCODEC_H_

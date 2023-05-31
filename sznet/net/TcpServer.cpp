@@ -62,8 +62,8 @@ void TcpServer::newConnection(sockets::sz_sock sockfd, const InetAddress& peerAd
 	m_loop->assertInLoopThread();
 	EventLoop* ioLoop = m_threadPool->getNextLoop();
 	char buf[64];
-	snprintf(buf, sizeof(buf), "-%s#%d", m_ipPort.c_str(), m_nextConnId);
-	++m_nextConnId;
+	uint32_t connId = m_nextConnId++;
+	snprintf(buf, sizeof(buf), "-%s#%d", m_ipPort.c_str(), connId);
 	string connName = m_name + buf;
 
 	LOG_INFO << "TcpServer::newConnection [" << m_name
@@ -73,8 +73,8 @@ void TcpServer::newConnection(sockets::sz_sock sockfd, const InetAddress& peerAd
 	// 创建连接
 	// FIXME poll with zero timeout to double confirm the new connection
 	// FIXME use make_shared if necessary
-	TcpConnectionPtr conn(new TcpConnection(ioLoop, connName, sockfd, localAddr, peerAddr));
-	m_connections[connName] = conn;
+	TcpConnectionPtr conn(new TcpConnection(ioLoop, connName, connId, sockfd, localAddr, peerAddr));
+	m_connections[connId] = conn;
 	conn->setConnectionCallback(m_connectionCallback);
 	conn->setMessageCallback(m_messageCallback);
 	conn->setWriteCompleteCallback(m_writeCompleteCallback);
@@ -93,8 +93,8 @@ void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& conn)
 {
 	m_loop->assertInLoopThread();
 	LOG_INFO << "TcpServer::removeConnectionInLoop [" << m_name
-		<< "] - connection " << conn->name();
-	size_t n = m_connections.erase(conn->name());
+		<< "] - connection " << conn->name() << " - " << conn->id();
+	size_t n = m_connections.erase(conn->id());
 	(void)n;
 	assert(n == 1);
 	EventLoop* ioLoop = conn->getLoop();

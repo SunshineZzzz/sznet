@@ -1,13 +1,8 @@
-#include <sznet/net/TcpServer.h>
-#include <sznet/log/Logging.h>
-#include <sznet/thread/Thread.h>
-#include <sznet/net/EventLoop.h>
-#include <sznet/net/InetAddress.h>
-#include <sznet/process/Process.h>
-#include <sznet/net/Codec.h>
+#include <sznet/net/KcpWithTcpServer.h>
+#include <sznet/net/EventLoopThread.h>
+#include <sznet/net/KcpTcpEventLoop.h>
+#include <sznet/net/KcpConnection.h>
 
-#include <atomic>
-#include <utility>
 #include <stdio.h>
 #include <signal.h>
 
@@ -33,17 +28,17 @@ void StopSignal(int sig)
 class EchoServer
 {
 public:
-    EchoServer(EventLoop* loop, const InetAddress& listenAddr) : 
-        m_server(loop, listenAddr, "EchoServer"),
+    EchoServer(KcpTcpEventLoop* loop, const std::vector<InetAddress>& udpListenAddrs, const InetAddress& listenAddr) :
+        m_server(loop, listenAddr, udpListenAddrs, "EchoServer"),
         m_transferred(0),
         m_receivedMessages(0),
         m_oldCounter(0),
         m_startTime(Timestamp::now()),
         m_codec(std::bind(&EchoServer::onMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))
     {
-        m_server.setConnectionCallback(
+        m_server.setKcpConnectionCallback(
             std::bind(&EchoServer::onConnection, this, std::placeholders::_1));
-        m_server.setMessageCallback(std::bind(&LengthHeaderCodec<>::onMessage, &m_codec,
+        m_server.setKcpMessageCallback(std::bind(&LengthHeaderCodec<KcpConnectionPtr>::onMessage, &m_codec,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
         m_server.setThreadNum(numThreads);
         loop->runEvery(3.0, std::bind(&EchoServer::printThroughput, this));
@@ -56,20 +51,14 @@ public:
     }
 
 private:
-    void onConnection(const TcpConnectionPtr& conn)
+    void onConnection(const KcpConnectionPtr& conn)
     {
-        LOG_TRACE << conn->peerAddress().toIpPort() << " -> "
-            << conn->localAddress().toIpPort() << " is "
+        LOG_INFO << conn->name() << " - "  << conn->peerAddress().toIpPort() 
+            << " -> " << conn->localAddress().toIpPort() << " is "
             << (conn->connected() ? "UP" : "DOWN");
-        conn->setTcpNoDelay(true);
-
-        if (conn->connected())
-        {
-            m_codec.send(get_pointer(conn), "hello");
-        }
     }
 
-    void onMessage(const sznet::net::TcpConnectionPtr& conn, const sznet::string& message, sznet::Timestamp receiveTime)
+    void onMessage(const sznet::net::KcpConnectionPtr& conn, const sznet::string& message, sznet::Timestamp receiveTime)
     {
         LOG_INFO << "server recv: " << message;
 
@@ -97,8 +86,8 @@ private:
         m_startTime = endTime;
     }
 
-    // TCP服务器
-    TcpServer m_server;
+    // KCP服务器
+    KcpWithTcpServer m_server;
     // 总接收到数据字节数
     std::atomic<int64_t> m_transferred;
     // timer内接收到数据次数
@@ -108,7 +97,7 @@ private:
     // 两次timer的差值
     Timestamp m_startTime;
     // 编解码器
-    LengthHeaderCodec<> m_codec;
+    LengthHeaderCodec<KcpConnectionPtr> m_codec;
 };
 
 int main(int argc, char* argv[])
@@ -130,11 +119,17 @@ int main(int argc, char* argv[])
     {
         numThreads = atoi(argv[1]);
     }
-    numThreads = (numThreads == 0 ? 1 : numThreads);
-    EventLoop loop;
+    numThreads = (numThreads == 0 ? 2 : numThreads);
+    InetAddress tcpListenAddr(2023);
+    std::vector<InetAddress> udpListenAddr;
+    for (int i = 1; i <= numThreads; ++i)
+    {
+        udpListenAddr.emplace_back(2023 + i);
+    }
+
+    KcpTcpEventLoop loop(tcpListenAddr, "base", 0);
     g_pMainLoopsRun = &loop;
-    InetAddress listenAddr(2023);
-    EchoServer server(&loop, listenAddr);
+    EchoServer server(&loop, udpListenAddr, tcpListenAddr);
 
     server.start();
 

@@ -46,7 +46,7 @@ public:
 	};
 
 public:
-	TcpConnection(EventLoop* loop, const string& name, sockets::sz_sock sockfd, const InetAddress& localAddr, const InetAddress& peerAddr);
+	TcpConnection(EventLoop* loop, const string& name, const uint32_t id, sockets::sz_sock sockfd, const InetAddress& localAddr, const InetAddress& peerAddr);
 	~TcpConnection();
 
 	// 获取TCP连接所属的IO事件循环
@@ -58,6 +58,11 @@ public:
 	const string& name() const 
 	{ 
 		return m_name; 
+	}
+	// 获取连接ID
+	const uint32_t id() const
+	{
+		return m_id;
 	}
 	// 获取连接的本地地址
 	const InetAddress& localAddress() const 
@@ -164,6 +169,8 @@ public:
 	}
 	// shrink收发缓冲区
 	void shrinkRSBuffer(size_t sendSize, size_t recvSize);
+	// m_loop所在线程中关闭连接，关闭写端
+	void forceCloseInLoop();
 
 private:
 	// 连接状态
@@ -191,8 +198,6 @@ private:
 	void sendInLoop(const void* message, size_t len);
 	// m_loop所在线程中半关闭，关闭写端
 	void shutdownInLoop();
-	// m_loop所在线程中关闭连接，关闭写端
-	void forceCloseInLoop();
 	// 设置状态
 	void setState(StateE s) 
 	{ 
@@ -211,6 +216,8 @@ private:
 	EventLoop* m_loop;
 	// 连接名称
 	const string m_name;
+	// 连接ID
+	uint32_t m_id;
 	// 连接状态
 	StateE m_state;
 	// 是否注册可读事件
@@ -223,15 +230,15 @@ private:
 	const InetAddress m_localAddr;
 	// 对方客户端地址
 	const InetAddress m_peerAddr;
-	// 外部连接建立/断开回调函数
+	// TCP连接建立/断开回调函数
 	ConnectionCallback m_connectionCallback;
-	// 外部处理收到消息的回调调函数
+	// TCP处理收到消息的回调调函数
 	MessageCallback m_messageCallback;
-	// 数据发送完成的回调函数，直接发送成功/发送缓冲区发送完毕
+	// TCP数据发送完成的回调函数，直接发送成功/发送缓冲区发送完毕
 	WriteCompleteCallback m_writeCompleteCallback;
-	// 发送高水位线回调函数，上升沿触发一次
+	// TCP发送高水位线回调函数，上升沿触发一次
 	HighWaterMarkCallback m_highWaterMarkCallback;
-	// 内部连接断开回调函数
+	// TCP连接断开回调函数
 	CloseCallback m_closeCallback;
 	// 发送高水位线
 	size_t m_highWaterMark;

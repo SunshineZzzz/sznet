@@ -17,6 +17,10 @@ namespace net
 
 Socket::~Socket()
 {
+	if (!m_ableClose)
+	{
+		return;
+	}
 	sockets::sz_closesocket(m_sockfd);
 }
 

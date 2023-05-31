@@ -27,9 +27,10 @@ void defaultMessageCallback(const TcpConnectionPtr&, Buffer* buf, Timestamp)
 	buf->retrieveAll();
 }
 
-TcpConnection::TcpConnection(EventLoop* loop, const string& nameArg, sockets::sz_sock sockfd, const InetAddress& localAddr, const InetAddress& peerAddr): 
+TcpConnection::TcpConnection(EventLoop* loop, const string& nameArg, const uint32_t id, sockets::sz_sock sockfd, const InetAddress& localAddr, const InetAddress& peerAddr): 
 	m_loop(CHECK_NOTNULL(loop)),
 	m_name(nameArg),
+	m_id(id),
 	m_state(kConnecting),
 	m_reading(true),
 	m_socket(new Socket(sockfd)),
@@ -297,7 +298,10 @@ void TcpConnection::connectEstablished()
 	m_channel->tie(shared_from_this());
 	m_channel->enableReading();
 
-	m_connectionCallback(shared_from_this());
+	if (m_connectionCallback)
+	{
+		m_connectionCallback(shared_from_this());
+	}
 }
 
 void TcpConnection::connectDestroyed()
@@ -322,7 +326,7 @@ void TcpConnection::handleRead(Timestamp receiveTime)
 	{
 		do
 		{
-			n = m_inputBuffer.readFd(m_channel->fd(), &savedErrno);
+			n = m_inputBuffer.readvFd(m_channel->fd(), &savedErrno);
 		} while (n == -1 && savedErrno == sz_err_eintr);
 		if (n > 0)
 		{
@@ -408,7 +412,10 @@ void TcpConnection::handleClose()
 
 	// 防止提前释放，造成不可预估的情况
 	TcpConnectionPtr guardThis(shared_from_this());
-	m_connectionCallback(guardThis);
+	if (m_connectionCallback)
+	{
+		m_connectionCallback(guardThis);
+	}
 	// must be the last line
 	m_closeCallback(guardThis);
 }

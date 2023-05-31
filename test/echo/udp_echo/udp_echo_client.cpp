@@ -8,6 +8,7 @@
 #include <sznet/net/EventLoopThread.h>
 #include <sznet/net/Channel.h>
 #include <sznet/string/StringOpt.h>
+#include <sznet/time/Time.h>
 
 #include <signal.h>
 #include <string>
@@ -244,6 +245,8 @@ int main(int argc, char* argv[])
         }
         if (tokens[0] == "quit")
         {
+            pLoop->runInLoop(std::bind(&Channel::disableAll, &channel));
+            pLoop->runInLoop(std::bind(&Channel::remove, &channel));
             break;
         }
         // ·¢ËÍÏûÏ¢
@@ -252,5 +255,10 @@ int main(int argc, char* argv[])
         LOG_INFO << "sz_socket_write rst: " << ns;
     }
 
+    while (!channel.isNoneEvent())
+    {
+        sz_sleep(1 * 1000);
+    }
+    
 	return 0;
 }
