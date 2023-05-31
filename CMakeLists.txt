@@ -44,6 +44,7 @@ string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
 message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_TYPE}})
 
 aux_source_directory("sznet/." SRC_LIST)
+aux_source_directory("3rd/." SRC_LIST)
 
 aux_source_directory("sznet/." SRC_LIST)
 aux_source_directory("sznet/base" SRC_LIST)
@@ -55,6 +56,7 @@ aux_source_directory("sznet/process" SRC_LIST)
 aux_source_directory("sznet/string" SRC_LIST)
 aux_source_directory("sznet/thread" SRC_LIST)
 aux_source_directory("sznet/time" SRC_LIST)
+
 
 add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
 
