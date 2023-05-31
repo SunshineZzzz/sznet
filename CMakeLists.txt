@@ -44,7 +44,7 @@ string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
 message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_TYPE}})
 
 aux_source_directory("sznet/." SRC_LIST)
-aux_source_directory("3rd/." SRC_LIST)
+aux_source_directory("3rd/kcp/." SRC_LIST)
 
 aux_source_directory("sznet/." SRC_LIST)
 aux_source_directory("sznet/base" SRC_LIST)
