@@ -262,7 +262,7 @@ void KcpConnection::shrinkRSBufferInLoop(size_t sendSize, size_t recvSize)
 
 void KcpConnection::kcpUpdateManual()
 {
-	LOG_INFO << "kcpUpdateManual";
+	// LOG_INFO << "kcpUpdateManual";
 	m_loop->assertInLoopThread();
 	assert(m_state == kConnected);
 	Timestamp curTimeStamp = Timestamp::now();
