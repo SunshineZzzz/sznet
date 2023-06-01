@@ -18,6 +18,7 @@ KcpWithTcpServer::KcpWithTcpServer(KcpTcpEventLoop* loop, const InetAddress& lis
 	m_name(nameArg),
 	m_acceptor(new Acceptor(loop, listenAddr, option == kReusePort)),
 	m_threadPool(new KcpTcpEventLoopThreadPool(loop, udpListenAddrs, m_name)),
+	m_started(0),
 	m_nextConnId(1),
 	m_udpListenAddrs(udpListenAddrs),
 	m_tcpCodec(std::bind(&KcpWithTcpServer::tcpMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)),
