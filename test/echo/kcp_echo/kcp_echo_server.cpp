@@ -125,21 +125,24 @@ int main(int argc, char* argv[])
     signal(SIGTERM, StopSignal);
 
     LOG_INFO << "pid = " << sz_getpid() << ", tid = " << CurrentThread::tid();
-    if (argc <= 3)
+    if (argc <= 5)
     {
-        printf("Usage: %s thread_num mode(1-echo, others-RTT) kcp_mode(1-normal, others-quick)\n", argv[0]);
+        printf("Usage: %s ip port thread_num mode(1-echo, others-RTT) kcp_mode(1-normal, others-quick)\n", argv[0]);
         return 0;
     }
 
-    numThreads = atoi(argv[1]);
+    char* szSvrip = argv[1];
+    uint16_t sSvrPort = static_cast<uint16_t>(atoi(argv[2]));
+    numThreads = atoi(argv[3]);
     numThreads = (numThreads == 0 ? 2 : numThreads);
-    int mode = atoi(argv[2]);
-    int kcpMode = atoi(argv[3]);
-    InetAddress tcpListenAddr(2023);
+    int mode = atoi(argv[4]);
+    int kcpMode = atoi(argv[5]);
+    
+    InetAddress tcpListenAddr(szSvrip, sSvrPort);
     std::vector<InetAddress> udpListenAddr;
     for (int i = 1; i <= numThreads; ++i)
     {
-        udpListenAddr.emplace_back(2023 + i);
+        udpListenAddr.emplace_back(sSvrPort + i);
     }
 
     KcpTcpEventLoop loop(tcpListenAddr, "base", 0);

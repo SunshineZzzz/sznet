@@ -139,9 +139,9 @@ int main(int argc, char* argv[])
 #endif
 
     LOG_INFO << "pid = " << sz_getpid() << ", tid = " << CurrentThread::tid();
-    if (argc <= 2)
+    if (argc <= 3)
     {
-        printf("Usage: %s host_ip mode(1-echo, others-RTT)\n", argv[0]);
+        printf("Usage: %s host_ip port mode(1-echo, others-RTT)\n", argv[0]);
         return 0;
     }
 
@@ -149,12 +149,13 @@ int main(int argc, char* argv[])
     signal(SIGTERM, StopSignal);
 
     char* szSvrIp = argv[1];
-    int mode = atoi(argv[2]);
+    uint16_t sSvrPort = static_cast<uint16_t>(atoi(argv[2]));
+    int mode = atoi(argv[3]);
 
     EventLoopThread threadLoop;
     EventLoop* pLoop = threadLoop.startLoop();
 
-    InetAddress serverAddr(szSvrIp, 2023);
+    InetAddress serverAddr(szSvrIp, sSvrPort);
 
     EchoClient client(pLoop, serverAddr, mode);
     client.connect();

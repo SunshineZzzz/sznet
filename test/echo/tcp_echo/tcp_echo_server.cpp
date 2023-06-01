@@ -127,19 +127,21 @@ int main(int argc, char* argv[])
     signal(SIGTERM, StopSignal);
 
     LOG_INFO << "pid = " << sz_getpid() << ", tid = " << CurrentThread::tid();
-    if (argc <= 2)
+    if (argc <= 4)
     {
-        printf("Usage: %s thread_num mode(1-echo, others-RTT)\n", argv[0]);
+        printf("Usage: %s ip port thread_num mode(1-echo, others-RTT)\n", argv[0]);
         return 0;
     }
 
-    numThreads = atoi(argv[1]);
+    char* szSvrip = argv[1];
+    uint16_t sSvrPort= static_cast<uint16_t>(atoi(argv[2]));
+    numThreads = atoi(argv[3]);
     numThreads = (numThreads == 0 ? 2 : numThreads);
-    int mode = atoi(argv[2]);
+    int mode = atoi(argv[4]);
 
     EventLoop loop;
     g_pMainLoopsRun = &loop;
-    InetAddress listenAddr(2023);
+    InetAddress listenAddr(szSvrip, sSvrPort);
     EchoServer server(&loop, listenAddr, mode);
 
     server.start();
