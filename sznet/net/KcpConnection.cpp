@@ -26,7 +26,7 @@ void defaultKcpMessageCallback(const KcpConnectionPtr&, Buffer* buf, Timestamp)
 
 const double KcpConnection::kEverySendVerify = 10.0;
 
-KcpConnection::KcpConnection(EventLoop* loop, sockets::sz_sock fd, int secretId, const string& nameArg, const uint32_t id, bool isClient, const KcpSettings& kcpSet) :
+KcpConnection::KcpConnection(EventLoop* loop, sockets::sz_sock fd, int secretId, const string& nameArg, const uint32_t id, bool isClient, int kcpMode) :
 	m_loop(CHECK_NOTNULL(loop)),
 	m_udpSocket(fd, isClient),
 	m_name(nameArg),
@@ -40,7 +40,7 @@ KcpConnection::KcpConnection(EventLoop* loop, sockets::sz_sock fd, int secretId,
 	m_kcp(nullptr),
 	m_isClient(isClient),
 	m_secretId(secretId),
-	m_kcpSet(kcpSet)
+	m_kcpSet(kcpMode == 1 ? getNormalKcpSet() : getQuickKcpSet())
 {
 	m_loop->assertInLoopThread();
 	LOG_DEBUG << "KcpConnection::ctor[" << m_name << "] at " << this << " id=" << id;
@@ -59,8 +59,6 @@ KcpConnection::~KcpConnection()
 		<< " id=" << m_id
 		<< " state=" << stateToString();
 	assert(m_state == kDisconnected);
-	m_loop->cancel(m_kcpUpdateTimerId);
-	m_loop->cancel(m_verifyTimerId);
 	if (m_kcp)
 	{
 		ikcp_release(m_kcp);
@@ -406,6 +404,10 @@ void KcpConnection::handleKcpClose()
 	assert(m_state == kConnected || m_state == kConnecting || m_state == kDisconnecting);
 	// we don't close fd, leave it to dtor, so we can find leaks easily.
 	setState(kDisconnected);
+	
+	// 先释放了
+	m_loop->cancel(m_kcpUpdateTimerId);
+	m_loop->cancel(m_verifyTimerId);
 
 	// 防止提前释放，造成不可预估的情况
 	KcpConnectionPtr guardThis(shared_from_this());

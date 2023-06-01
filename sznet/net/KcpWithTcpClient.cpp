@@ -37,7 +37,7 @@ void removeKcpConnection(EventLoop* loop, const KcpConnectionPtr& conn)
 
 } // namespace detail
 
-KcpWithTcpClient::KcpWithTcpClient(EventLoop* loop, const InetAddress& tcpServerAddr, const string& nameArg):
+KcpWithTcpClient::KcpWithTcpClient(EventLoop* loop, const InetAddress& tcpServerAddr, const string& nameArg, int kcpMode):
 	m_loop(CHECK_NOTNULL(loop)),
 	m_tcpConnector(new Connector(loop, tcpServerAddr)),
     m_name(nameArg),
@@ -47,8 +47,8 @@ KcpWithTcpClient::KcpWithTcpClient(EventLoop* loop, const InetAddress& tcpServer
     m_tcpConnect(true),
     m_nextConnId(1),
 	m_tcpCodec(std::bind(&KcpWithTcpClient::handleTcpMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)),
-	m_udpListenAddr(tcpServerAddr)
-	
+	m_udpListenAddr(tcpServerAddr),
+	m_kcpMode(kcpMode)
 {
 	m_tcpConnector->setNewConnectionCallback(std::bind(&KcpWithTcpClient::newTcpConnection, this, std::placeholders::_1));
 	// FIXME setConnectFailedCallback
@@ -223,7 +223,7 @@ void KcpWithTcpClient::handleTcpMessage(const TcpConnectionPtr& tcpConn, const s
 	uint32_t connId = m_nextConnId++;
 	snprintf(buf, sizeof(buf), ":kcp-%s#%d", m_udpListenAddr.toIpPort().c_str(), tcpConn->id());
 	string connName = m_name + buf;
-	m_kcpConnection.reset(new KcpConnection(m_loop, sockets::sz_udp_create(m_udpListenAddr.family()), secretId, connName, conv, true));
+	m_kcpConnection.reset(new KcpConnection(m_loop, sockets::sz_udp_create(m_udpListenAddr.family()), secretId, connName, conv, true, m_kcpMode));
 	m_kcpConnection->setState(KcpConnection::StateE::kConnecting);
 	m_kcpConnection->setPeerAddr(m_udpListenAddr);
 	m_kcpConnection->newKCP();

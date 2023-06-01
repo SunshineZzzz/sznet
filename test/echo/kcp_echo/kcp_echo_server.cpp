@@ -28,20 +28,26 @@ void StopSignal(int sig)
 class EchoServer
 {
 public:
-    EchoServer(KcpTcpEventLoop* loop, const std::vector<InetAddress>& udpListenAddrs, const InetAddress& listenAddr) :
-        m_server(loop, listenAddr, udpListenAddrs, "EchoServer"),
+    EchoServer(KcpTcpEventLoop* loop, const std::vector<InetAddress>& udpListenAddrs, const InetAddress& listenAddr, int mode = 1, int kcpMode = 1) :
+        m_server(loop, listenAddr, udpListenAddrs, "EchoServer", kcpMode),
         m_transferred(0),
         m_receivedMessages(0),
         m_oldCounter(0),
         m_startTime(Timestamp::now()),
-        m_codec(std::bind(&EchoServer::onMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))
+        m_codec(std::bind(&EchoServer::onMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)),
+        m_mode(mode),
+        m_kcpMode(kcpMode)
+
     {
         m_server.setKcpConnectionCallback(
             std::bind(&EchoServer::onConnection, this, std::placeholders::_1));
         m_server.setKcpMessageCallback(std::bind(&LengthHeaderCodec<KcpConnectionPtr>::onMessage, &m_codec,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
         m_server.setThreadNum(numThreads);
-        loop->runEvery(3.0, std::bind(&EchoServer::printThroughput, this));
+        if (m_mode == 1)
+        {
+            loop->runEvery(3.0, std::bind(&EchoServer::printThroughput, this));
+        }
     }
 
     void start()
@@ -57,18 +63,18 @@ private:
             << " -> " << conn->localAddress().toIpPort() << " is "
             << (conn->connected() ? "UP" : "DOWN");
     }
-
     void onMessage(const sznet::net::KcpConnectionPtr& conn, const sznet::string& message, sznet::Timestamp receiveTime)
     {
-        LOG_INFO << "server recv: " << message;
-
+        if (m_mode == 1)
+        {
+            LOG_INFO << "server recv: " << message;
+        }
+        m_codec.send(get_pointer(conn), message);
         size_t len = message.size();
         m_transferred.fetch_add(len);
         ++m_receivedMessages;
-        m_codec.send(get_pointer(conn), message);
         (void)receiveTime;
     }
-
     // ÍÌÍÂ´òÓ¡
     void printThroughput()
     {
@@ -98,6 +104,10 @@ private:
     Timestamp m_startTime;
     // ±à½âÂëÆ÷
     LengthHeaderCodec<KcpConnectionPtr> m_codec;
+    // 1 - echo, others - RTT
+    int m_mode;
+    // 1 - normal, others - quick
+    int m_kcpMode;
 };
 
 int main(int argc, char* argv[])
@@ -115,11 +125,16 @@ int main(int argc, char* argv[])
     signal(SIGTERM, StopSignal);
 
     LOG_INFO << "pid = " << sz_getpid() << ", tid = " << CurrentThread::tid();
-    if (argc > 1)
+    if (argc <= 3)
     {
-        numThreads = atoi(argv[1]);
+        printf("Usage: %s thread_num mode(1-echo, others-RTT) kcp_mode(1-normal, others-quick)\n", argv[0]);
+        return 0;
     }
+
+    numThreads = atoi(argv[1]);
     numThreads = (numThreads == 0 ? 2 : numThreads);
+    int mode = atoi(argv[2]);
+    int kcpMode = atoi(argv[3]);
     InetAddress tcpListenAddr(2023);
     std::vector<InetAddress> udpListenAddr;
     for (int i = 1; i <= numThreads; ++i)
@@ -129,7 +144,7 @@ int main(int argc, char* argv[])
 
     KcpTcpEventLoop loop(tcpListenAddr, "base", 0);
     g_pMainLoopsRun = &loop;
-    EchoServer server(&loop, udpListenAddr, tcpListenAddr);
+    EchoServer server(&loop, udpListenAddr, tcpListenAddr, mode, kcpMode);
 
     server.start();
 

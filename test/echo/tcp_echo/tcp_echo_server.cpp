@@ -33,20 +33,24 @@ void StopSignal(int sig)
 class EchoServer
 {
 public:
-    EchoServer(EventLoop* loop, const InetAddress& listenAddr) : 
+    EchoServer(EventLoop* loop, const InetAddress& listenAddr, int mode = 1) : 
         m_server(loop, listenAddr, "EchoServer"),
         m_transferred(0),
         m_receivedMessages(0),
         m_oldCounter(0),
         m_startTime(Timestamp::now()),
-        m_codec(std::bind(&EchoServer::onMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))
+        m_codec(std::bind(&EchoServer::onMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)),
+        m_mode(mode)
     {
         m_server.setConnectionCallback(
             std::bind(&EchoServer::onConnection, this, std::placeholders::_1));
         m_server.setMessageCallback(std::bind(&LengthHeaderCodec<>::onMessage, &m_codec,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
         m_server.setThreadNum(numThreads);
-        loop->runEvery(3.0, std::bind(&EchoServer::printThroughput, this));
+        if (m_mode == 1)
+        {
+            loop->runEvery(3.0, std::bind(&EchoServer::printThroughput, this));
+        }
     }
 
     void start()
@@ -62,24 +66,19 @@ private:
             << conn->localAddress().toIpPort() << " is "
             << (conn->connected() ? "UP" : "DOWN");
         conn->setTcpNoDelay(true);
-
-        if (conn->connected())
-        {
-            m_codec.send(get_pointer(conn), "hello");
-        }
     }
-
     void onMessage(const sznet::net::TcpConnectionPtr& conn, const sznet::string& message, sznet::Timestamp receiveTime)
     {
-        LOG_INFO << "server recv: " << message;
-
+        if (m_mode == 1)
+        {
+            LOG_INFO << "server recv: " << message;
+        }
+        m_codec.send(get_pointer(conn), message);
         size_t len = message.size();
         m_transferred.fetch_add(len);
         ++m_receivedMessages;
-        m_codec.send(get_pointer(conn), message);
         (void)receiveTime;
     }
-
     // ÍÌÍÂ´òÓ¡
     void printThroughput()
     {
@@ -109,6 +108,8 @@ private:
     Timestamp m_startTime;
     // ±à½âÂëÆ÷
     LengthHeaderCodec<> m_codec;
+    // 1 - echo, others - RTT
+    int m_mode;
 };
 
 int main(int argc, char* argv[])
@@ -126,15 +127,20 @@ int main(int argc, char* argv[])
     signal(SIGTERM, StopSignal);
 
     LOG_INFO << "pid = " << sz_getpid() << ", tid = " << CurrentThread::tid();
-    if (argc > 1)
+    if (argc <= 2)
     {
-        numThreads = atoi(argv[1]);
+        printf("Usage: %s thread_num mode(1-echo, others-RTT)\n", argv[0]);
+        return 0;
     }
-    numThreads = (numThreads == 0 ? 1 : numThreads);
+
+    numThreads = atoi(argv[1]);
+    numThreads = (numThreads == 0 ? 2 : numThreads);
+    int mode = atoi(argv[2]);
+
     EventLoop loop;
     g_pMainLoopsRun = &loop;
     InetAddress listenAddr(2023);
-    EchoServer server(&loop, listenAddr);
+    EchoServer server(&loop, listenAddr, mode);
 
     server.start();
 

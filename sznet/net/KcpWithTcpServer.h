@@ -41,7 +41,7 @@ public:
 		kReusePort,
 	};
 
-	KcpWithTcpServer(KcpTcpEventLoop* loop, const InetAddress& listenAddr, const std::vector<InetAddress>& udpListenAddrs, const string& nameArg, Option option = kNoReusePort);
+	KcpWithTcpServer(KcpTcpEventLoop* loop, const InetAddress& listenAddr, const std::vector<InetAddress>& udpListenAddrs, const string& nameArg, int kcpMode = 1, Option option = kNoReusePort);
 	~KcpWithTcpServer();
 
 	// ¼àÌýip&port×Ö·û´®
@@ -146,6 +146,8 @@ private:
 	std::vector<InetAddress> m_udpListenAddrs;
 	// 4×Ö½Ú±à½âÂëÆ÷
 	LengthHeaderCodec<> m_tcpCodec;
+	// 1 - normal, others - quick
+	int m_kcpMode;
 };
 
 } // end namespace net

@@ -12,7 +12,7 @@ namespace sznet
 namespace net
 {
 
-KcpWithTcpServer::KcpWithTcpServer(KcpTcpEventLoop* loop, const InetAddress& listenAddr, const std::vector<InetAddress>& udpListenAddrs, const string& nameArg, Option option) :
+KcpWithTcpServer::KcpWithTcpServer(KcpTcpEventLoop* loop, const InetAddress& listenAddr, const std::vector<InetAddress>& udpListenAddrs, const string& nameArg, int kcpMode, Option option) :
 	m_loop(CHECK_NOTNULL(loop)),
 	m_ipPort(listenAddr.toIpPort()),
 	m_name(nameArg),
@@ -20,7 +20,8 @@ KcpWithTcpServer::KcpWithTcpServer(KcpTcpEventLoop* loop, const InetAddress& lis
 	m_threadPool(new KcpTcpEventLoopThreadPool(loop, udpListenAddrs, m_name)),
 	m_nextConnId(1),
 	m_udpListenAddrs(udpListenAddrs),
-	m_tcpCodec(std::bind(&KcpWithTcpServer::tcpMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))
+	m_tcpCodec(std::bind(&KcpWithTcpServer::tcpMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)),
+	m_kcpMode(kcpMode)
 {
 	m_acceptor->setNewConnectionCallback(std::bind(&KcpWithTcpServer::newConnection, this, std::placeholders::_1, std::placeholders::_2));
 }
@@ -145,6 +146,7 @@ void KcpWithTcpServer::onThreadInitCallback(KcpTcpEventLoop* loop)
 		loop->setKcpMessageCallback(m_kcpMessageCallback);
 	}
 	loop->setKcpWriteCompleteCallback(m_kcpWriteCompleteCallback);
+	loop->setKcpMode(m_kcpMode);
 	if (m_threadInitCallback)
 	{
 		m_threadInitCallback(loop);

@@ -32,10 +32,12 @@ void StopSignal(int sig)
 class EchoClient : NonCopyable
 {
 public:
-    EchoClient(EventLoop* loop, const InetAddress& tcplistenAddr) :
+    EchoClient(EventLoop* loop, const InetAddress& tcplistenAddr, int mode = 1, int kcpMode = 1) :
         m_loop(loop),
-        m_client(loop, tcplistenAddr, "EchoClient"),
-        m_kcpCodec(std::bind(&EchoClient::onMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))
+        m_client(loop, tcplistenAddr, "EchoClient", kcpMode),
+        m_kcpCodec(std::bind(&EchoClient::onMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)),
+        m_mode(mode),
+        m_kcpMode(kcpMode)
     {
         m_client.setKcpConnectionCallback(std::bind(&EchoClient::onConnection, this, std::placeholders::_1));
         m_client.setKcpMessageCallback(std::bind(&LengthHeaderCodec<KcpConnectionPtr>::onMessage, &m_kcpCodec, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
@@ -68,11 +70,44 @@ private:
         LOG_INFO << conn->name() << conn->localAddress().toIpPort() 
             << " -> " << conn->peerAddress().toIpPort() << " is "
             << (conn->connected() ? "UP" : "DOWN");
+        {
+            sznet::MutexLockGuard lock(m_mutex);
+            if (conn->connected())
+            {
+                if (m_mode == 1)
+                {
+                    m_everySendForRttTimer = m_loop->runEvery(1.0, std::bind(&EchoClient::everySendForRtt, this));
+                }
+            }
+            else
+            {
+                m_loop->cancel(m_everySendForRttTimer);
+            }
+        }
     }
     // 消息
     void onMessage(const KcpConnectionPtr& conn, const sznet::string& message, sznet::Timestamp receiveTime)
     {
-        LOG_INFO << "client recv: " << message;
+        if (m_mode == 1)
+        {
+            LOG_INFO << "client recv: " << message;
+            return;
+        }
+        uint32_t last = *reinterpret_cast<const uint32_t*>(message.data());
+        uint32_t cur = static_cast<uint32_t>(Timestamp::now().milliSecondsSinceEpoch());
+        uint32_t rtt = (cur - last) / 2;
+        LOG_INFO << "rtt: " << rtt;
+    }
+    // timer不断的发送
+    void everySendForRtt()
+    {
+        m_loop->assertInLoopThread();
+        if (!m_client.kcpConnected())
+        {
+            return;
+        }
+        uint32_t st = static_cast<uint32_t>(Timestamp::now().milliSecondsSinceEpoch());
+        m_kcpCodec.send(get_pointer(m_client.kcpConnection()), reinterpret_cast<const void*>(&st), sizeof(uint32_t));
     }
 
 public:
@@ -84,6 +119,12 @@ public:
     sznet::MutexLock m_mutex;
     // 4字节编解码器
     LengthHeaderCodec<KcpConnectionPtr> m_kcpCodec;
+    // 1 - echo, others - RTT
+    int m_mode;
+    // 1 - normal, others - quick
+    int m_kcpMode;
+    // 便于计算RTT
+    TimerId m_everySendForRttTimer;
 };
 
 int main(int argc, char* argv[])
@@ -98,21 +139,25 @@ int main(int argc, char* argv[])
 #endif
 
     LOG_INFO << "pid = " << sz_getpid() << ", tid = " << CurrentThread::tid();
-    if (argc <= 1)
+    if (argc <= 3)
     {
-        printf("Usage: %s host_ip\n", argv[0]);
+        printf("Usage: %s host_ip mode(1-echo, others-RTT), kcp_mode(1-normal, others-quick)\n", argv[0]);
         return 0;
     }
 
     signal(SIGINT, StopSignal);
     signal(SIGTERM, StopSignal);
 
+    char* szSvrIp = argv[1];
+    int mode = atoi(argv[2]);
+    int kcpMode = atoi(argv[3]);
+
     EventLoopThread threadLoop;
     EventLoop* pLoop = threadLoop.startLoop();
 
-    InetAddress serverAddr(argv[1], 2023);
+    InetAddress serverAddr(szSvrIp, 2023);
 
-    EchoClient client(pLoop, serverAddr);
+    EchoClient client(pLoop, serverAddr, mode, kcpMode);
 
     client.connectTcp();
 
@@ -127,18 +172,21 @@ int main(int argc, char* argv[])
         }
         if (tokens[0] == "quit")
         {
-            // client.disconnect();
+            client.disconnectTcp();
             break;
         }
-        // 发送消息
-        client.write(line);
+        if (mode == 1)
+        {
+            // 发送消息
+            client.write(line);
+        }
     }
 
-    // TcpConnectionPtr conn = client.m_client.connection();
-    //while (conn.use_count() > 1)
-    //{
-    //    sznet::sz_sleep(1 * 1000);
-    //}
+    KcpConnectionPtr conn = client.m_client.kcpConnection();
+    while (conn.use_count() > 1)
+    {
+        sznet::sz_sleep(1 * 1000);
+    }
 
     return 0;
 }

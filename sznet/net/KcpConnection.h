@@ -107,7 +107,7 @@ public:
 	};
 
 public:
-	KcpConnection(EventLoop* loop, sockets::sz_sock fd, int secretId, const string& name, const uint32_t id, bool isClient = true, const KcpSettings& kcpSet = getQuickKcpSet());
+	KcpConnection(EventLoop* loop, sockets::sz_sock fd, int secretId, const string& name, const uint32_t id, bool isClient = true, int kcpMode = 1);
 	~KcpConnection();
 
 	// 获取KCP连接所属的IO事件循环

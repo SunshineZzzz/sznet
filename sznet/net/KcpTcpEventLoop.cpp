@@ -12,7 +12,7 @@ namespace sznet
 namespace net
 {
 
-KcpTcpEventLoop::KcpTcpEventLoop(const InetAddress udpLisetenAddr, string name, int seed) :
+KcpTcpEventLoop::KcpTcpEventLoop(const InetAddress udpLisetenAddr, string name, int seed, int kcpMode) :
 	EventLoop(),
 	m_udpLisetenAddr(udpLisetenAddr),
 	m_udpSocket(sockets::sz_udp_createnonblockingordie(udpLisetenAddr.family())),
@@ -20,7 +20,8 @@ KcpTcpEventLoop::KcpTcpEventLoop(const InetAddress udpLisetenAddr, string name, 
 	m_calcNetLastTime(Timestamp::now()),
 	m_random(seed),
 	m_curConv(0),
-	m_name(name)
+	m_name(name),
+	m_kcpMode(kcpMode)
 {
 	m_udpSocket.bindAddress(m_udpLisetenAddr);
 	m_udpChannel.enableReading();
@@ -33,7 +34,6 @@ KcpTcpEventLoop::~KcpTcpEventLoop()
 	m_udpChannel.disableAll();
 	m_udpChannel.remove();
 }
-
 
 void KcpTcpEventLoop::removeTcpConnectionInLoop(const TcpConnectionPtr& tcpConn)
 {
@@ -217,7 +217,7 @@ void KcpTcpEventLoop::handleNewUdpMessage()
 		char buf[256];
 		snprintf(buf, sizeof(buf), "-kcp-%s#%d", getUdpListenIpPort().c_str(), conv);
 		string connName = m_name + buf;
-		KcpConnectionPtr kcpConn(new KcpConnection(this, m_udpSocket.fd(), secretId, connName, conv, false));
+		KcpConnectionPtr kcpConn(new KcpConnection(this, m_udpSocket.fd(), secretId, connName, conv, false, m_kcpMode));
 		kcpConn->setState(KcpConnection::StateE::kConnecting);
 		kcpConn->setPeerAddr(InetAddress(m_curRecvAddr));
 		kcpConn->newKCP();

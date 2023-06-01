@@ -34,11 +34,12 @@ void StopSignal(int sig)
 class EchoClient : NonCopyable
 {
 public:
-    EchoClient(EventLoop* loop, const InetAddress& listenAddr) : 
+    EchoClient(EventLoop* loop, const InetAddress& listenAddr, int mode = 1) : 
         m_loop(loop),
         m_client(loop, listenAddr, "EchoClient"),
         m_codec(std::bind(&EchoClient::onMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)),
-        m_mutex()
+        m_mutex(),
+        m_mode(mode)
     {
         m_client.setConnectionCallback(
             std::bind(&EchoClient::onConnection, this, std::placeholders::_1));
@@ -65,6 +66,7 @@ public:
     }
 
 private:
+    // 连接 / 断连通知
     void onConnection(const TcpConnectionPtr& conn)
     {
         LOG_TRACE << conn->localAddress().toIpPort() << " -> "
@@ -75,12 +77,39 @@ private:
             if (conn->connected())
             {
                 conn->setTcpNoDelay(true);
+                if (m_mode == 2)
+                {
+                    m_everySendForRttTimer = m_loop->runEvery(1.0, std::bind(&EchoClient::everySendForRtt, this));
+                }
+            }
+            else
+            {
+                m_loop->cancel(m_everySendForRttTimer);
             }
         }
     }
+    // 消息
     void onMessage(const sznet::net::TcpConnectionPtr& conn, const sznet::string& message, sznet::Timestamp receiveTime)
     {
-        LOG_INFO << "client recv: " << message;
+        if (m_mode == 1)
+        {
+            LOG_INFO << "client recv: " << message;
+            return;
+        }
+        uint32_t last = *reinterpret_cast<const uint32_t*>(message.data());
+        uint32_t rtt = (static_cast<uint32_t>(Timestamp::now().milliSecondsSinceEpoch()) - last) / 2;
+        LOG_INFO << "rtt: " << rtt;
+    }
+    // timer不断的发送
+    void everySendForRtt()
+    {
+        m_loop->assertInLoopThread();
+        if (!m_client.connection()->connected())
+        {
+            return;
+        }
+        uint32_t st = static_cast<uint32_t>(Timestamp::now().milliSecondsSinceEpoch());
+        m_codec.send(get_pointer(m_client.connection()), reinterpret_cast<const void*>(&st), sizeof(uint32_t));
     }
 
 public:
@@ -92,6 +121,10 @@ public:
     sznet::MutexLock m_mutex;
     // 4字节编解码器
     LengthHeaderCodec<> m_codec;
+    // 1 - echo, others - RTT
+    int m_mode;
+    // 便于计算RTT
+    TimerId m_everySendForRttTimer;
 };
 
 int main(int argc, char* argv[])
@@ -106,21 +139,24 @@ int main(int argc, char* argv[])
 #endif
 
     LOG_INFO << "pid = " << sz_getpid() << ", tid = " << CurrentThread::tid();
-    if (argc <= 1)
+    if (argc <= 2)
     {
-        printf("Usage: %s host_ip\n", argv[0]);
+        printf("Usage: %s host_ip mode(1-echo, others-RTT)\n", argv[0]);
         return 0;
     }
 
     signal(SIGINT, StopSignal);
     signal(SIGTERM, StopSignal);
 
+    char* szSvrIp = argv[1];
+    int mode = atoi(argv[2]);
+
     EventLoopThread threadLoop;
     EventLoop* pLoop = threadLoop.startLoop();
 
-    InetAddress serverAddr(argv[1], 2023);
+    InetAddress serverAddr(szSvrIp, 2023);
 
-    EchoClient client(pLoop, serverAddr);
+    EchoClient client(pLoop, serverAddr, mode);
     client.connect();
 
     std::string line;
@@ -137,8 +173,11 @@ int main(int argc, char* argv[])
             client.disconnect();
             break;
         }
-        // 发送消息
-        client.write(line);
+        if (mode == 1)
+        {
+            // 发送消息
+            client.write(line);
+        }
     }
 
     TcpConnectionPtr conn = client.m_client.connection();

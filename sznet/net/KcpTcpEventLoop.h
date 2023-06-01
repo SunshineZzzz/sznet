@@ -60,7 +60,7 @@ public:
 	};
 
 public:
-	KcpTcpEventLoop(const InetAddress udpLisetenAddr, string name = string(), int seed = 0);
+	KcpTcpEventLoop(const InetAddress udpLisetenAddr, string name = string(), int seed = 0, int kcpMode = 1);
 	virtual ~KcpTcpEventLoop();
 
 	// 返回线程监听的UDP端口
@@ -134,6 +134,11 @@ public:
 	{
 		m_kcpWriteCompleteCallback = cb;
 	}
+	// 设置KCP模式
+	void setKcpMode(int kcpMode)
+	{
+		m_kcpMode = kcpMode;
+	}
 	// TCP连接断开了
 	void removeTcpConnectionInLoop(const TcpConnectionPtr& conn);
 	// KCP连接断开了
@@ -200,6 +205,8 @@ private:
 	KcpMessageCallback m_kcpMessageCallback;
 	// TCP数据发送完成的回调函数，直接发送成功/发送缓冲区发送完毕
 	KcpWriteCompleteCallback m_kcpWriteCompleteCallback;
+	// 1 - normal, others - quick
+	int m_kcpMode;
 };
 
 } // end namespace net

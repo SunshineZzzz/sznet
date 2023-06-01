@@ -29,7 +29,7 @@ typedef std::shared_ptr<Connector> ConnectorPtr;
 class KcpWithTcpClient : NonCopyable
 {
 public:
-	KcpWithTcpClient(EventLoop* loop, const InetAddress& tcpServerAddr, const string& nameArg);
+	KcpWithTcpClient(EventLoop* loop, const InetAddress& tcpServerAddr, const string& nameArg, int kcpMode = 1);
 	// force out-line dtor, for std::unique_ptr members.
 	~KcpWithTcpClient();
 
@@ -145,6 +145,8 @@ private:
 	InetAddress m_udpListenAddr;
 	// KCPÁ¬½Ó
 	KcpConnectionPtr m_kcpConnection;
+	// 1 - normal, others - quick
+	int m_kcpMode;
 };
 
 } // namespace net
