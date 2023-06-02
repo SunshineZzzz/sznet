@@ -154,7 +154,11 @@ void Thread::start()
 	// FIXME: move(m_func)
 	detail::ThreadData* data = new detail::ThreadData(m_func, m_name, &m_tid, &m_latch);
 	m_pthreadId = sz_thread_create(&detail::startThread, data);
+#ifdef SZ_OS_WINDOWS
+	if (reinterpret_cast<size_t>(m_pthreadId) < 0)
+#else
 	if (m_pthreadId < 0)
+#endif
 	{
 		m_started = false;
 		delete data;
