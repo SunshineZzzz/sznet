@@ -195,6 +195,7 @@ void KcpWithTcpClient::removeTcpConnection(const TcpConnectionPtr& tcpConn)
 
 void KcpWithTcpClient::removeKcpConnection(const KcpConnectionPtr& kcpConn)
 {
+	(void)kcpConn;
 	// 存在的话肯定是KCP主动断开连接，所以需要在关闭TCP的连接
 	if (m_tcpConnection)
 	{
@@ -203,7 +204,7 @@ void KcpWithTcpClient::removeKcpConnection(const KcpConnectionPtr& kcpConn)
 	}
 }
 
-void KcpWithTcpClient::handleTcpMessage(const TcpConnectionPtr& tcpConn, const string& message, Timestamp receiveTime)
+void KcpWithTcpClient::handleTcpMessage(const TcpConnectionPtr& tcpConn, const string& message, Timestamp)
 {
 	m_loop->assertInLoopThread();
 	if (message.size() != (sizeof(uint16_t) + sizeof(int32_t) + sizeof(int32_t)))
@@ -220,7 +221,6 @@ void KcpWithTcpClient::handleTcpMessage(const TcpConnectionPtr& tcpConn, const s
 	m_udpListenAddr.resetPort(udpListenPort);
 	// 创建KcpConnection
 	char buf[256];
-	uint32_t connId = m_nextConnId++;
 	snprintf(buf, sizeof(buf), ":kcp-%s#%d", m_udpListenAddr.toIpPort().c_str(), tcpConn->id());
 	string connName = m_name + buf;
 	m_kcpConnection.reset(new KcpConnection(m_loop, sockets::sz_udp_create(m_udpListenAddr.family()), secretId, connName, conv, true, m_kcpMode));

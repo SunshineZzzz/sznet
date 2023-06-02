@@ -74,7 +74,7 @@ private:
             sznet::MutexLockGuard lock(m_mutex);
             if (conn->connected())
             {
-                if (m_mode == 1)
+                if (m_mode == 2)
                 {
                     m_everySendForRttTimer = m_loop->runEvery(1.0, std::bind(&EchoClient::everySendForRtt, this));
                 }

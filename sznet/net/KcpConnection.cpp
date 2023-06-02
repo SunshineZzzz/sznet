@@ -217,6 +217,7 @@ int KcpConnection::kcpOutput(const char* buf, int len, ikcpcb* kcp, void* user)
 	KcpConnection* pKcpConnection = static_cast<KcpConnection*>(user);
 	assert(pKcpConnection->connected());
 	assert(pKcpConnection->m_peerAddr);
+	assert(pKcpConnection->m_kcp == kcp);
 	pKcpConnection->assertInLoopThread();
 	sz_ssize_t ret = sockets::sz_udp_send(pKcpConnection->m_udpSocket.fd(), buf, len, pKcpConnection->m_peerAddr->getSockAddr());
 	if (ret == -1)
@@ -274,7 +275,7 @@ void KcpConnection::kcpUpdateManual()
 	m_kcpUpdateTimerId = m_loop->runAt(nextTimestamp, std::bind(&KcpConnection::kcpUpdateManual, this));
 }
 
-void KcpConnection::handleUdpMessage(Timestamp receiveTime)
+void KcpConnection::handleUdpMessage(Timestamp)
 {
 	assert(m_isClient);
 	m_loop->assertInLoopThread();

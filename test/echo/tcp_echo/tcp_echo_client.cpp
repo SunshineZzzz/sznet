@@ -12,6 +12,9 @@
 #include <utility>
 #include <iostream>
 #include <string>
+#include <vector>
+#include <numeric>
+#include <chrono>
 
 #include <stdio.h>
 #include <signal.h>
@@ -96,9 +99,10 @@ private:
             LOG_INFO << "client recv: " << message;
             return;
         }
-        uint32_t last = *reinterpret_cast<const uint32_t*>(message.data());
-        uint32_t rtt = (static_cast<uint32_t>(Timestamp::now().milliSecondsSinceEpoch()) - last) / 2;
-        LOG_INFO << "rtt: " << rtt;
+        int64_t lastTime = *reinterpret_cast<const int64_t*>(message.data());
+        int64_t nowTime = Timestamp::now().milliSecondsSinceEpoch();
+        int64_t rtt = static_cast<int64_t>(nowTime - lastTime);
+        LOG_INFO << "rtt: " << rtt ;
     }
     // timer²»¶ÏµÄ·¢ËÍ
     void everySendForRtt()
@@ -108,8 +112,8 @@ private:
         {
             return;
         }
-        uint32_t st = static_cast<uint32_t>(Timestamp::now().milliSecondsSinceEpoch());
-        m_codec.send(get_pointer(m_client.connection()), reinterpret_cast<const void*>(&st), sizeof(uint32_t));
+        int64_t st = Timestamp::now().milliSecondsSinceEpoch();
+        m_codec.send(get_pointer(m_client.connection()), reinterpret_cast<const void*>(&st), sizeof(st));
     }
 
 public:

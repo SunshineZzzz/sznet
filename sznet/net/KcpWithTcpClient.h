@@ -127,7 +127,7 @@ private:
 	// 默认true，主动断开，设置 false
 	// 非主动断掉以后，这两都为true才会调用 m_connector->restart()
 	std::atomic<bool> m_tcpConnect;
-	// 连接成功自增ID
+	// 连接成功自增ID,TCP
 	// always in loop thread
 	uint32_t m_nextConnId;
 	// 互斥量
