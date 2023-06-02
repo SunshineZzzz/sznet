@@ -1,4 +1,4 @@
-// Comment: Kcp Cooperate With Tcp Server
+// Comment: KcpWithTcp服务器实现
 
 #ifndef _SZNET_NET_KCPWITHTCPSERVER_H_
 #define _SZNET_NET_KCPWITHTCPSERVER_H_

@@ -1,4 +1,6 @@
-﻿#ifndef _SZNET_THREAD_THREADPOOL_H_
+﻿// Comment: 线程池实现
+
+#ifndef _SZNET_THREAD_THREADPOOL_H_
 #define _SZNET_THREAD_THREADPOOL_H_
 
 #include "../base/NonCopyable.h"
