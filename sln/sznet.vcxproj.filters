@@ -108,12 +108,6 @@
     <ClInclude Include="..\sznet\log\LogFile.h">
       <Filter>sznet\log</Filter>
     </ClInclude>
-    <ClInclude Include="..\sznet\ds\BlockingQueue.h">
-      <Filter>sznet\ds</Filter>
-    </ClInclude>
-    <ClInclude Include="..\sznet\ds\BoundedBlockingQueue.h">
-      <Filter>sznet\ds</Filter>
-    </ClInclude>
     <ClInclude Include="..\sznet\log\AsyncLogging.h">
       <Filter>sznet\log</Filter>
     </ClInclude>
@@ -209,6 +203,9 @@
     </ClInclude>
     <ClInclude Include="..\sznet\net\KcpWithTcpClient.h">
       <Filter>sznet\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sznet\base\WeakCallback.h">
+      <Filter>sznet\base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

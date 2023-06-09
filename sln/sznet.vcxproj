@@ -27,8 +27,7 @@
     <ClInclude Include="..\sznet\base\NonCopyable.h" />
     <ClInclude Include="..\sznet\base\Platform.h" />
     <ClInclude Include="..\sznet\base\Types.h" />
-    <ClInclude Include="..\sznet\ds\BlockingQueue.h" />
-    <ClInclude Include="..\sznet\ds\BoundedBlockingQueue.h" />
+    <ClInclude Include="..\sznet\base\WeakCallback.h" />
     <ClInclude Include="..\sznet\ds\MinHeap.h" />
     <ClInclude Include="..\sznet\io\FileUtil.h" />
     <ClInclude Include="..\sznet\io\IO.h" />
